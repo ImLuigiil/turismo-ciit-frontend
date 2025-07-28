@@ -1,7 +1,9 @@
 // src/components/ProjectForm.js
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+// --- CORRECCIÓN: Eliminar 'Link' de la importación ---
+import { useNavigate, useParams } from 'react-router-dom';
+// --- FIN CORRECCIÓN ---
 import { useNotification } from '../contexts/NotificationContext';
 
 import './ProjectForm.css';
@@ -23,13 +25,11 @@ function ProjectForm() {
   const [noCapitulos, setNoCapitulos] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFinAprox, setFechaFinAprox] = useState('');
-  const [faseActual, setFaseActual] = useState('1'); // Estado para la fase actual del formulario
+  const [faseActual, setFaseActual] = useState('1');
 
-  // --- NUEVOS ESTADOS PARA LA JUSTIFICACIÓN ---
-  const [originalFaseActual, setOriginalFaseActual] = useState(''); // Para comparar si la fase cambió
+  const [originalFaseActual, setOriginalFaseActual] = useState('');
   const [showJustificationModal, setShowJustificationModal] = useState(false);
   const [justificationText, setJustificationText] = useState('');
-  // --- FIN NUEVOS ESTADOS ---
 
   const [personasDirectorio, setPersonasDirectorio] = useState([]);
 
@@ -89,7 +89,7 @@ function ProjectForm() {
     };
   }, []);
 
-  // --- NUEVO useEffect para precargar y guardar la fase original ---
+
   useEffect(() => {
     if (isEditing) {
       setFormLoading(true);
@@ -113,7 +113,7 @@ function ProjectForm() {
           setFechaInicio(project.fechaInicio ? new Date(project.fechaInicio).toISOString().split('T')[0] : '');
           setFechaFinAprox(project.fechaFinAprox ? new Date(project.fechaFinAprox).toISOString().split('T')[0] : '');
           setFaseActual(String(project.faseActual));
-          setOriginalFaseActual(String(project.faseActual)); // ¡Guardar la fase original!
+          setOriginalFaseActual(String(project.faseActual));
           
           setNombreCambiosCount(project.nombreCambiosCount || 0);
           setPoblacionBeneficiada(project.poblacionBeneficiada || '');
@@ -132,7 +132,7 @@ function ProjectForm() {
 
         } catch (err) {
           console.error("Error al cargar los datos del proyecto:", err);
-          setError("No se pudieron cargar los datos del proyecto.");
+          setError("No se pudieron cargar las comunidades.");
         } finally {
           setFormLoading(false);
         }
@@ -140,7 +140,6 @@ function ProjectForm() {
       fetchProjectData();
     }
   }, [isEditing, idProyectoUrl, listaComunidades]);
-  // --- FIN NUEVO useEffect ---
 
 
   const handleAddPersona = () => {
@@ -192,7 +191,6 @@ function ProjectForm() {
     setExistingImages(prevImages => prevImages.filter(img => img.idProyectoImagen !== imageIdToRemove));
   };
 
-  // --- Función para manejar el envío del formulario (incluyendo la justificación) ---
   const handleFormSubmit = async () => {
     setError(null);
     setLoading(true);
@@ -218,11 +216,9 @@ function ProjectForm() {
     formData.append('faseActual', String(faseActual));
     formData.append('poblacionBeneficiada', poblacionBeneficiada ? String(poblacionBeneficiada) : '');
 
-    // --- ENVIAR JUSTIFICACIÓN SI EXISTE ---
     if (justificationText) {
       formData.append('justificacionFase', justificationText);
     }
-    // --- FIN ENVÍO JUSTIFICACIÓN ---
 
     newImageFiles.forEach((file, index) => {
       formData.append(`images`, file);
@@ -334,38 +330,32 @@ function ProjectForm() {
       console.error(`Error al ${isEditing ? 'actualizar' : 'agregar'} proyecto:`, err.response || err);
     }
   };
-  // --- FIN Función para manejar el envío del formulario ---
 
-  // --- Función principal que se llama al enviar el formulario HTML ---
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Previene el envío por defecto del formulario HTML
+    e.preventDefault();
 
-    // Si estamos editando y la fase actual ha cambiado, mostramos la modal de justificación
     if (isEditing && String(faseActual) !== String(originalFaseActual)) {
-      setShowJustificationModal(true); // Muestra la modal
+      setShowJustificationModal(true);
     } else {
-      // Si no hay cambio de fase o no estamos editando, procede directamente con el envío
       handleFormSubmit();
     }
   };
 
-  // Función para manejar el envío de la justificación desde la modal
   const handleJustificationSubmit = () => {
     if (!justificationText.trim()) {
       setError('La justificación es obligatoria si se cambia la fase.');
       return;
     }
-    setShowJustificationModal(false); // Cierra la modal
-    handleFormSubmit(); // Procede con el envío del formulario principal
+    setShowJustificationModal(false);
+    handleFormSubmit();
   };
 
   const handleJustificationCancel = () => {
-    setShowJustificationModal(false); // Cierra la modal
-    setJustificationText(''); // Limpia el texto de justificación
-    setFaseActual(originalFaseActual); // Opcional: revierte la fase a la original si se cancela
+    setShowJustificationModal(false);
+    setJustificationText('');
+    setFaseActual(originalFaseActual);
     setError(null);
   };
-  // --- FIN Funciones de Justificación ---
 
 
   if (formLoading) {
@@ -378,7 +368,7 @@ function ProjectForm() {
     <div className="project-form-page">
       <div className="project-form-container">
         <h2>{isEditing ? `Editar Proyecto: ${nombre}` : 'Agregar Nuevo Proyecto de Turismo Comunitario'}</h2>
-        <form onSubmit={handleSubmit} className="project-form"> {/* onSubmit llama a la nueva función handleSubmit */}
+        <form onSubmit={handleSubmit} className="project-form">
           {isEditing && (
             <div className="form-group">
               <label htmlFor="idProyecto">ID del Proyecto:</label>
@@ -475,8 +465,8 @@ function ProjectForm() {
             <input
               type="file"
               id="projectImages"
-              accept="image/*"
-              multiple
+              accept="image/*" // Acepta cualquier tipo de imagen
+              multiple // Permite seleccionar múltiples archivos
               onChange={handleNewImageChange}
             />
             <div className="image-previews-container">
@@ -594,7 +584,7 @@ function ProjectForm() {
         </form>
       </div>
 
-      {/* --- MODAL DE JUSTIFICACIÓN --- */}
+      {/* MODAL DE JUSTIFICACIÓN */}
       {showJustificationModal && (
         <div className="justification-modal-overlay">
           <div className="justification-modal-content">
@@ -618,7 +608,6 @@ function ProjectForm() {
           </div>
         </div>
       )}
-      {/* --- FIN MODAL DE JUSTIFICACIÓN --- */}
     </div>
   );
 }

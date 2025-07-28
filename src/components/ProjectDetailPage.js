@@ -77,7 +77,7 @@ function ProjectDetailPage() {
   };
 
   const calcularAvance = (faseActual) => {
-    const totalFases = 7;
+
     if (faseActual < 1) return 0;
     if (faseActual > 7) return 100;
 

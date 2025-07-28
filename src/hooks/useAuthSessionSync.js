@@ -36,7 +36,7 @@ function useAuthSessionSync(isAdmin, onLogout) {
         const newSessionInfo = event.newValue ? JSON.parse(event.newValue) : null;
         // Si el cambio no fue de esta misma sesión y existe información
         if (newSessionInfo && newSessionInfo.id !== currentSessionId) {
-          console.warn(`[SessionSync] Otra sesión (<span class="math-inline">\{newSessionInfo\.id\}\) detectada\. Esta sesión \(</span>{currentSessionId}) será invalidada.`);
+          console.warn('Otra sesión de administrador detectada. Cerrando sesión en esta pestaña.');
           // Cerrar sesión en esta pestaña
           onLogout();
           navigate('/login');
@@ -69,7 +69,7 @@ function useAuthSessionSync(isAdmin, onLogout) {
           // Si la última actividad fue muy reciente (ej. en los últimos 5 segundos)
           // y el ID no coincide con el de esta pestaña
           if (Date.now() - info.timestamp < 5000 && info.id !== currentSessionId) {
-            console.warn(`[SessionSync] Sesión activa (<span class="math-inline">\{info\.id\}\) detectada al cargar\. Invalidando esta sesión \(</span>{currentSessionId}).`);
+            console.warn('Sesión de administrador activa en otra pestaña al cargar. Esta pestaña se cerrará.');
             onLogout();
             navigate('/login');
             alert('Ya existe una sesión de administrador activa. Tu intento de inicio de sesión en esta pestaña ha sido redirigido.');
