@@ -1,0 +1,98 @@
+/* src/components/FotosPage.css */
+
+.fotos-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.fotos-container h2 {
+  text-align: center;
+  color: #1B396A;
+  margin-bottom: 30px;
+  font-size: 2.2em;
+}
+
+.no-fotos {
+  text-align: center;
+  color: #777;
+  font-size: 1.1em;
+  padding: 20px;
+}
+
+.municipio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Cuadrícula de tarjetas de municipio */
+  gap: 25px;
+  justify-content: center;
+}
+
+.municipio-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden; /* Para que la imagen no se desborde */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.municipio-card:hover {
+  transform: translateY(-5px);
+}
+
+.municipio-card-image-container {
+  width: 100%;
+  height: 180px; /* Altura fija para la imagen de la tarjeta */
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e0e0e0; /* Fondo si no hay imagen */
+  border-bottom: 1px solid #eee;
+}
+
+.municipio-card-image-container.no-image {
+    color: #777;
+    font-size: 1.1em;
+}
+
+.municipio-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Recorta para cubrir el espacio */
+}
+
+.municipio-card-title {
+  color: #333;
+  font-size: 1.4em;
+  margin: 15px 10px 5px;
+}
+
+.municipio-card-count {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.municipio-card-button {
+  background-color: #1B396A;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.municipio-card-button:hover {
+  background-color: #2a5796;
+}

@@ -1,0 +1,626 @@
+// src/components/ProjectForm.js
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNotification } from '../contexts/NotificationContext';
+
+import './ProjectForm.css';
+
+function ProjectForm() {
+  const { idProyectoUrl } = useParams();
+  const isEditing = !!idProyectoUrl;
+
+  const [idProyecto, setIdProyecto] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCommunityId, setSelectedCommunityId] = useState('');
+  const [listaComunidades, setListaComunidades] = useState([]);
+  const [filteredComunidades, setFilteredComunidades] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const [noCapitulos, setNoCapitulos] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFinAprox, setFechaFinAprox] = useState('');
+  const [faseActual, setFaseActual] = useState('1'); // Estado para la fase actual del formulario
+
+  // --- NUEVOS ESTADOS PARA LA JUSTIFICACIÓN ---
+  const [originalFaseActual, setOriginalFaseActual] = useState(''); // Para comparar si la fase cambió
+  const [showJustificationModal, setShowJustificationModal] = useState(false);
+  const [justificationText, setJustificationText] = useState('');
+  // --- FIN NUEVOS ESTADOS ---
+
+  const [personasDirectorio, setPersonasDirectorio] = useState([]);
+
+  const [nombreCambiosCount, setNombreCambiosCount] = useState(0);
+  const MAX_NAME_CHANGES = 3;
+
+  const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
+
+  const [newImageFiles, setNewImageFiles] = useState([]);
+  const [newImagePreviews, setNewImagePreviews] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
+  const [imagesToDeleteIds, setImagesToDeleteIds] = useState([]);
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
+
+  const fases = Array.from({ length: 7 }, (_, i) => i + 1);
+
+  useEffect(() => {
+    const fetchComunidades = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/comunidades');
+        setListaComunidades(response.data);
+        setFilteredComunidades(response.data);
+      } catch (err) {
+        console.error("Error al cargar la lista de comunidades:", err);
+        setError("No se pudieron cargar las comunidades.");
+      }
+    };
+    fetchComunidades();
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredComunidades(listaComunidades);
+    } else {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      const filtered = listaComunidades.filter(comunidad =>
+        comunidad.nombre.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+      setFilteredComunidades(filtered);
+    }
+  }, [searchTerm, listaComunidades]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // --- NUEVO useEffect para precargar y guardar la fase original ---
+  useEffect(() => {
+    if (isEditing) {
+      setFormLoading(true);
+      const fetchProjectData = async () => {
+        try {
+          const API_URL_BASE = 'http://localhost:3000/proyectos';
+          const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
+          const project = response.data;
+
+          setIdProyecto(project.idProyecto);
+          setNombre(project.nombre);
+          setDescripcion(project.descripcion || '');
+          if (project.comunidad) {
+            setSearchTerm(project.comunidad.nombre);
+            setSelectedCommunityId(project.comunidad.idComunidad);
+          } else {
+            setSearchTerm('');
+            setSelectedCommunityId('');
+          }
+          setNoCapitulos(project.noCapitulos || '');
+          setFechaInicio(project.fechaInicio ? new Date(project.fechaInicio).toISOString().split('T')[0] : '');
+          setFechaFinAprox(project.fechaFinAprox ? new Date(project.fechaFinAprox).toISOString().split('T')[0] : '');
+          setFaseActual(String(project.faseActual));
+          setOriginalFaseActual(String(project.faseActual)); // ¡Guardar la fase original!
+          
+          setNombreCambiosCount(project.nombreCambiosCount || 0);
+          setPoblacionBeneficiada(project.poblacionBeneficiada || '');
+
+          if (project.imagenes && project.imagenes.length > 0) {
+            setExistingImages(project.imagenes.map(img => ({
+              ...img,
+              fullUrl: `http://localhost:3000${img.url}`
+            })));
+          } else {
+            setExistingImages([]);
+          }
+
+          const personasResponse = await axios.get(`http://localhost:3000/personas-proyecto/by-project/${idProyectoUrl}`);
+          setPersonasDirectorio(personasResponse.data);
+
+        } catch (err) {
+          console.error("Error al cargar los datos del proyecto:", err);
+          setError("No se pudieron cargar los datos del proyecto.");
+        } finally {
+          setFormLoading(false);
+        }
+      };
+      fetchProjectData();
+    }
+  }, [isEditing, idProyectoUrl, listaComunidades]);
+  // --- FIN NUEVO useEffect ---
+
+
+  const handleAddPersona = () => {
+    setPersonasDirectorio([...personasDirectorio, { apellidoPaterno: '', apellidoMaterno: '', nombre: '', rolEnProyecto: '', contacto: '' }]);
+  };
+
+  const handlePersonaChange = (index, field, value) => {
+    const newPersonas = [...personasDirectorio];
+    newPersonas[index][field] = value;
+    setPersonasDirectorio(newPersonas);
+  };
+
+  const handleRemovePersona = (index) => {
+    const newPersonas = personasDirectorio.filter((_, i) => i !== index);
+    setPersonasDirectorio(newPersonas);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setSelectedCommunityId('');
+    setShowDropdown(true);
+  };
+
+  const handleCommunitySelect = (comunidad) => {
+    setSearchTerm(comunidad.nombre);
+    setSelectedCommunityId(comunidad.idComunidad);
+    setShowDropdown(false);
+  };
+
+  const handleNewImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+
+    setNewImageFiles(prevFiles => [...prevFiles, ...files]);
+    setNewImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    setError(null);
+  };
+
+  const handleRemoveNewImage = (indexToRemove) => {
+    setNewImageFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+    setNewImagePreviews(prevPreviews => {
+      URL.revokeObjectURL(prevPreviews[indexToRemove]);
+      return prevPreviews.filter((_, index) => index !== indexToRemove);
+    });
+  };
+
+  const handleRemoveExistingImage = (imageIdToRemove) => {
+    setImagesToDeleteIds(prevIds => [...prevIds, imageIdToRemove]);
+    setExistingImages(prevImages => prevImages.filter(img => img.idProyectoImagen !== imageIdToRemove));
+  };
+
+  // --- Función para manejar el envío del formulario (incluyendo la justificación) ---
+  const handleFormSubmit = async () => {
+    setError(null);
+    setLoading(true);
+
+    const token = sessionStorage.getItem('access_token');
+    if (!token) {
+      setError('No autorizado. Por favor, inicia sesión.');
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
+
+    const formData = new FormData();
+    if (isEditing) {
+      formData.append('idProyecto', String(idProyecto));
+    }
+    formData.append('nombre', nombre);
+    formData.append('descripcion', descripcion);
+    formData.append('comunidadIdComunidad', selectedCommunityId ? String(selectedCommunityId) : '');
+    formData.append('noCapitulos', noCapitulos ? String(noCapitulos) : '');
+    formData.append('fechaInicio', fechaInicio);
+    formData.append('fechaFinAprox', fechaFinAprox);
+    formData.append('faseActual', String(faseActual));
+    formData.append('poblacionBeneficiada', poblacionBeneficiada ? String(poblacionBeneficiada) : '');
+
+    // --- ENVIAR JUSTIFICACIÓN SI EXISTE ---
+    if (justificationText) {
+      formData.append('justificacionFase', justificationText);
+    }
+    // --- FIN ENVÍO JUSTIFICACIÓN ---
+
+    newImageFiles.forEach((file, index) => {
+      formData.append(`images`, file);
+    });
+
+    formData.append('imagesToDeleteIds', JSON.stringify(imagesToDeleteIds));
+
+
+    if (!selectedCommunityId) {
+      if (searchTerm) {
+        const matchedCommunity = listaComunidades.find(c => c.nombre.toLowerCase() === searchTerm.toLowerCase());
+        if (matchedCommunity) {
+          setSelectedCommunityId(matchedCommunity.idComunidad);
+          formData.set('comunidadIdComunidad', String(matchedCommunity.idComunidad));
+        } else {
+          setError('Por favor, selecciona un municipio de la lista o asegúrate de que el nombre coincida exactamente.');
+          setLoading(false);
+          return;
+        }
+      } else {
+          setError('El campo de comunidad es obligatorio.');
+          setLoading(false);
+          return;
+      }
+    }
+
+
+    try {
+      const API_URL_BASE = 'http://localhost:3000/proyectos';
+      let currentProjectId = Number(idProyecto);
+
+      if (isEditing) {
+        await axios.put(`${API_URL_BASE}/${idProyectoUrl}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        showNotification(`Proyecto "${nombre}" actualizado con éxito!`, 'success');
+      } else {
+        const response = await axios.post(API_URL_BASE, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        currentProjectId = response.data.idProyecto;
+        localStorage.setItem('newProjectNotification', JSON.stringify({
+          name: nombre,
+          id: currentProjectId
+        }));
+        console.log('Notificación de nuevo proyecto guardada en localStorage:', { name: nombre, id: currentProjectId });
+        showNotification(`Se ha subido un nuevo proyecto "${nombre}"`, 'success');
+      }
+
+      const personasInDbForProject = isEditing 
+        ? (await axios.get(`http://localhost:3000/personas-proyecto/by-project/${currentProjectId}`)).data
+        : [];
+      const personasIdsInDb = personasInDbForProject.map(p => p.idPersonaProyecto);
+      const personasIdsInForm = personasDirectorio.map(p => p.idPersonaProyecto).filter(id => id);
+
+      for (const dbId of personasIdsInDb) {
+        if (!personasIdsInForm.includes(dbId)) {
+          await axios.delete(`http://localhost:3000/personas-proyecto/${dbId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+      }
+
+      for (const persona of personasDirectorio) {
+        if (!persona.apellidoPaterno && !persona.apellidoMaterno && !persona.nombre) {
+          continue;
+        }
+
+        if (persona.idPersonaProyecto && personasIdsInDb.includes(persona.idPersonaProyecto)) {
+          await axios.put(`http://localhost:3000/personas-proyecto/${persona.idPersonaProyecto}`, {
+            apellidoPaterno: persona.apellidoPaterno,
+            apellidoMaterno: persona.apellidoMaterno || null,
+            nombre: persona.nombre,
+            rolEnProyecto: persona.rolEnProyecto || null,
+            contacto: persona.contacto || null,
+            proyectoIdProyecto: currentProjectId
+          }, { headers: { Authorization: `Bearer ${token}` } });
+        } else {
+          await axios.post(`http://localhost:3000/personas-proyecto`, {
+            apellidoPaterno: persona.apellidoPaterno,
+            apellidoMaterno: persona.apellidoMaterno || null,
+            nombre: persona.nombre,
+            rolEnProyecto: persona.rolEnProyecto || null,
+            contacto: persona.contacto || null,
+            proyectoIdProyecto: currentProjectId
+          }, { headers: { Authorization: `Bearer ${token}` } });
+        }
+      }
+
+      setLoading(false);
+      navigate('/proyectos-turismo');
+    } catch (err) {
+      setLoading(false);
+      if (err.response && err.response.data && err.response.data.message) {
+        if (Array.isArray(err.response.data.message)) {
+          setError(err.response.data.message.join(', '));
+        } else {
+          setError(err.response.data.message);
+        }
+      } else {
+        setError(`Error al ${isEditing ? 'actualizar' : 'agregar'} el proyecto. Revisa la consola para más detalles.`);
+      }
+      console.error(`Error al ${isEditing ? 'actualizar' : 'agregar'} proyecto:`, err.response || err);
+    }
+  };
+  // --- FIN Función para manejar el envío del formulario ---
+
+  // --- Función principal que se llama al enviar el formulario HTML ---
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Previene el envío por defecto del formulario HTML
+
+    // Si estamos editando y la fase actual ha cambiado, mostramos la modal de justificación
+    if (isEditing && String(faseActual) !== String(originalFaseActual)) {
+      setShowJustificationModal(true); // Muestra la modal
+    } else {
+      // Si no hay cambio de fase o no estamos editando, procede directamente con el envío
+      handleFormSubmit();
+    }
+  };
+
+  // Función para manejar el envío de la justificación desde la modal
+  const handleJustificationSubmit = () => {
+    if (!justificationText.trim()) {
+      setError('La justificación es obligatoria si se cambia la fase.');
+      return;
+    }
+    setShowJustificationModal(false); // Cierra la modal
+    handleFormSubmit(); // Procede con el envío del formulario principal
+  };
+
+  const handleJustificationCancel = () => {
+    setShowJustificationModal(false); // Cierra la modal
+    setJustificationText(''); // Limpia el texto de justificación
+    setFaseActual(originalFaseActual); // Opcional: revierte la fase a la original si se cancela
+    setError(null);
+  };
+  // --- FIN Funciones de Justificación ---
+
+
+  if (formLoading) {
+    return <div className="project-form-loading">Cargando datos del proyecto...</div>;
+  }
+
+  const isNameFieldDisabled = isEditing && nombreCambiosCount >= MAX_NAME_CHANGES;
+
+  return (
+    <div className="project-form-page">
+      <div className="project-form-container">
+        <h2>{isEditing ? `Editar Proyecto: ${nombre}` : 'Agregar Nuevo Proyecto de Turismo Comunitario'}</h2>
+        <form onSubmit={handleSubmit} className="project-form"> {/* onSubmit llama a la nueva función handleSubmit */}
+          {isEditing && (
+            <div className="form-group">
+              <label htmlFor="idProyecto">ID del Proyecto:</label>
+              <input
+                type="number"
+                id="idProyecto"
+                value={idProyecto}
+                onChange={(e) => setIdProyecto(e.target.value)}
+                required
+                disabled={true}
+              />
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="nombre">Nombre del Proyecto:</label>
+            <input
+              type="text"
+              id="nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+              disabled={isNameFieldDisabled}
+            />
+            {isEditing && (
+              <p className="name-changes-info">
+                Cambios de nombre restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
+                {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
+              </p>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="descripcion">Descripción:</label>
+            <textarea
+              id="descripcion"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            ></textarea>
+          </div>
+
+          <div className="form-group" ref={dropdownRef}>
+            <label htmlFor="comunidadSearch">Comunidad:</label>
+            <input
+              type="text"
+              id="comunidadSearch"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              onFocus={() => setShowDropdown(true)}
+              placeholder="Busca o selecciona un municipio"
+              required
+            />
+            {showDropdown && filteredComunidades.length > 0 && (
+              <ul className="community-dropdown">
+                {filteredComunidades.slice(0, 100).map((comunidad) => (
+                  <li
+                    key={comunidad.idComunidad}
+                    onClick={() => handleCommunitySelect(comunidad)}
+                  >
+                    {comunidad.nombre}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {showDropdown && filteredComunidades.length === 0 && searchTerm !== '' && (
+                <p className="no-results-message">No se encontraron municipios.</p>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
+            <input
+              type="number"
+              id="poblacionBeneficiada"
+              value={poblacionBeneficiada}
+              onChange={(e) => setPoblacionBeneficiada(e.target.value)}
+              placeholder="Número de personas beneficiadas"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="noCapitulos">Número de Capítulos:</label>
+            <input
+              type="number"
+              id="noCapitulos"
+              value={noCapitulos}
+              onChange={(e) => setNoCapitulos(e.target.value)}
+            />
+          </div>
+
+          {/* Campo para subir múltiples imágenes */}
+          <div className="form-group">
+            <label htmlFor="projectImages">Imágenes del Proyecto:</label>
+            <input
+              type="file"
+              id="projectImages"
+              accept="image/*"
+              multiple
+              onChange={handleNewImageChange}
+            />
+            <div className="image-previews-container">
+              {/* Previsualizaciones de imágenes existentes */}
+              {existingImages.map(img => (
+                <div key={img.idProyectoImagen} className="image-preview-item">
+                  <img src={`http://localhost:3000${img.fullUrl}`} alt="Existente" className="image-preview" />
+                  <button type="button" onClick={() => handleRemoveExistingImage(img.idProyectoImagen)} className="remove-image-button">X</button>
+                </div>
+              ))}
+              {/* Previsualizaciones de nuevas imágenes seleccionadas */}
+              {newImagePreviews.map((previewUrl, index) => (
+                <div key={`new-${index}`} className="image-preview-item">
+                  <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
+                  <button type="button" onClick={() => handleRemoveNewImage(index)} className="remove-image-button">X</button>
+                </div>
+              ))}
+            </div>
+            {(existingImages.length === 0 && newImageFiles.length === 0) && (
+                <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
+            )}
+          </div>
+
+          <div className="personas-directorio-section">
+            <h3>Personas Involucradas en el Proyecto</h3>
+            {personasDirectorio.map((persona, index) => (
+              <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
+                <input
+                  type="text"
+                  placeholder="Apellido Paterno"
+                  value={persona.apellidoPaterno}
+                  onChange={(e) => handlePersonaChange(index, 'apellidoPaterno', e.target.value)}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Apellido Materno (Opcional)"
+                  value={persona.apellidoMaterno}
+                  onChange={(e) => handlePersonaChange(index, 'apellidoMaterno', e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Nombre(s)"
+                  value={persona.nombre}
+                  onChange={(e) => handlePersonaChange(index, 'nombre', e.target.value)}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Rol (ej. Líder)"
+                  value={persona.rolEnProyecto}
+                  onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Contacto (ej. email)"
+                  value={persona.contacto}
+                  onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
+                />
+                <button type="button" onClick={() => handleRemovePersona(index)} className="remove-persona-button">
+                  X
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={handleAddPersona} className="add-persona-button">
+              + Agregar Persona
+            </button>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="fechaInicio">Fecha de Inicio:</label>
+            <input
+              type="date"
+              id="fechaInicio"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="fechaFinAprox">Fecha Final (Aprox.):</label>
+            <input
+              type="date"
+              id="fechaFinAprox"
+              value={fechaFinAprox}
+              onChange={(e) => setFechaFinAprox(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="faseActual">Fase Actual:</label>
+            <select
+              id="faseActual"
+              value={faseActual}
+              onChange={(e) => setFaseActual(e.target.value)}
+            >
+              {fases.map((fase) => (
+                <option key={fase} value={fase}>
+                  Fase {fase}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {error && <p className="error-message">{error}</p>}
+
+          <div className="form-buttons">
+            <button type="submit" disabled={loading} className="submit-button">
+              {loading ? (isEditing ? 'Actualizando...' : 'Agregando...') : (isEditing ? 'Actualizar Proyecto' : 'Agregar Proyecto')}
+            </button>
+            <button type="button" onClick={() => navigate('/proyectos-turismo')} className="cancel-button">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* --- MODAL DE JUSTIFICACIÓN --- */}
+      {showJustificationModal && (
+        <div className="justification-modal-overlay">
+          <div className="justification-modal-content">
+            <h3>Justificación de Cambio de Fase</h3>
+            <p>Por favor, explica por qué estás cambiando la fase del proyecto.</p>
+            <textarea
+              value={justificationText}
+              onChange={(e) => setJustificationText(e.target.value)}
+              placeholder="Escribe tu justificación aquí..."
+              rows="5"
+            ></textarea>
+            {error && <p className="error-message">{error}</p>}
+            <div className="modal-buttons">
+              <button onClick={handleJustificationSubmit} className="submit-button">
+                Enviar Justificación
+              </button>
+              <button onClick={handleJustificationCancel} className="cancel-button">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* --- FIN MODAL DE JUSTIFICACIÓN --- */}
+    </div>
+  );
+}
+
+export default ProjectForm;

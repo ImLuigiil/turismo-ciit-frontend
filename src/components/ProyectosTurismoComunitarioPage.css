@@ -1,0 +1,210 @@
+/* src/components/ProyectosTurismoComunitarioPage.css */
+
+.proyectos-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.proyectos-container h2 {
+  text-align: center;
+  color: #1B396A; /* El color azul de tu navbar */
+  margin-bottom: 30px;
+  font-size: 2.2em;
+}
+
+.proyectos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Columnas responsivas */
+  gap: 25px; /* Espacio entre las tarjetas */
+  justify-content: center; /* Centra las tarjetas si no llenan la fila */
+}
+
+.proyecto-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.proyecto-card:hover {
+  transform: translateY(-5px); /* Pequeño efecto al pasar el ratón */
+}
+
+.proyecto-card-title {
+  color: #333;
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.proyecto-card-description {
+  color: #666;
+  font-size: 0.95em;
+  line-height: 1.5;
+  flex-grow: 1; /* Permite que la descripción ocupe el espacio disponible */
+  margin-bottom: 15px;
+
+  /* --- NUEVOS ESTILOS: Para asegurar que la descripción truncada se vea bien --- */
+  overflow: hidden; /* Oculta cualquier texto que se desborde */
+  text-overflow: ellipsis; /* Añade puntos suspensivos (...) al final del texto truncado */
+  display: -webkit-box; /* Para compatibilidad con navegadores basados en WebKit */
+  -webkit-line-clamp: 3; /* Limita el texto a 3 líneas (ajusta según necesites) */
+  -webkit-box-orient: vertical; /* Necesario con -webkit-line-clamp */
+  /* --- FIN NUEVOS ESTILOS --- */
+}
+
+.proyecto-card-community { /* Estilo para el nombre de la comunidad */
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.proyecto-card-progress {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  height: 25px; /* Altura de la barra de progreso */
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4CAF50; /* Verde para el progreso, puedes cambiarlo */
+  border-radius: 5px;
+  text-align: right;
+  transition: width 0.5s ease-in-out;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.progress-text {
+  position: relative; /* Asegura que el texto esté sobre la barra */
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  color: #333; /* Color de texto que contraste con el fondo */
+  font-size: 0.9em;
+  z-index: 1; /* Asegura que el texto esté encima de la barra de progreso */
+}
+
+/* Opcional: ajustar el color del texto de progreso si la barra es muy oscura */
+.progress-bar[style*="width: 50%"] + .progress-text,
+.progress-bar[style*="width: 75%"] + .progress-text,
+.progress-bar[style*="width: 100%"] + .progress-text {
+    color: white; /* Ejemplo: si la barra es más de la mitad, el texto es blanco */
+}
+
+.proyecto-card-button {
+  background-color: #1B396A; /* Azul de tu navbar */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  align-self: flex-end; /* Alinea el botón a la derecha en la parte inferior */
+  margin-top: auto; /* Empuja el botón al final de la tarjeta */
+}
+
+.proyecto-card-button:hover {
+  background-color: #2a5796; /* Un tono más oscuro de azul al pasar el ratón */
+}
+
+.no-proyectos {
+  grid-column: 1 / -1; /* Ocupa todas las columnas */
+  text-align: center;
+  color: #777;
+  font-size: 1.1em;
+  padding: 20px;
+}
+
+/* Estilos para el botón Agregar Nuevo Proyecto */
+.add-new-project-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease;
+  margin-bottom: 25px;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.add-new-project-button:hover {
+  background-color: #45a049;
+}
+
+/* Estilos para los botones de administrador en las tarjetas */
+.admin-actions {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.admin-edit-button,
+.admin-delete-button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+  color: white;
+}
+
+.admin-edit-button {
+  background-color: #2196F3;
+}
+
+.admin-edit-button:hover {
+  background-color: #0b7dda;
+}
+
+.admin-delete-button {
+  background-color: #f44336;
+}
+
+.admin-delete-button:hover {
+  background-color: #da190b;
+}
+
+/* Estilos para la imagen principal en la tarjeta del proyecto */
+.proyecto-card-image-container {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+}
+
+.proyecto-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

@@ -1,0 +1,127 @@
+/* src/components/DiplomadosPage.css */
+
+.diplomados-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.diplomados-container h2 {
+  text-align: center;
+  color: #1B396A;
+  margin-bottom: 30px;
+  font-size: 2.2em;
+}
+
+/* --- Estilos para el botón Agregar Nuevo Diplomado --- */
+.add-new-diplomado-button {
+  background-color: #4CAF50; /* Un verde para "Agregar" */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease;
+  margin-bottom: 25px; /* Espacio debajo del botón */
+  display: block; /* Para que ocupe su propia línea */
+  width: fit-content; /* Ajusta el ancho al contenido */
+  margin-left: auto; /* Alinea el botón a la derecha o lo centra si es el único elemento */
+  margin-right: auto; /* Ayuda a centrarlo con margin-left auto */
+}
+
+.add-new-diplomado-button:hover {
+  background-color: #45a049;
+}
+/* --- Fin Estilos Botón Agregar --- */
+
+
+.diplomados-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+.diplomado-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.diplomado-card:hover {
+  transform: translateY(-5px);
+}
+
+.diplomado-card-title {
+  color: #333;
+  font-size: 1.3em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.diplomado-card-button {
+  background-color: #1B396A;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background-color 0.3s ease;
+  margin-top: auto;
+}
+
+.diplomado-card-button:hover {
+  background-color: #2a5796;
+}
+
+.diplomado-card-date {
+    font-size: 0.85em;
+    color: #777;
+    margin-top: 10px;
+}
+
+.no-diplomados {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #777;
+  font-size: 1.1em;
+  padding: 20px;
+}
+
+/* --- Estilos para acciones de administrador en tarjetas de Diplomado --- */
+.admin-actions {
+    display: flex;
+    justify-content: center; /* Centra los botones de admin */
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.admin-delete-button { /* Asumiendo que solo habrá botón de eliminar por ahora */
+    background-color: #f44336; /* Rojo para eliminar */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    flex: 0; /* No expandir */
+    width: fit-content;
+}
+
+.admin-delete-button:hover {
+    background-color: #da190b;
+}

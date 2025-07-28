@@ -1,0 +1,141 @@
+/* src/components/Header.css */
+
+.main-header {
+  background-color: transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para la Capa Superior del Sándwich (#611232) */
+.header-top-bar {
+  background-color: #611232; /* Color vino/morado */
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85em;
+}
+
+.header-logo-top {
+    height: 100px; /* Aumentado de 40px a 60px */
+    width: auto;
+}
+
+.header-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-action-item-top {
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+
+.header-action-item-top:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-icon-top {
+  font-size: 1.8em; /* Aumentado de 1.5em a 1.8em para que sea más proporcional */
+  cursor: pointer;
+  color: white;
+}
+
+/* Estilos para la Capa Media del Sándwich (Blanca) */
+.header-middle-bar {
+  background-color: white; /* Color blanco */
+  color: #333;
+  padding: 10px 70px;
+  display: flex;
+  justify-content: center; /* Cambiado de flex-start a center para centrar los logos */
+  align-items: center;
+  gap: 60px; /* Aumentado el espacio entre logos para mejor visibilidad */
+}
+
+.header-middle-content {
+  /* Ya no necesita display flex aquí, ya lo tiene .header-middle-bar */
+  /* Si necesitas control granular sobre este div, puedes añadir estilos */
+}
+
+.header-logo-middle {
+  height: 100px; /* Aumentado de 60px a 80px para los logos de la sección media */
+  width: auto;
+}
+
+/* Estilos para la Capa Inferior del Sándwich (Navegación Principal - Azul #1B396A) */
+.main-nav {
+  background-color: #1B396A;
+  color: white;
+  padding: 10px 20px;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-home {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-right: 20px;
+  position: relative;
+}
+
+.nav-home::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: #ffd700;
+  bottom: 0;
+  left: 0;
+  transition: width 0.3s ease;
+}
+
+.nav-home:hover::after {
+  width: 100%;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.nav-item a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 5px 0;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.nav-item a:hover {
+  color: #ffd700;
+}
+
+.nav-item a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: #ffd700;
+  bottom: 0;
+  left: 0;
+  transition: width 0.3s ease;
+}
+
+.nav-item a:hover::after {
+  width: 100%;
+}

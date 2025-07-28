@@ -1,0 +1,508 @@
+// src/components/ProjectForm.js
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+
+import './ProjectForm.css';
+
+function ProjectForm() {
+  const { idProyectoUrl } = useParams();
+  const isEditing = !!idProyectoUrl;
+
+  const [idProyecto, setIdProyecto] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCommunityId, setSelectedCommunityId] = useState('');
+  const [listaComunidades, setListaComunidades] = useState([]);
+  const [filteredComunidades, setFilteredComunidades] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const [noCapitulos, setNoCapitulos] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFinAprox, setFechaFinAprox] = useState('');
+  const [faseActual, setFaseActual] = useState('1');
+
+  const [personasDirectorio, setPersonasDirectorio] = useState([]);
+
+  // --- NUEVOS ESTADOS PARA LA IMAGEN ---
+  const [selectedImageFile, setSelectedImageFile] = useState(null); // El archivo de imagen seleccionado
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(''); // URL para mostrar la previsualización
+  const [currentImageUrl, setCurrentImageUrl] = useState(''); // URL de la imagen actual en modo edición
+  // --- FIN NUEVOS ESTADOS ---
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const fases = Array.from({ length: 7 }, (_, i) => i + 1);
+
+  // Cargar la lista COMPLETA de comunidades al inicio
+  useEffect(() => {
+    const fetchComunidades = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/comunidades');
+        setListaComunidades(response.data);
+        setFilteredComunidades(response.data);
+      } catch (err) {
+        console.error("Error al cargar la lista de comunidades:", err);
+        setError("No se pudieron cargar las comunidades.");
+      }
+    };
+    fetchComunidades();
+  }, []);
+
+  // Filtrar comunidades cuando cambia el searchTerm o listaComunidades
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredComunidades(listaComunidades);
+    } else {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      const filtered = listaComunidades.filter(comunidad =>
+        comunidad.nombre.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+      setFilteredComunidades(filtered);
+    }
+  }, [searchTerm, listaComunidades]);
+
+  // Manejar clics fuera del dropdown (para cerrarlo)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+
+  // Lógica para precargar datos en modo edición
+  useEffect(() => {
+    if (isEditing) {
+      setFormLoading(true);
+      const fetchProjectData = async () => {
+        try {
+          const API_URL_BASE = 'http://localhost:3000/proyectos';
+          const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
+          const project = response.data;
+
+          setIdProyecto(project.idProyecto);
+          setNombre(project.nombre);
+          setDescripcion(project.descripcion || '');
+          if (project.comunidad) {
+            setSearchTerm(project.comunidad.nombre);
+            setSelectedCommunityId(project.comunidad.idComunidad);
+          } else {
+            setSearchTerm('');
+            setSelectedCommunityId('');
+          }
+          setNoCapitulos(project.noCapitulos || '');
+          setFechaInicio(project.fechaInicio ? new Date(project.fechaInicio).toISOString().split('T')[0] : '');
+          setFechaFinAprox(project.fechaFinAprox ? new Date(project.fechaFinAprox).toISOString().split('T')[0] : '');
+          setFaseActual(String(project.faseActual));
+          
+          // --- PRECARGA DE IMAGEN ---
+          if (project.imagenUrl) {
+            setCurrentImageUrl(`http://localhost:3000${project.imagenUrl}`); // URL completa de la imagen actual
+          } else {
+            setCurrentImageUrl('');
+          }
+          // --- FIN PRECARGA DE IMAGEN ---
+
+          const personasResponse = await axios.get(`http://localhost:3000/personas-proyecto/by-project/${idProyectoUrl}`);
+          setPersonasDirectorio(personasResponse.data);
+
+        } catch (err) {
+          console.error("Error al cargar los datos del proyecto:", err);
+          setError("No se pudieron cargar los datos del proyecto.");
+        } finally {
+          setFormLoading(false);
+        }
+      };
+      fetchProjectData();
+    }
+  }, [isEditing, idProyectoUrl, listaComunidades]);
+
+
+  const handleAddPersona = () => {
+    setPersonasDirectorio([...personasDirectorio, { nombreCompleto: '', rolEnProyecto: '', contacto: '' }]);
+  };
+
+  const handlePersonaChange = (index, field, value) => {
+    const newPersonas = [...personasDirectorio];
+    newPersonas[index][field] = value;
+    setPersonasDirectorio(newPersonas);
+  };
+
+  const handleRemovePersona = (index) => {
+    const newPersonas = personasDirectorio.filter((_, i) => i !== index);
+    setPersonasDirectorio(newPersonas);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setSelectedCommunityId('');
+    setShowDropdown(true);
+  };
+
+  const handleCommunitySelect = (comunidad) => {
+    setSearchTerm(comunidad.nombre);
+    setSelectedCommunityId(comunidad.idComunidad);
+    setShowDropdown(false);
+  };
+
+  // --- NUEVA FUNCIÓN PARA MANEJAR LA SELECCIÓN DE IMAGEN ---
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImageFile(file);
+      setImagePreviewUrl(URL.createObjectURL(file)); // Crea una URL temporal para la previsualización
+      setError(null);
+    } else {
+      setSelectedImageFile(null);
+      setImagePreviewUrl('');
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImageFile(null);
+    setImagePreviewUrl('');
+    setCurrentImageUrl('null'); // Indica al backend que borre la imagen actual
+  };
+  // --- FIN NUEVAS FUNCIONES DE IMAGEN ---
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError(null);
+    setLoading(true);
+
+    const token = sessionStorage.getItem('access_token');
+    if (!token) {
+      setError('No autorizado. Por favor, inicia sesión.');
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
+
+    // --- CAMBIO CLAVE: USAR FormData para enviar todos los datos, incluyendo el archivo ---
+    const formData = new FormData();
+    formData.append('idProyecto', idProyecto); // idProyecto es requerido
+    formData.append('nombre', nombre); // nombre es requerido
+    formData.append('descripcion', descripcion);
+    formData.append('comunidadIdComunidad', selectedCommunityId || ''); // Enviar como string, el backend convertirá
+    formData.append('noCapitulos', noCapitulos);
+    formData.append('fechaInicio', fechaInicio);
+    formData.append('fechaFinAprox', fechaFinAprox);
+    formData.append('faseActual', faseActual);
+
+    // Adjuntar el archivo de imagen si se seleccionó uno nuevo
+    if (selectedImageFile) {
+      formData.append('image', selectedImageFile); // 'image' debe coincidir con el nombre del campo en FileInterceptor
+    } else if (currentImageUrl === 'null') {
+      // Si el usuario indicó borrar la imagen existente
+      formData.append('imagenUrl', 'null'); // Envía un string 'null' para que el backend sepa que debe borrarla
+    }
+    // Si selectedImageFile es null y currentImageUrl no es 'null', no se envía nada para 'image' ni 'imagenUrl'
+    // lo que significa que el backend mantendrá la imagen existente.
+    // --- FIN CAMBIO CLAVE ---
+
+
+    // Validación básica para la comunidad seleccionada
+    if (!selectedCommunityId && searchTerm) {
+      const matchedCommunity = listaComunidades.find(c => c.nombre.toLowerCase() === searchTerm.toLowerCase());
+      if (matchedCommunity) {
+        setSelectedCommunityId(matchedCommunity.idComunidad);
+        formData.set('comunidadIdComunidad', matchedCommunity.idComunidad); // Actualiza también en formData
+      } else {
+        setError('Por favor, selecciona un municipio de la lista o asegúrate de que el nombre coincida exactamente.');
+        setLoading(false);
+        return;
+      }
+    } else if (!selectedCommunityId && !searchTerm) {
+        setError('El campo de comunidad es obligatorio.');
+        setLoading(false);
+        return;
+    }
+
+
+    try {
+      const API_URL_BASE = 'http://localhost:3000/proyectos';
+      let currentProjectId = parseInt(idProyecto);
+
+      if (isEditing) {
+        await axios.put(`${API_URL_BASE}/${idProyectoUrl}`, formData, { // Enviar formData
+          headers: {
+            'Content-Type': 'multipart/form-data', // Importante para enviar archivos
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        alert('Proyecto actualizado con éxito!');
+      } else {
+        const response = await axios.post(API_URL_BASE, formData, { // Enviar formData
+          headers: {
+            'Content-Type': 'multipart/form-data', // Importante para enviar archivos
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        alert('Proyecto agregado con éxito!');
+        currentProjectId = response.data.idProyecto;
+      }
+
+      const personasInDbForProject = isEditing 
+        ? (await axios.get(`http://localhost:3000/personas-proyecto/by-project/${currentProjectId}`)).data
+        : [];
+      const personasIdsInDb = personasInDbForProject.map(p => p.idPersonaProyecto);
+      const personasIdsInForm = personasDirectorio.map(p => p.idPersonaProyecto).filter(id => id);
+
+      for (const dbId of personasIdsInDb) {
+        if (!personasIdsInForm.includes(dbId)) {
+          await axios.delete(`http://localhost:3000/personas-proyecto/${dbId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+      }
+
+      for (const persona of personasDirectorio) {
+        if (!persona.nombreCompleto) continue;
+
+        if (persona.idPersonaProyecto && personasIdsInDb.includes(persona.idPersonaProyecto)) {
+          await axios.put(`http://localhost:3000/personas-proyecto/${persona.idPersonaProyecto}`, {
+            nombreCompleto: persona.nombreCompleto,
+            rolEnProyecto: persona.rolEnProyecto,
+            contacto: persona.contacto,
+            proyectoIdProyecto: currentProjectId
+          }, { headers: { Authorization: `Bearer ${token}` } });
+        } else {
+          await axios.post(`http://localhost:3000/personas-proyecto`, {
+            nombreCompleto: persona.nombreCompleto,
+            rolEnProyecto: persona.rolEnProyecto,
+            contacto: persona.contacto,
+            proyectoIdProyecto: currentProjectId
+          }, { headers: { Authorization: `Bearer ${token}` } });
+        }
+      }
+
+      setLoading(false);
+      navigate('/proyectos-turismo');
+    } catch (err) {
+      setLoading(false);
+      if (err.response && err.response.data && err.response.data.message) {
+        if (Array.isArray(err.response.data.message)) {
+          setError(err.response.data.message.join(', '));
+        } else {
+          setError(err.response.data.message);
+        }
+      } else {
+        setError(`Error al ${isEditing ? 'actualizar' : 'agregar'} el proyecto. Revisa la consola para más detalles.`);
+      }
+      console.error(`Error al ${isEditing ? 'actualizar' : 'agregar'} proyecto:`, err.response || err);
+    }
+  };
+
+  if (formLoading) {
+    return <div className="project-form-loading">Cargando datos del proyecto...</div>;
+  }
+
+  return (
+    <div className="project-form-page">
+      <div className="project-form-container">
+        <h2>{isEditing ? `Editar Proyecto: ${nombre}` : 'Agregar Nuevo Proyecto de Turismo Comunitario'}</h2>
+        <form onSubmit={handleSubmit} className="project-form">
+          <div className="form-group">
+            <label htmlFor="idProyecto">ID del Proyecto:</label>
+            <input
+              type="number"
+              id="idProyecto"
+              value={idProyecto}
+              onChange={(e) => setIdProyecto(e.target.value)}
+              required
+              disabled={isEditing}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="nombre">Nombre del Proyecto:</label>
+            <input
+              type="text"
+              id="nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="descripcion">Descripción:</label>
+            <textarea
+              id="descripcion"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            ></textarea>
+          </div>
+
+          <div className="form-group" ref={dropdownRef}>
+            <label htmlFor="comunidadSearch">Comunidad:</label>
+            <input
+              type="text"
+              id="comunidadSearch"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              onFocus={() => setShowDropdown(true)}
+              placeholder="Busca o selecciona un municipio"
+              required
+            />
+            {showDropdown && filteredComunidades.length > 0 && (
+              <ul className="community-dropdown">
+                {filteredComunidades.slice(0, 100).map((comunidad) => (
+                  <li
+                    key={comunidad.idComunidad}
+                    onClick={() => handleCommunitySelect(comunidad)}
+                  >
+                    {comunidad.nombre}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {showDropdown && filteredComunidades.length === 0 && searchTerm !== '' && (
+                <p className="no-results-message">No se encontraron municipios.</p>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="noCapitulos">Número de Capítulos:</label>
+            <input
+              type="number"
+              id="noCapitulos"
+              value={noCapitulos}
+              onChange={(e) => setNoCapitulos(e.target.value)}
+            />
+          </div>
+
+          {/* --- CAMPO PARA SUBIR IMAGEN --- */}
+          <div className="form-group">
+            <label htmlFor="projectImage">Imagen del Proyecto:</label>
+            <input
+              type="file"
+              id="projectImage"
+              accept="image/*" // Solo acepta archivos de imagen
+              onChange={handleImageChange}
+            />
+            {(imagePreviewUrl || currentImageUrl) && (
+              <div className="image-preview-container">
+                <img
+                  src={imagePreviewUrl || currentImageUrl}
+                  alt="Previsualización de la imagen"
+                  className="image-preview"
+                />
+                <button type="button" onClick={handleRemoveImage} className="remove-image-button">
+                  X Quitar Imagen
+                </button>
+              </div>
+            )}
+          </div>
+          {/* --- FIN CAMPO IMAGEN --- */}
+
+          <div className="personas-directorio-section">
+            <h3>Personas Involucradas en el Proyecto</h3>
+            {personasDirectorio.map((persona, index) => (
+              <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
+                <input
+                  type="text"
+                  placeholder="Nombre Completo"
+                  value={persona.nombreCompleto}
+                  onChange={(e) => handlePersonaChange(index, 'nombreCompleto', e.target.value)}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Rol (ej. Líder)"
+                  value={persona.rolEnProyecto}
+                  onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Contacto (ej. email)"
+                  value={persona.contacto}
+                  onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
+                />
+                <button type="button" onClick={() => handleRemovePersona(index)} className="remove-persona-button">
+                  X
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={handleAddPersona} className="add-persona-button">
+              + Agregar Persona
+            </button>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="fechaInicio">Fecha de Inicio:</label>
+            <input
+              type="date"
+              id="fechaInicio"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="fechaFinAprox">Fecha Final (Aprox.):</label>
+            <input
+              type="date"
+              id="fechaFinAprox"
+              value={fechaFinAprox}
+              onChange={(e) => (setFechaFinA.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="faseActual">Fase Actual:</label>
+            <select
+              id="faseActual"
+              value={faseActual}
+              onChange={(e) => setFaseActual(e.target.value)}
+            >
+              {fases.map((fase) => (
+                <option key={fase} value={fase}>
+                  Fase {fase}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {error && <p className="error-message">{error}</p>}
+
+          <div className="form-buttons">
+            <button type="submit" disabled={loading} className="submit-button">
+              {loading ? (isEditing ? 'Actualizando...' : 'Agregando...') : (isEditing ? 'Actualizar Proyecto' : 'Agregar Proyecto')}
+            </button>
+            <button type="button" onClick={() => navigate('/proyectos-turismo')} className="cancel-button">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default ProjectForm;
+
+
+
+          <div className="form-group">
+            <label htmlFor="fechaFinAprox">Fecha Final (Aprox.):</label>
+            <input
+              type="date"
+              id="fechaFinAprox"
+              value={fechaFinAprox}
+              onChange={(e) => setFechaFinAprox(e.target.value)}
+            />
+          </div>

@@ -1,0 +1,127 @@
+/* src/components/CommunityForm.css */
+
+.community-form-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px); /* Ajusta según la altura de tu navbar */
+    background-color: #f4f7f6;
+    padding: 20px;
+}
+
+.community-form-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+}
+
+.community-form-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+.community-form .form-group {
+    margin-bottom: 18px;
+}
+
+.community-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: bold;
+}
+
+.community-form .form-group input[type="text"],
+.community-form .form-group input[type="number"],
+.community-form .form-group textarea,
+.community-form .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho */
+}
+
+.community-form .form-group textarea {
+    resize: vertical; /* Permite redimensionar verticalmente */
+    min-height: 80px;
+}
+
+.community-form .error-message {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.community-form .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px; /* Espacio entre los botones */
+    margin-top: 30px;
+}
+
+.community-form .submit-button,
+.community-form .cancel-button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex: 1; /* Para que los botones ocupen el mismo ancho */
+}
+
+.community-form .submit-button {
+    background-color: #28a745; /* Verde para agregar/actualizar */
+    color: white;
+}
+
+.community-form .submit-button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.community-form .submit-button:disabled {
+    background-color: #94d3a2;
+    cursor: not-allowed;
+}
+
+.community-form .cancel-button {
+    background-color: #6c757d; /* Gris para cancelar */
+    color: white;
+}
+
+.community-form .cancel-button:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+.community-form-loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2em;
+    color: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .community-form-container {
+        padding: 20px;
+        margin: 10px;
+    }
+    .community-form .form-buttons {
+        flex-direction: column;
+    }
+}

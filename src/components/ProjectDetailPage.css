@@ -1,0 +1,227 @@
+/* src/components/ProjectDetailPage.css */
+
+.project-detail-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.back-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.back-button:hover {
+  background-color: #5a6268;
+}
+
+.project-detail-container h2 {
+  text-align: center;
+  color: #1B396A;
+  margin-bottom: 30px;
+  font-size: 2.2em;
+}
+
+.project-detail-content {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.project-main-info {
+  flex: 3;
+  min-width: 450px;
+  order: 2;
+}
+
+.project-image-gallery-container {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.project-main-image-full {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #f8f8f8;
+}
+
+.gallery-navigation {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.gallery-nav-button {
+    background-color: rgba(27, 57, 106, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5em;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.gallery-nav-button:hover {
+    background-color: #1B396A;
+}
+
+.gallery-thumbnails {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.gallery-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.gallery-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.gallery-thumbnail.active {
+    border-color: #1B396A;
+    box-shadow: 0 0 0 2px rgba(27, 57, 106, 0.5);
+}
+
+.project-main-description {
+  font-size: 1.1em;
+  line-height: 1.7;
+  color: #444;
+  text-align: justify;
+}
+
+.project-detail-sidebar {
+  flex: 1;
+  min-width: 280px;
+  background-color: #f0f2f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+  order: 1;
+}
+
+.project-detail-sidebar p {
+  margin-bottom: 10px;
+  font-size: 1em;
+  color: #333;
+}
+
+.project-detail-sidebar strong {
+  color: #1B396A;
+}
+
+.sidebar-progress-bar-container {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  height: 20px;
+}
+
+.sidebar-progress-bar {
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+.directorio-personas-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.directorio-personas-list li {
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  font-size: 0.95em;
+  color: #495057;
+}
+
+.directorio-personas-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* --- ESTILOS PARA EL BOTÓN GENERAR REPORTE --- */
+.generate-report-button {
+  background-color: #007bff; /* Azul para el botón de reporte */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  width: 100%; /* Ocupa todo el ancho de la barra lateral */
+  margin-top: 20px; /* Margen superior */
+}
+
+.generate-report-button:hover {
+  background-color: #0056b3;
+}
+/* --- FIN ESTILOS BOTÓN --- */
+
+/* Media Queries para responsividad */
+@media (max-width: 768px) {
+  .project-detail-content {
+    flex-direction: column;
+  }
+  .project-detail-sidebar,
+  .project-main-info {
+    min-width: unset;
+    width: 100%;
+    order: unset;
+  }
+}

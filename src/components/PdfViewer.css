@@ -1,0 +1,114 @@
+/* src/components/PdfViewer.css */
+
+.pdf-viewer-overlay {
+  position: fixed; /* O absolute, dependiendo de dónde quieres que aparezca */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Asegura que esté por encima de todo lo demás */
+}
+
+.pdf-viewer-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  max-width: 90%; /* Ajusta el ancho máximo del contenedor */
+  max-height: 90%; /* Ajusta la altura máxima del contenedor */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.pdf-viewer-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #333;
+}
+
+.pdf-document-container {
+  flex-grow: 1; /* Permite que el visor ocupe el espacio disponible */
+  overflow: auto; /* Para scroll si el PDF es más grande que el contenedor */
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+.pdf-document {
+    width: 100% !important; /* Asegura que el documento ocupe todo el ancho disponible */
+    height: auto !important; /* Mantiene la proporción */
+    display: flex;
+    justify-content: center; /* Centra el documento si es más pequeño que el contenedor */
+    align-items: center;
+}
+
+/* Estilos para las páginas individuales dentro del PDF */
+.react-pdf__Page canvas { /* Selecciona el canvas generado por react-pdf */
+  max-width: 100%;
+  height: auto !important;
+  display: block; /* Elimina espacios extra debajo del canvas */
+  margin: 0 auto; /* Centra la página en su contenedor */
+}
+
+.react-pdf__Page {
+    margin-bottom: 10px; /* Espacio entre páginas si muestras varias */
+    display: flex;
+    justify-content: center; /* Centra la página si el canvas es más pequeño */
+}
+
+
+.pdf-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.pdf-navigation button {
+  background-color: #1B396A;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pdf-navigation button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pdf-navigation button:hover:not(:disabled) {
+  background-color: #2a5796;
+}
+
+.pdf-download-btn {
+    background-color: #4CAF50; /* Un color verde para descargar */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    text-decoration: none; /* Para que parezca un botón */
+    text-align: center;
+    display: block; /* Ocupa su propia línea */
+    margin: 10px auto 0; /* Centra el botón de descarga */
+    transition: background-color 0.3s ease;
+}
+
+.pdf-download-btn:hover {
+    background-color: #45a049;
+}

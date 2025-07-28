@@ -1,0 +1,136 @@
+/* src/components/CursosPage.css */
+
+.cursos-container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.cursos-container h2 {
+  text-align: center;
+  color: #1B396A;
+  margin-bottom: 30px;
+  font-size: 2.2em;
+}
+
+/* Botón "Agregar Nuevo Curso" */
+.add-new-curso-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease;
+  margin-bottom: 25px;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.add-new-curso-button:hover {
+  background-color: #45a049;
+}
+
+.cursos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  justify-content: center;
+}
+
+.curso-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.curso-card:hover {
+  transform: translateY(-5px);
+}
+
+.curso-card-title {
+  color: #333;
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.curso-card-type {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.curso-card-button {
+  background-color: #1B396A;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  margin-top: auto; /* Empuja el botón al final */
+}
+
+.curso-card-button:hover {
+  background-color: #2a5796;
+}
+
+.no-cursos {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #777;
+  font-size: 1.1em;
+  padding: 20px;
+}
+
+/* Estilos para los botones de administrador en las tarjetas */
+.admin-actions {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.admin-edit-button,
+.admin-delete-button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+  color: white;
+}
+
+.admin-edit-button {
+  background-color: #2196F3; /* Azul para editar */
+}
+
+.admin-edit-button:hover {
+  background-color: #0b7dda;
+}
+
+.admin-delete-button {
+  background-color: #f44336; /* Rojo para eliminar */
+}
+
+.admin-delete-button:hover {
+  background-color: #da190b;
+}
