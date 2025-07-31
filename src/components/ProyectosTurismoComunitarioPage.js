@@ -19,7 +19,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = `${process.env.REACT_APP_API_URL}proyectos`;
+      const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`;
       const response = await axios.get(API_URL);
       setProyectos(response.data);
       setLoading(false);
