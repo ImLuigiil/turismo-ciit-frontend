@@ -13,7 +13,7 @@ function FotosPage() {
   useEffect(() => {
     const fetchProjectImagesGrouped = async () => {
       try {
-        const API_URL = 'http://localhost:3000/proyectos'; // Endpoint para obtener todos los proyectos
+        const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`; // Endpoint para obtener todos los proyectos
         const response = await axios.get(API_URL);
         const projects = response.data;
 
@@ -38,7 +38,7 @@ function FotosPage() {
 
             // Si aún no hay una imagen principal, toma la primera del proyecto
             if (!grouped[comunidadId].firstImageUrl) {
-              grouped[comunidadId].firstImageUrl = `http://localhost:3000${project.imagenes[0].url}`;
+              grouped[comunidadId].firstImageUrl = `${process.env.REACT_APP_API_URL}${project.imagenes[0].url}`;
             }
           }
         });

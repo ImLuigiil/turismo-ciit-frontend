@@ -21,7 +21,7 @@ function ProjectDetailPage() {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const API_URL_BASE = `http://localhost:3000`;
+        const API_URL_BASE = `${process.env.REACT_APP_API_URL}`;
 
         const projectResponse = await axios.get(`${API_URL_BASE}/proyectos/${idProyecto}`);
         setProject(projectResponse.data);
@@ -101,7 +101,7 @@ function ProjectDetailPage() {
 
       showNotification('Generando reporte PDF...', 'success', 5000); // Notificación de proceso
 
-      const response = await axios.get(`http://localhost:3000/proyectos/${idProyecto}/report`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/${idProyecto}/report`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -158,7 +158,7 @@ function ProjectDetailPage() {
   }
 
   const displayImageUrl = project.imagenes && project.imagenes.length > 0
-    ? `http://localhost:3000${project.imagenes[currentImageIndex].url}`
+    ? `${process.env.REACT_APP_API_URL}${project.imagenes[currentImageIndex].url}`
     : 'https://placehold.co/600x300/e0e0e0/777?text=Sin+Imagen';
 
 
@@ -238,7 +238,7 @@ function ProjectDetailPage() {
                 {project.imagenes.map((img, index) => (
                   <img
                     key={img.idProyectoImagen}
-                    src={`http://localhost:3000${img.url}`}
+                    src={`${process.env.REACT_APP_API_URL}${img.url}`}
                     alt={`Thumbnail ${index}`}
                     className={`gallery-thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                     onClick={() => setCurrentImageIndex(index)}

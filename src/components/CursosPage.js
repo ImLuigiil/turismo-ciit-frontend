@@ -16,7 +16,7 @@ function CursosPage({ isAdmin }) {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = 'http://localhost:3000/cursos';
+      const API_URL = `${process.env.REACT_APP_API_URL}/cursos`;
       const response = await axios.get(API_URL);
       setCursos(response.data);
     } catch (err) {
@@ -36,7 +36,7 @@ function CursosPage({ isAdmin }) {
       window.open(curso.link, '_blank'); // Abrir enlace de video en nueva pestaña
     } else if (curso.tipo === 'pdf' && curso.link) {
       // Construir la URL completa para el PDF
-      const fullLink = curso.link.startsWith('http') ? curso.link : `http://localhost:3000${curso.link}`;
+      const fullLink = curso.link.startsWith('http') ? curso.link : `${process.env.REACT_APP_API_URL}${curso.link}`;
       window.open(fullLink, '_blank'); // Abrir PDF en nueva pestaña
     } else {
       showNotification('No hay contenido disponible para este curso.', 'error');
@@ -61,7 +61,7 @@ function CursosPage({ isAdmin }) {
           return;
         }
 
-        await axios.delete(`http://localhost:3000/cursos/${cursoId}`, {
+        await axios.delete(`${process.env.REACT_APP_API_URL}/cursos/${cursoId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

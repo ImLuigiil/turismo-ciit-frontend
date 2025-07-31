@@ -54,7 +54,7 @@ function ProjectForm() {
   useEffect(() => {
     const fetchComunidades = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/comunidades');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/comunidades`);
         setListaComunidades(response.data);
         setFilteredComunidades(response.data);
       } catch (err) {
@@ -95,7 +95,7 @@ function ProjectForm() {
       setFormLoading(true);
       const fetchProjectData = async () => {
         try {
-          const API_URL_BASE = 'http://localhost:3000/proyectos';
+          const API_URL_BASE = `${process.env.REACT_APP_API_URL}/proyectos`;
           const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
           const project = response.data;
 
@@ -121,13 +121,13 @@ function ProjectForm() {
           if (project.imagenes && project.imagenes.length > 0) {
             setExistingImages(project.imagenes.map(img => ({
               ...img,
-              fullUrl: `http://localhost:3000${img.url}`
+              fullUrl: `${process.env.REACT_APP_API_URL}${img.url}`
             })));
           } else {
             setExistingImages([]);
           }
 
-          const personasResponse = await axios.get(`http://localhost:3000/personas-proyecto/by-project/${idProyectoUrl}`);
+          const personasResponse = await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${idProyectoUrl}`);
           setPersonasDirectorio(personasResponse.data);
 
         } catch (err) {
@@ -247,7 +247,7 @@ function ProjectForm() {
 
 
     try {
-      const API_URL_BASE = 'http://localhost:3000/proyectos';
+      const API_URL_BASE = `${process.env.REACT_APP_API_URL}/proyectos`;
       let currentProjectId = Number(idProyecto);
 
       if (isEditing) {
@@ -275,14 +275,14 @@ function ProjectForm() {
       }
 
       const personasInDbForProject = isEditing 
-        ? (await axios.get(`http://localhost:3000/personas-proyecto/by-project/${currentProjectId}`)).data
+        ? (await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${currentProjectId}`)).data
         : [];
       const personasIdsInDb = personasInDbForProject.map(p => p.idPersonaProyecto);
       const personasIdsInForm = personasDirectorio.map(p => p.idPersonaProyecto).filter(id => id);
 
       for (const dbId of personasIdsInDb) {
         if (!personasIdsInForm.includes(dbId)) {
-          await axios.delete(`http://localhost:3000/personas-proyecto/${dbId}`, {
+          await axios.delete(`${process.env.REACT_APP_API_URL}/personas-proyecto/${dbId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
         }
@@ -294,7 +294,7 @@ function ProjectForm() {
         }
 
         if (persona.idPersonaProyecto && personasIdsInDb.includes(persona.idPersonaProyecto)) {
-          await axios.put(`http://localhost:3000/personas-proyecto/${persona.idPersonaProyecto}`, {
+          await axios.put(`${process.env.REACT_APP_API_URL}/personas-proyecto/${persona.idPersonaProyecto}`, {
             apellidoPaterno: persona.apellidoPaterno,
             apellidoMaterno: persona.apellidoMaterno || null,
             nombre: persona.nombre,
@@ -303,7 +303,7 @@ function ProjectForm() {
             proyectoIdProyecto: currentProjectId
           }, { headers: { Authorization: `Bearer ${token}` } });
         } else {
-          await axios.post(`http://localhost:3000/personas-proyecto`, {
+          await axios.post(`${process.env.REACT_APP_API_URL}/personas-proyecto`, {
             apellidoPaterno: persona.apellidoPaterno,
             apellidoMaterno: persona.apellidoMaterno || null,
             nombre: persona.nombre,
@@ -473,7 +473,7 @@ function ProjectForm() {
               {/* Previsualizaciones de imágenes existentes */}
               {existingImages.map(img => (
                 <div key={img.idProyectoImagen} className="image-preview-item">
-                  <img src={`http://localhost:3000${img.fullUrl}`} alt="Existente" className="image-preview" />
+                  <img src={`${process.env.REACT_APP_API_URL}${img.fullUrl}`} alt="Existente" className="image-preview" />
                   <button type="button" onClick={() => handleRemoveExistingImage(img.idProyectoImagen)} className="remove-image-button">X</button>
                 </div>
               ))}

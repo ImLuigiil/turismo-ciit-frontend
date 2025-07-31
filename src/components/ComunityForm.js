@@ -34,7 +34,7 @@ function CommunityForm() {
     };
 
     try {
-      await axios.post('http://localhost:3000/comunidades', communityData, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/comunidades`, communityData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

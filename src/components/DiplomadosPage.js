@@ -21,7 +21,7 @@ function DiplomadosPage({ isAdmin }) {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = 'http://localhost:3000/diplomados';
+      const API_URL = `${process.env.REACT_APP_API_URL}/diplomados`;
       const response = await axios.get(API_URL);
       setDiplomados(response.data);
     } catch (err) {
@@ -38,16 +38,12 @@ function DiplomadosPage({ isAdmin }) {
 
   const handleViewPdfClick = (link) => {
     if (link) {
-      // --- VERIFICACIÓN CLAVE: Construir la URL completa para el PDF ---
-      // Si el link es relativo (ej. /uploads/diplomados/mi-diploma.pdf),
-      // construye la URL completa usando la URL base de tu backend.
-      const baseUrl = 'http://localhost:3000'; // La URL base de tu backend
+      const baseUrl = `${process.env.REACT_APP_API_URL}`;
       const fullLink = link.startsWith('http://') || link.startsWith('https://')
                        ? link
                        : `${baseUrl}${link}`;
-      // --- FIN VERIFICACIÓN ---
 
-      console.log('Intentando cargar PDF desde URL (final):', fullLink); // Para depuración
+      console.log('Intentando cargar PDF desde URL (final):', fullLink);
       setSelectedPdfUrl(fullLink);
     } else {
       showNotification('No hay enlace de PDF disponible para este diplomado.', 'error');
@@ -72,7 +68,7 @@ function DiplomadosPage({ isAdmin }) {
                   return;
               }
 
-              await axios.delete(`http://localhost:3000/diplomados/${idDiplomado}`, {
+              await axios.delete(`${process.env.REACT_APP_API_URL}/diplomados/${idDiplomado}`, {
                   headers: { Authorization: `Bearer ${token}` }
               });
 

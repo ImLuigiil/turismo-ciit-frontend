@@ -18,7 +18,7 @@
       useEffect(() => {
         const fetchMunicipioImages = async () => {
           try {
-            const API_URL_PROYECTOS = 'http://localhost:3000/proyectos';
+            const API_URL_PROYECTOS = `${process.env.REACT_APP_API_URL}/proyectos`;
             const projectsResponse = await axios.get(API_URL_PROYECTOS);
             const projects = projectsResponse.data;
 
@@ -101,7 +101,7 @@
       }
 
       const displayImageUrl = allMunicipioImages.length > 0
-        ? `http://localhost:3000${allMunicipioImages[currentImageIndex].url}`
+        ? `${process.env.REACT_APP_API_URL}${allMunicipioImages[currentImageIndex].url}`
         : 'https://placehold.co/800x450/e0e0e0/777?text=Sin+Imágenes+para+este+Municipio';
 
       return (
@@ -135,7 +135,7 @@
                 {allMunicipioImages.map((img, index) => (
                   <img
                     key={img.id}
-                    src={`http://localhost:3000${img.url}`}
+                    src={`${process.env.REACT_APP_API_URL}${img.url}`}
                     alt={`Thumbnail ${index}`}
                     className={`gallery-thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                     onClick={() => setCurrentImageIndex(index)}

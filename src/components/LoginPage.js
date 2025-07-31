@@ -18,7 +18,7 @@ function LoginPage({ onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const API_URL = 'http://localhost:3000/auth/login';
+      const API_URL = `${process.env.REACT_APP_API_URL}/auth/login`;
 
       const response = await axios.post(API_URL, {
         usuariocol,

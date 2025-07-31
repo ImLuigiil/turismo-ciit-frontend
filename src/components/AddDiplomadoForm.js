@@ -49,7 +49,7 @@ function AddDiplomadoForm() {
     formData.append('file', selectedFile);
 
     try {
-      const API_URL = 'http://localhost:3000/diplomados';
+      const API_URL = `${process.env.REACT_APP_API_URL}/diplomados`;
 
       await axios.post(API_URL, formData, {
         headers: {

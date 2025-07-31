@@ -28,7 +28,7 @@ function CursoForm() {
       setFormLoading(true);
       const fetchCursoData = async () => {
         try {
-          const API_URL_BASE = 'http://localhost:3000/cursos';
+          const API_URL_BASE = `${process.env.REACT_APP_API_URL}/cursos`;
           const response = await axios.get(`${API_URL_BASE}/${idCursoUrl}`);
           const curso = response.data;
 
@@ -38,7 +38,7 @@ function CursoForm() {
           
           // Si el curso tiene un link y es de tipo PDF, lo guardamos como currentFileUrl
           if (curso.tipo === 'pdf' && curso.link) {
-            setCurrentFileUrl(`http://localhost:3000${curso.link}`);
+            setCurrentFileUrl(`${process.env.REACT_APP_API_URL}${curso.link}`);
           } else {
             setCurrentFileUrl('');
           }
@@ -111,7 +111,7 @@ function CursoForm() {
     }
 
     try {
-      const API_URL_BASE = 'http://localhost:3000/cursos';
+      const API_URL_BASE = `${process.env.REACT_APP_API_URL}/cursos`;
       
       if (isEditing) {
         await axios.put(`${API_URL_BASE}/${idCursoUrl}`, formData, {

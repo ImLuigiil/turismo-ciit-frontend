@@ -19,7 +19,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = 'http://localhost:3000/proyectos';
+      const API_URL = `${process.env.REACT_APP_API_URL}proyectos`;
       const response = await axios.get(API_URL);
       setProyectos(response.data);
       setLoading(false);
@@ -126,12 +126,12 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
           return;
         }
 
-        await axios.delete(`http://localhost:3000/proyectos/${proyectoId}`, {
+        await axios.delete(`${process.env.REACT_APP_API_URL}/proyectos/${proyectoId}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
 
         alert(`Proyecto con ID ${proyectoId} eliminado con éxito.`);
-        fetchProyectos(); // Vuelve a cargar la lista de proyectos después de eliminar
+        fetchProyectos();
       } catch (err) {
         console.error(`Error al eliminar el proyecto con ID ${proyectoId}:`, err);
         if (err.response && err.response.status === 401) {
