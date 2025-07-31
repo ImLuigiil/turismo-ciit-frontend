@@ -170,7 +170,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
               {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
                 <div className="proyecto-card-image-container">
                   <img
-                    src={`http://localhost:3000${proyecto.imagenes[0].url}`}
+                    src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
                     alt={`Imagen de ${proyecto.nombre}`}
                     className="proyecto-card-image"
                   />
