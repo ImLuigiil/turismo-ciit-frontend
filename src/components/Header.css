@@ -10,26 +10,26 @@
   background-color: #611232; /* Color vino/morado */
   color: white;
   padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
+  display: flex; /* Para alinear el logo y las acciones */
+  justify-content: space-between; /* Espacia el logo de las acciones */
   align-items: center;
-  font-size: 0.85em;
+  font-size: 0.85em; /* Fuente más pequeña para esta barra */
 }
 
 .header-logo-top {
-    height: 100px; /* Aumentado de 40px a 60px */
+    height: 60px; /* Tamaño del logo en la barra superior */
     width: auto;
 }
 
 .header-top-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 15px; /* Espacio entre Trámites, Gobierno, Icono */
 }
 
 .header-action-item-top {
   cursor: pointer;
-  padding: 3px 8px;
+  padding: 3px 8px; /* Padding más pequeño para esta barra */
   border-radius: 3px;
   transition: background-color 0.3s ease;
 }
@@ -39,7 +39,7 @@
 }
 
 .user-icon-top {
-  font-size: 1.8em; /* Aumentado de 1.5em a 1.8em para que sea más proporcional */
+  font-size: 1.8em; /* Tamaño del ícono de usuario en la barra superior */
   cursor: pointer;
   color: white;
 }
@@ -47,27 +47,26 @@
 /* Estilos para la Capa Media del Sándwich (Blanca) */
 .header-middle-bar {
   background-color: white; /* Color blanco */
-  color: #333;
-  padding: 10px 70px;
+  color: #333; /* Color de texto para los elementos dentro de esta barra */
+  padding: 10px 20px;
   display: flex;
-  justify-content: center; /* Cambiado de flex-start a center para centrar los logos */
+  justify-content: center; /* Alinea los logos al centro */
   align-items: center;
-  gap: 60px; /* Aumentado el espacio entre logos para mejor visibilidad */
-}
-
-.header-middle-content {
-  /* Ya no necesita display flex aquí, ya lo tiene .header-middle-bar */
-  /* Si necesitas control granular sobre este div, puedes añadir estilos */
+  gap: 30px; /* Espacio entre los logos */
+  flex-wrap: nowrap; /* ¡IMPORTANTE! Evita que los logos se envuelvan en múltiples líneas */
+  overflow-x: auto; /* Permite scroll horizontal si los logos son demasiados grandes */
+  -webkit-overflow-scrolling: touch; /* Suaviza el scroll en iOS */
 }
 
 .header-logo-middle {
-  height: 100px; /* Aumentado de 60px a 80px para los logos de la sección media */
+  height: 80px; /* Tamaño de los logos en la barra media para PC */
   width: auto;
+  flex-shrink: 0; /* Evita que los logos se encojan más allá de su contenido inicial */
 }
 
 /* Estilos para la Capa Inferior del Sándwich (Navegación Principal - Azul #1B396A) */
 .main-nav {
-  background-color: #1B396A;
+  background-color: #1B396A; /* Se mantiene el color azul */
   color: white;
   padding: 10px 20px;
 }
@@ -138,4 +137,63 @@
 
 .nav-item a:hover::after {
   width: 100%;
+}
+
+/* --- MEDIA QUERIES PARA DISPOSITIVOS MÓVILES --- */
+@media (max-width: 768px) { /* Para pantallas de hasta 768px de ancho (tablets y móviles) */
+  .header-logo-top {
+    height: 45px; /* Reduce el tamaño del logo superior */
+  }
+  .user-icon-top {
+    font-size: 1.5em; /* Reduce el tamaño del icono de usuario superior */
+  }
+
+  .header-middle-bar {
+    padding: 8px 10px; /* Reduce el padding en móviles */
+    gap: 15px; /* Reduce el espacio entre logos en móviles */
+    justify-content: flex-start; /* Alinea a la izquierda en móviles si hay scroll */
+  }
+
+  .header-logo-middle {
+    height: 50px; /* Reduce el tamaño de los logos en la barra media para móviles */
+  }
+
+  .main-nav {
+    padding: 8px 10px; /* Reduce el padding de la barra de navegación */
+  }
+
+  .nav-list {
+    gap: 10px; /* Reduce el espacio entre ítems de navegación */
+    justify-content: center; /* Centra los ítems de navegación en móviles */
+  }
+
+  .nav-item a {
+    font-size: 0.9em; /* Reduce el tamaño de fuente de los ítems de navegación */
+  }
+
+  .nav-home {
+    font-size: 1em; /* Ajusta el tamaño del botón de inicio */
+    margin-right: 10px;
+  }
+}
+
+@media (max-width: 480px) { /* Ajustes adicionales para móviles muy pequeños */
+  .header-top-actions {
+    gap: 8px;
+  }
+  .header-action-item-top {
+    padding: 2px 5px;
+    font-size: 0.8em;
+  }
+  .header-middle-bar {
+    padding: 5px 8px;
+    gap: 10px;
+  }
+  .header-logo-middle {
+    height: 40px; /* Logos aún más pequeños en pantallas muy pequeñas */
+  }
+  .nav-list {
+    flex-direction: column; /* Apila los ítems de navegación si es necesario */
+    align-items: center;
+  }
 }
