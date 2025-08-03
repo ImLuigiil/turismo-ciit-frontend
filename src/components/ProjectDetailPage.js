@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext';
-
+import { useNotification } from '../contexts/NotificationContext'; // Para notificaciones
 import './ProjectDetailPage.css';
 
 function ProjectDetailPage() {
@@ -15,14 +14,9 @@ function ProjectDetailPage() {
   const [error, setError] = useState(null);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const CAROUSEL_ROTATION_SPEED = 5000;
+  const CAROUSEL_ROTATION_SPEED = 5000; // 5 segundos
 
-  const { showNotification } = useNotification();
-
-  const formatNumber = (num) => {
-    if (num === null || num === undefined) return 'N/A';
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
+  const { showNotification } = useNotification(); // Usar hook de notificación
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -51,6 +45,7 @@ function ProjectDetailPage() {
     }
   }, [idProyecto]);
 
+  // Efecto para la rotación automática del carrusel
   useEffect(() => {
     let intervalId;
     if (project && project.imagenes && project.imagenes.length > 1) {
@@ -82,7 +77,7 @@ function ProjectDetailPage() {
   };
 
   const calcularAvance = (faseActual) => {
-    const totalFases = 7;
+
     if (faseActual < 1) return 0;
     if (faseActual > 7) return 100;
 
@@ -94,6 +89,7 @@ function ProjectDetailPage() {
     }
   };
 
+  // --- NUEVA FUNCIÓN: Generar Reporte PDF ---
   const handleGenerateReport = async () => {
     try {
       const token = sessionStorage.getItem('access_token');
@@ -103,23 +99,24 @@ function ProjectDetailPage() {
         return;
       }
 
-      showNotification('Generando reporte PDF...', 'success', 5000);
+      showNotification('Generando reporte PDF...', 'success', 5000); // Notificación de proceso
 
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/${idProyecto}/report`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: 'blob',
+        responseType: 'blob', // Importante: indica a Axios que espere un blob (archivo binario)
       });
 
+      // Crear un objeto URL para el blob y descargar el archivo
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `reporte_proyecto_${project.idProyecto}.pdf`);
+      link.setAttribute('download', `reporte_proyecto_${project.idProyecto}.pdf`); // Nombre del archivo
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(url); // Libera el objeto URL
 
       showNotification('Reporte PDF generado y descargado con éxito!', 'success');
 
@@ -129,6 +126,7 @@ function ProjectDetailPage() {
         showNotification('No autorizado para generar reportes. Tu sesión ha expirado.', 'error');
         navigate('/login');
       } else if (err.response && err.response.data) {
+        // Intentar leer el mensaje de error del blob si es posible
         const reader = new FileReader();
         reader.onload = function() {
           try {
@@ -138,13 +136,15 @@ function ProjectDetailPage() {
             showNotification('Error al generar reporte. Formato de error inesperado.', 'error');
           }
         };
-        reader.readAsText(err.response.data);
+        reader.readAsText(err.response.data); // Leer el blob como texto
       } else {
         showNotification('Ocurrió un error al generar el reporte PDF.', 'error');
       }
     }
   };
+  // --- FIN NUEVA FUNCIÓN ---
 
+  // Rendering condicional de estados de carga/error
   if (loading) {
     return <div className="project-detail-loading">Cargando detalles del proyecto...</div>;
   }
@@ -171,6 +171,7 @@ function ProjectDetailPage() {
       <h2>"{project.nombre}"</h2>
 
       <div className="project-detail-content">
+        {/* BARRA LATERAL IZQUIERDA */}
         <div className="project-detail-sidebar">
           <p><strong>Estado Actual:</strong> Activo</p>
           <p><strong>Porcentaje:</strong> {calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%</p>
@@ -203,17 +204,22 @@ function ProjectDetailPage() {
           {project.comunidad && <p><strong>Comunidad:</strong> {project.comunidad.nombre}</p>}
           
           {project.poblacionBeneficiada !== null && project.poblacionBeneficiada !== undefined && (
-            <p><strong>Población Beneficiada:</strong> {formatNumber(project.poblacionBeneficiada)}</p>
+            <p><strong>Población Beneficiada:</strong> {project.poblacionBeneficiada}</p>
           )}
 
           {project.fechaInicio && <p><strong>Fecha Inicio:</strong> {new Date(project.fechaInicio).toLocaleDateString()}</p>}
           {project.fechaFinAprox && <p><strong>Fecha Fin Aprox:</strong> {new Date(project.fechaFinAprox).toLocaleDateString()}</p>}
 
+          {/* --- BOTÓN GENERAR REPORTE --- */}
+          {/* Solo visible si el usuario es administrador (puedes pasar isAdmin como prop si lo necesitas) */}
+          {/* Por ahora, asumimos que si está en esta página, puede generar reporte */}
           <button onClick={handleGenerateReport} className="generate-report-button">
             Generar Reporte PDF
           </button>
+          {/* --- FIN BOTÓN --- */}
         </div>
 
+        {/* CONTENIDO PRINCIPAL */}
         <div className="project-main-info">
           <div className="project-image-gallery-container">
             <img
