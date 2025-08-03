@@ -37,6 +37,7 @@ function ProjectForm() {
   const MAX_NAME_CHANGES = 3;
 
   const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
+  const [showLengthError, setShowLengthError] = useState(false);
 
   const [newImageFiles, setNewImageFiles] = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
@@ -442,23 +443,28 @@ function ProjectForm() {
             <div className="form-row">
             <div className="form-group">
               <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-                <input
-                type="text"
-                id="poblacionBeneficiada"
-                value={poblacionBeneficiada}
-                onChange={(e) => {
-                  const value = e.target.value;
-                   // Usa una expresión regular para validar que solo sean números y no más de 9 dígitos
-                  const sanitizedValue = value.replace(/[^0-9]/g, '');
-                  if (sanitizedValue.length <= 9) {
-                    setPoblacionBeneficiada(sanitizedValue);
-                  }
-                }}
-                placeholder="Número de personas beneficiadas"
-                pattern="\d{1,9}" // Ayuda a la validación del navegador, aunque la lógica en onChange es la principal
-                title="Ingresa un número de hasta 9 dígitos"
-                  />
-              </div>
+              <input
+              type="text"
+              id="poblacionBeneficiada"
+              value={poblacionBeneficiada}
+              onChange={(e) => {
+                const value = e.target.value;
+                const sanitizedValue = value.replace(/[^0-9]/g, '');
+                if (sanitizedValue.length <= 9) {
+                  setPoblacionBeneficiada(sanitizedValue);
+                  setShowLengthError(false); // Ocultar la burbuja si es válido
+                  } else {
+                    setShowLengthError(true); // Mostrar la burbuja si la longitud excede 9
+                    }
+                   }}
+                   placeholder="Número de personas beneficiadas"
+                   pattern="\d{1,9}"
+                   title="Ingresa un número de hasta 9 dígitos"
+                   />
+                   {showLengthError && (
+                    <div className="input-error-bubble">No se aceptan más de 9 dígitos</div>
+                    )}
+                    </div>
 
             <div className="form-group">
               <label htmlFor="noCapitulos">Número de Capítulos:</label>
