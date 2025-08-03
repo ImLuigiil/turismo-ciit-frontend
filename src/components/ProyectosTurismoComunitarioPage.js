@@ -33,25 +33,27 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   useEffect(() => {
     fetchProyectos();
 
-    // Lógica para mostrar notificación de nuevo proyecto
+    // --- Lógica para mostrar notificación de nuevo proyecto ---
+    // Ahora lee de localStorage para persistir entre sesiones/pestañas
     const newProjectNotification = localStorage.getItem('newProjectNotification');
-    console.log('ProyectosTurismoPage: Valor de newProjectNotification en localStorage:', newProjectNotification);
+    console.log('ProyectosTurismoPage: Valor de newProjectNotification en localStorage:', newProjectNotification); // <-- LOG AÑADIDO
     if (newProjectNotification) {
       try {
         const { name } = JSON.parse(newProjectNotification);
-        console.log('ProyectosTurismoPage: Disparando notificación para:', name);
+        console.log('ProyectosTurismoPage: Disparando notificación para:', name); // <-- LOG AÑADIDO
         showNotification(`Se ha subido un nuevo proyecto "${name}"`, 'success');
-        localStorage.removeItem('newProjectNotification');
-        console.log('ProyectosTurismoPage: newProjectNotification eliminado de localStorage.');
+        localStorage.removeItem('newProjectNotification'); // Limpiar para que no se muestre de nuevo en futuras cargas
+        console.log('ProyectosTurismoPage: newProjectNotification eliminado de localStorage.'); // <-- LOG AÑADIDO
       } catch (e) {
         console.error("Error al parsear la notificación de nuevo proyecto:", e);
-        localStorage.removeItem('newProjectNotification');
+        localStorage.removeItem('newProjectNotification'); // Limpiar incluso si hay error de parseo
       }
     } else {
-      console.log('ProyectosTurismoPage: No se encontró newProjectNotification en localStorage.');
+      console.log('ProyectosTurismoPage: No se encontró newProjectNotification en localStorage.'); // <-- LOG AÑADIDO
     }
+    // --- FIN Lógica de notificación ---
 
-  }, [showNotification]);
+  }, [showNotification]); // Dependencia del hook de notificación
 
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
