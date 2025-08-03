@@ -438,26 +438,30 @@ function ProjectForm() {
             )}
           </div>
 
-          <div className="form-group">
+{/* INICIO DE CÓDIGO MODIFICADO */}
+            <div className="form-row">
+            <div className="form-group">
             <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-            <input
-              type="number"
-              id="poblacionBeneficiada"
-              value={poblacionBeneficiada}
-              onChange={(e) => setPoblacionBeneficiada(e.target.value)}
-              placeholder="Número de personas beneficiadas"
-            />
-          </div>
+               <input
+                  type="number"
+                  id="poblacionBeneficiada"
+                  value={poblacionBeneficiada}
+                  onChange={(e) => setPoblacionBeneficiada(e.target.value)}
+                  placeholder="Número de personas beneficiadas"
+               />
+               </div>
 
-          <div className="form-group">
-            <label htmlFor="noCapitulos">Número de Capítulos:</label>
-            <input
-              type="number"
-              id="noCapitulos"
-              value={noCapitulos}
-              onChange={(e) => setNoCapitulos(e.target.value)}
-            />
+            <div className="form-group">
+              <label htmlFor="noCapitulos">Número de Capítulos:</label>
+              <input
+                type="number"
+                id="noCapitulos"
+                value={noCapitulos}
+                onChange={(e) => setNoCapitulos(e.target.value)}
+             />
+            </div>
           </div>
+{/* FIN DE CÓDIGO MODIFICADO */}
 
           {/* Campo para subir múltiples imágenes */}
           <div className="form-group">
