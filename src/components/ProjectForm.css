@@ -1,4 +1,5 @@
 /* src/components/ProjectForm.css */
+
 .project-form-page {
   display: flex;
   justify-content: center;
@@ -30,9 +31,21 @@
   gap: 15px;
 }
 
+/* --- CAMBIO CLAVE AQUÍ: Estilos para el contenedor doble --- */
+.double-form-group {
+    display: flex;
+    gap: 20px; /* Espacio entre los dos campos */
+}
+
+/* Para que los campos dentro del contenedor doble ocupen el mismo espacio */
+.double-form-group .form-group {
+    flex: 1;
+}
+/* --- FIN CAMBIO CLAVE --- */
+
 .form-group {
   text-align: left;
-  position: relative; /* Para posicionar el dropdown de comunidad */
+  position: relative;
 }
 
 .form-group label {
@@ -108,18 +121,17 @@
     color: #1B396A;
 }
 
-/* Estilos para el campo de búsqueda de Comunidad */
 .community-dropdown {
   position: absolute;
-  top: 100%; /* Justo debajo del input */
+  top: 100%;
   left: 0;
   right: 0;
   background-color: white;
   border: 1px solid #ddd;
   border-top: none;
-  max-height: 200px; /* Altura máxima para el scroll */
-  overflow-y: auto; /* Scroll si hay muchos resultados */
-  z-index: 10; /* Asegura que esté por encima de otros elementos */
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -152,7 +164,6 @@
     background-color: #f9f9f9;
 }
 
-/* Estilos para la sección de Personas del Directorio */
 .personas-directorio-section {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
@@ -171,15 +182,22 @@
 
 .persona-input-group {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 10px;
   align-items: center;
-  flex-wrap: wrap;
+  border: 1px solid #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #ffffff;
 }
 
 .persona-input-group input {
   flex: 1;
-  min-width: 120px;
+  min-width: 100px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 0.9em;
 }
 
 .remove-persona-button {
@@ -192,6 +210,7 @@
   font-size: 0.8em;
   transition: background-color 0.3s ease;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .remove-persona-button:hover {
@@ -218,262 +237,17 @@
   background-color: #45a049;
 }
 
-.name-changes-info {
-    font-size: 0.85em;
-    color: #555;
-    margin-top: 5px;
-    text-align: right;
-}
-
-.name-changes-limit-reached {
-    color: #f44336; /* Rojo para indicar que el límite ha sido alcanzado */
-    font-weight: bold;
-}
-
-.personas-directorio-section {
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  padding: 20px;
-  margin-bottom: 20px;
-  background-color: #fcfcfc;
-}
-
-.personas-directorio-section h3 {
-  font-size: 1.3em;
-  color: #1B396A;
-  margin-top: 0;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.persona-input-group {
-  display: flex;
-  flex-wrap: wrap; /* Permite que los inputs se envuelvan en filas si no hay espacio */
-  gap: 10px; /* Espacio entre los inputs */
-  margin-bottom: 10px;
-  align-items: center;
-  border: 1px solid #f0f0f0; /* Borde sutil para agrupar */
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #ffffff;
-}
-
-.persona-input-group input {
-  flex: 1; /* Permite que los inputs se expandan */
-  min-width: 100px; /* Ancho mínimo para cada input */
-  /* Asegúrate de que el padding y border no afecten el flex-basis */
-  box-sizing: border-box;
-  padding: 8px 10px; /* Ajusta el padding para inputs más pequeños */
-  font-size: 0.9em;
-}
-
-.remove-persona-button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.8em;
-  transition: background-color 0.3s ease;
-  flex-shrink: 0; /* No se encoge */
-  margin-left: auto; /* Empuja el botón a la derecha si hay espacio */
-}
-
-.remove-persona-button:hover {
-  background-color: #da190b;
-}
-
-.add-persona-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s ease;
-  display: block;
-  width: fit-content;
-  margin-top: 15px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.add-persona-button:hover {
-  background-color: #45a049;
-}
-
-/* Media query para apilar inputs en pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .persona-input-group input {
-    flex-basis: 100%; /* Cada input ocupa su propia línea */
-    min-width: unset;
-  }
-  .remove-persona-button {
-    width: 100%;
-    margin-left: 0;
-  }
-}
-
-.image-previews-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 15px;
-  justify-content: center; /* Centra las miniaturas */
-  border: 1px dashed #ccc; /* Borde para el área de previsualización */
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  min-height: 80px; /* Altura mínima si no hay imágenes */
-  align-items: center; /* Centra verticalmente */
-}
-
-.image-preview-item {
-  position: relative;
-  width: 100px; /* Tamaño fijo para la miniatura */
-  height: 100px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  flex-shrink: 0; /* No se encoge */
-}
-
-.image-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Recorta para cubrir el área */
-  display: block;
-}
-
-.remove-image-button {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background-color: rgba(244, 67, 54, 0.8); /* Rojo semitransparente */
-  color: white;
-  border: none;
-  border-radius: 50%; /* Botón redondo */
-  width: 24px;
-  height: 24px;
-  font-size: 0.8em;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  line-height: 1; /* Para centrar la X */
-  padding: 0;
-  transition: background-color 0.2s ease;
-}
-
-.remove-image-button:hover {
-  background-color: #f44336;
-}
-
-.no-images-message {
-    font-size: 0.9em;
-    color: #777;
-    text-align: center;
-    width: 100%;
-}
-
-/* Ajustes para el input type="file" */
-.form-group input[type="file"] {
-    padding: 8px; /* Ajusta el padding para que se vea mejor */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.image-previews-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 15px;
-  justify-content: center; /* Centra las miniaturas */
-  border: 1px dashed #ccc; /* Borde para el área de previsualización */
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  min-height: 80px; /* Altura mínima si no hay imágenes */
-  align-items: center; /* Centra verticalmente */
-}
-
-.image-preview-item {
-  position: relative;
-  width: 100px; /* Tamaño fijo para la miniatura */
-  height: 100px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  flex-shrink: 0; /* No se encoge */
-}
-
-.image-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Recorta para cubrir el área */
-  display: block;
-}
-
-.remove-image-button {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background-color: rgba(244, 67, 54, 0.8); /* Rojo semitransparente */
-  color: white;
-  border: none;
-  border-radius: 50%; /* Botón redondo */
-  width: 24px;
-  height: 24px;
-  font-size: 0.8em;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  line-height: 1; /* Para centrar la X */
-  padding: 0;
-  transition: background-color 0.2s ease;
-}
-
-.remove-image-button:hover {
-  background-color: #f44336;
-}
-
-.no-images-message {
-    font-size: 0.9em;
-    color: #777;
-    text-align: center;
-    width: 100%;
-}
-
-/* Ajustes para el input type="file" */
-.form-group input[type="file"] {
-    padding: 8px; /* Ajusta el padding para que se vea mejor */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* src/components/ProjectForm.css */
-
-/* ... (tus estilos existentes) ... */
-
-/* Estilos para la modal de justificación */
 .justification-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Asegura que esté por encima de todo */
+  z-index: 1000;
 }
 
 .justification-modal-content {
@@ -482,7 +256,7 @@
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 100%;
-  max-width: 500px; /* Ancho máximo de la modal */
+  max-width: 500px;
   text-align: center;
   position: relative;
 }
@@ -499,13 +273,13 @@
 }
 
 .justification-modal-content textarea {
-  width: calc(100% - 20px); /* Ajusta el ancho considerando el padding */
+  width: calc(100% - 20px);
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 1em;
   min-height: 120px;
-  resize: vertical; /* Permite redimensionar verticalmente */
+  resize: vertical;
   margin-bottom: 15px;
 }
 
@@ -521,7 +295,6 @@
   margin-top: 20px;
 }
 
-/* Reutiliza submit-button y cancel-button de ProjectForm.css */
 .modal-buttons .submit-button,
 .modal-buttons .cancel-button {
   padding: 10px 18px;
