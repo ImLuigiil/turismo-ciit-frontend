@@ -441,15 +441,20 @@ function ProjectForm() {
 {/* INICIO DE CÓDIGO MODIFICADO */}
             <div className="form-row">
             <div className="form-group">
-            <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-               <input
-                  type="number"
-                  id="poblacionBeneficiada"
-                  value={poblacionBeneficiada}
-                  onChange={(e) => setPoblacionBeneficiada(e.target.value)}
-                  placeholder="Número de personas beneficiadas"
-               />
-               </div>
+              <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
+          <input
+            type="number"
+            id="poblacionBeneficiada"
+            value={poblacionBeneficiada}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value.length <= 9) {
+              setPoblacionBeneficiada(value);
+        }
+        }}
+          placeholder="Número de personas beneficiadas"
+          />
+        </div>
 
             <div className="form-group">
               <label htmlFor="noCapitulos">Número de Capítulos:</label>
