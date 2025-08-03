@@ -1,87 +1,59 @@
-// src/components/ProjectDetailPage.js
+// src/components/ProyectosTurismoComunitarioPage.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext';
+import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../contexts/NotificationContext'; // Importa el hook de notificación
 
-import './ProjectDetailPage.css';
+import './ProyectosTurismoComunitarioPage.css';
 
-function ProjectDetailPage() {
-  const { idProyecto } = useParams();
-  const navigate = useNavigate();
-  const [project, setProject] = useState(null);
-  const [personasDirectorio, setPersonasDirectorio] = useState([]);
+// Recibe la prop isAdmin
+function ProyectosTurismoComunitarioPage({ isAdmin }) {
+  const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { showNotification } = useNotification(); // Usa el hook de notificación
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const CAROUSEL_ROTATION_SPEED = 5000; // 5 segundos
-
-  const { showNotification } = useNotification();
-
-  const formatNumber = (num) => {
-    if (num === null || num === undefined) return 'N/A';
-    return num.toLocaleString('en-US');
-  };
-
-  useEffect(() => {
-    const fetchProjectDetails = async () => {
-      try {
-        const API_URL_BASE = `${process.env.REACT_APP_API_URL}`;
-
-        const projectResponse = await axios.get(`${API_URL_BASE}/proyectos/${idProyecto}`);
-        setProject(projectResponse.data);
-
-        const personasResponse = await axios.get(`${API_URL_BASE}/personas-proyecto/by-project/${idProyecto}`);
-        setPersonasDirectorio(personasResponse.data);
-
-        setLoading(false);
-      } catch (err) {
-        console.error(`Error al obtener detalles del proyecto con ID ${idProyecto}:`, err);
-        setError("No se pudieron cargar los detalles del proyecto.");
-        setLoading(false);
-      }
-    };
-
-    if (idProyecto) {
-      fetchProjectDetails();
-    } else {
-      setError("ID de proyecto no proporcionado.");
+  // Función para obtener proyectos
+  const fetchProyectos = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`;
+      const response = await axios.get(API_URL);
+      setProyectos(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error al obtener los proyectos:", err);
+      setError(err);
       setLoading(false);
     }
-  }, [idProyecto]);
+  };
 
   useEffect(() => {
-    let intervalId;
-    if (project && project.imagenes && project.imagenes.length > 1) {
-      intervalId = setInterval(() => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % project.imagenes.length);
-      }, CAROUSEL_ROTATION_SPEED);
-    }
+    fetchProyectos();
 
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
+    // Lógica para mostrar notificación de nuevo proyecto
+    const newProjectNotification = localStorage.getItem('newProjectNotification');
+    console.log('ProyectosTurismoPage: Valor de newProjectNotification en localStorage:', newProjectNotification);
+    if (newProjectNotification) {
+      try {
+        const { name } = JSON.parse(newProjectNotification);
+        console.log('ProyectosTurismoPage: Disparando notificación para:', name);
+        showNotification(`Se ha subido un nuevo proyecto "${name}"`, 'success');
+        localStorage.removeItem('newProjectNotification');
+        console.log('ProyectosTurismoPage: newProjectNotification eliminado de localStorage.');
+      } catch (e) {
+        console.error("Error al parsear la notificación de nuevo proyecto:", e);
+        localStorage.removeItem('newProjectNotification');
       }
-    };
-  }, [project, CAROUSEL_ROTATION_SPEED]);
-
-
-  const goToNextImage = () => {
-    if (project && project.imagenes && project.imagenes.length > 0) {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % project.imagenes.length);
+    } else {
+      console.log('ProyectosTurismoPage: No se encontró newProjectNotification en localStorage.');
     }
-  };
 
-  const goToPrevImage = () => {
-    if (project && project.imagenes && project.imagenes.length > 0) {
-      setCurrentImageIndex((prevIndex) =>
-        (prevIndex - 1 + project.imagenes.length) % project.imagenes.length
-      );
-    }
-  };
+  }, [showNotification]);
 
-  const calcularAvance = (faseActual) => {
+  const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
     if (faseActual > 7) return 100;
 
@@ -93,158 +65,166 @@ function ProjectDetailPage() {
     }
   };
 
-  const handleGenerateReport = async () => {
-    try {
-      const token = sessionStorage.getItem('access_token');
-      if (!token) {
-        showNotification('No estás autenticado para generar reportes.', 'error');
-        navigate('/login');
-        return;
-      }
+  const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
+    if (faseActual === 7) {
+      return 100;
+    }
 
-      showNotification('Generando reporte PDF...', 'success', 5000);
+    let timeBasedPercentage = 0;
+    if (fechaInicio && fechaFinAprox) {
+      const startDate = new Date(fechaInicio);
+      const endDate = new Date(fechaFinAprox);
+      const currentDate = new Date();
 
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/${idProyecto}/report`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `reporte_proyecto_${project.idProyecto}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      showNotification('Reporte PDF generado y descargado con éxito!', 'success');
-
-    } catch (err) {
-      console.error("Error al generar el reporte PDF:", err);
-      if (err.response && err.response.status === 401) {
-        showNotification('No autorizado para generar reportes. Tu sesión ha expirado.', 'error');
-        navigate('/login');
-      } else if (err.response && err.response.data) {
-        const reader = new FileReader();
-        reader.onload = function() {
-          try {
-            const errorData = JSON.parse(reader.result);
-            showNotification(`Error al generar reporte: ${errorData.message || 'Error desconocido'}`, 'error');
-          } catch (parseError) {
-            showNotification('Error al generar reporte. Formato de error inesperado.', 'error');
-          }
-        };
-        reader.readAsText(err.response.data);
+      if (currentDate < startDate) {
+        timeBasedPercentage = 0;
+      } else if (currentDate > endDate) {
+        timeBasedPercentage = 100;
       } else {
-        showNotification('Ocurrió un error al generar el reporte PDF.', 'error');
+        const totalDuration = endDate.getTime() - startDate.getTime();
+        const elapsedDuration = currentDate.getTime() - startDate.getTime();
+        if (totalDuration === 0) {
+          timeBasedPercentage = 100;
+        } else {
+          timeBasedPercentage = (elapsedDuration / totalDuration) * 100;
+        }
+      }
+    }
+
+    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
+
+    const finalPercentage = (timeBasedPercentage * 0.7) + (phaseTargetPercentage * 0.3);
+
+    return Math.min(100, Math.max(0, Math.round(finalPercentage)));
+  };
+
+  const truncateDescription = (description, maxLength) => {
+    if (!description) return '';
+    if (description.length <= maxLength) return description;
+    return description.substring(0, maxLength) + '...';
+  };
+
+  const handleAgregarNuevo = () => {
+    navigate('/proyectos/nuevo');
+    console.log("Redirigir a página para agregar nuevo proyecto");
+  };
+
+  const handleEditarProyecto = (proyectoId) => {
+    navigate(`/proyectos/editar/${proyectoId}`);
+    console.log(`Redirigir a página para editar el proyecto con ID: ${proyectoId}`);
+  };
+
+  const handleEliminarProyecto = async (proyectoId) => {
+    if (window.confirm(`¿Estás seguro de que quieres eliminar el proyecto con ID: ${proyectoId}?`)) {
+      try {
+        const token = sessionStorage.getItem('access_token');
+        if (!token) {
+          alert('No estás autenticado. Por favor, inicia sesión.');
+          navigate('/login');
+          return;
+        }
+
+        await axios.delete(`${process.env.REACT_APP_API_URL}/proyectos/${proyectoId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        alert(`Proyecto con ID ${proyectoId} eliminado con éxito.`);
+        fetchProyectos();
+      } catch (err) {
+        console.error(`Error al eliminar el proyecto con ID ${proyectoId}:`, err);
+        if (err.response && err.response.status === 401) {
+          alert('No autorizado. Tu sesión ha expirado o no tienes permisos.');
+        } else if (err.response && err.response.data && err.response.data.message) {
+          alert(`Error al eliminar: ${err.response.data.message}`);
+        } else {
+          alert('Ocurrió un error al intentar eliminar el proyecto.');
+        }
       }
     }
   };
 
   if (loading) {
-    return <div className="project-detail-loading">Cargando detalles del proyecto...</div>;
+    return <div className="proyectos-loading">Cargando proyectos de turismo comunitario...</div>;
   }
 
   if (error) {
-    return <div className="project-detail-error">{error}</div>;
+    return <div className="proyectos-error">Error al cargar los proyectos: {error.message}</div>;
   }
-
-  if (!project) {
-    return <div className="project-detail-error">Proyecto no encontrado.</div>;
-  }
-
-  const displayImageUrl = project.imagenes && project.imagenes.length > 0
-    ? `${process.env.REACT_APP_API_URL}${project.imagenes[currentImageIndex].url}`
-    : 'https://placehold.co/600x300/e0e0e0/777?text=Sin+Imagen';
-
 
   return (
-    <div className="project-detail-container">
-      <button onClick={() => navigate('/proyectos-turismo')} className="back-button">
-        ← Volver a Proyectos
-      </button>
+    <div className="proyectos-container">
+      <h2>Proyectos Red de Turismo Comunitario</h2>
 
-      <h2>"{project.nombre}"</h2>
+      {isAdmin && (
+        <button className="add-new-project-button" onClick={handleAgregarNuevo}>
+          Agregar Nuevo Proyecto
+        </button>
+      )}
 
-      <div className="project-detail-content">
-        <div className="project-detail-sidebar">
-          <p><strong>Estado Actual:</strong> Activo</p>
-          <p><strong>Porcentaje:</strong> {calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%</p>
-          <p><strong>Avance:</strong> Fase {project.faseActual}</p>
-          
-          <div className="sidebar-progress-bar-container">
-            <div
-              className="sidebar-progress-bar"
-              style={{ width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%` }}
-            ></div>
-          </div>
-
-          <h3>Personas del Directorio:</h3>
-          {personasDirectorio.length > 0 ? (
-            <ul className="directorio-personas-list">
-              {personasDirectorio.map(persona => (
-                <li key={persona.idPersonaProyecto}>
-                  <strong>
-                    {persona.apellidoPaterno} {persona.apellidoMaterno} {persona.nombre}
-                  </strong>
-                  {persona.rolEnProyecto && ` (${persona.rolEnProyecto})`}
-                  {persona.contacto && ` - ${persona.contacto}`}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No hay personas registradas para este proyecto.</p>
-          )}
-
-          {project.comunidad && <p><strong>Comunidad:</strong> {project.comunidad.nombre}</p>}
-          
-          {project.poblacionBeneficiada !== null && project.poblacionBeneficiada !== undefined && (
-            <p><strong>Población Beneficiada:</strong> {formatNumber(project.poblacionBeneficiada)}</p>
-          )}
-
-          {project.fechaInicio && <p><strong>Fecha Inicio:</strong> {new Date(project.fechaInicio).toLocaleDateString()}</p>}
-          {project.fechaFinAprox && <p><strong>Fecha Fin Aprox:</strong> {new Date(project.fechaFinAprox).toLocaleDateString()}</p>}
-
-          <button onClick={handleGenerateReport} className="generate-report-button">
-            Generar Reporte PDF
-          </button>
-        </div>
-
-        <div className="project-main-info">
-          <div className="project-image-gallery-container">
-            <img
-              src={displayImageUrl}
-              alt={`Imagen del proyecto ${project.nombre}`}
-              className="project-main-image-full"
-            />
-            {project.imagenes && project.imagenes.length > 1 && (
-              <div className="gallery-navigation">
-                <button onClick={goToPrevImage} className="gallery-nav-button">←</button>
-                <button onClick={goToNextImage} className="gallery-nav-button">→</button>
-              </div>
-            )}
-            {project.imagenes && project.imagenes.length > 0 && (
-              <div className="gallery-thumbnails">
-                {project.imagenes.map((img, index) => (
+      <div className="proyectos-grid">
+        {proyectos.length > 0 ? (
+          proyectos.map(proyecto => (
+            <div key={proyecto.idProyecto} className="proyecto-card">
+              {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
+                <div className="proyecto-card-image-container">
                   <img
-                    key={img.idProyectoImagen}
-                    src={`${process.env.REACT_APP_API_URL}${img.url}`}
-                    alt={`Thumbnail ${index}`}
-                    className={`gallery-thumbnail ${index === currentImageIndex ? 'active' : ''}`}
-                    onClick={() => setCurrentImageIndex(index)}
+                    src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
+                    alt={`Imagen de ${proyecto.nombre}`}
+                    className="proyecto-card-image"
                   />
-                ))}
+                </div>
+              ) : (
+                <div className="proyecto-card-image-container">
+                  <img
+                    src="https://placehold.co/300x180/e0e0e0/777?text=Sin+Imagen"
+                    alt="Sin imagen"
+                    className="proyecto-card-image"
+                  />
+                </div>
+              )}
+              <h3 className="proyecto-card-title">{proyecto.nombre}</h3>
+              <p className="proyecto-card-description">
+                {truncateDescription(proyecto.descripcion, 100)}
+              </p>
+              {proyecto.comunidad && (
+                <p className="proyecto-card-community">Comunidad: {proyecto.comunidad.nombre}</p>
+              )}
+              <div className="proyecto-card-progress">
+                <div
+                  className="progress-bar"
+                  style={{ width: `${calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%` }}
+                ></div>
+                <span className="progress-text">
+                  Avance: {calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%
+                  {proyecto.faseActual && ` (Fase ${proyecto.faseActual})`}
+                </span>
               </div>
-            )}
-          </div>
-          <p className="project-main-description">{project.descripcion}</p>
-        </div>
+              <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
+
+              {isAdmin && (
+                <div className="admin-actions">
+                  <button
+                    className="admin-edit-button"
+                    onClick={() => handleEditarProyecto(proyecto.idProyecto)}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className="admin-delete-button"
+                    onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <p className="no-proyectos">No hay proyectos de turismo comunitario registrados.</p>
+        )}
       </div>
     </div>
   );
 }
 
-export default ProjectDetailPage;
+export default ProyectosTurismoComunitarioPage;
