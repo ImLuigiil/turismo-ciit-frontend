@@ -43,17 +43,16 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
         console.log('ProyectosTurismoPage: Disparando notificación para:', name); // <-- LOG AÑADIDO
         showNotification(`Se ha subido un nuevo proyecto "${name}"`, 'success');
         localStorage.removeItem('newProjectNotification'); // Limpiar para que no se muestre de nuevo en futuras cargas
-        console.log('ProyectosTurismoPage: newProjectNotification eliminado de localStorage.'); // <-- LOG AÑADIDO
+        console.log('ProyectosTurismoPage: newProjectNotification eliminado de localStorage.'); 
       } catch (e) {
         console.error("Error al parsear la notificación de nuevo proyecto:", e);
         localStorage.removeItem('newProjectNotification'); // Limpiar incluso si hay error de parseo
       }
     } else {
-      console.log('ProyectosTurismoPage: No se encontró newProjectNotification en localStorage.'); // <-- LOG AÑADIDO
+      console.log('ProyectosTurismoPage: No se encontró newProjectNotification en localStorage.'); 
     }
-    // --- FIN Lógica de notificación ---
 
-  }, [showNotification]); // Dependencia del hook de notificación
+  }, [showNotification]);
 
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
