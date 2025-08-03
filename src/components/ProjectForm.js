@@ -490,7 +490,7 @@ function ProjectForm() {
               ))}
             </div>
             {(existingImages.length === 0 && newImageFiles.length === 0) && (
-                <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
+                <p className="no-images-message">Formatos soportados: JPG, JPEG, PNG. Maximo 15 fotos </p>
             )}
           </div>
 
