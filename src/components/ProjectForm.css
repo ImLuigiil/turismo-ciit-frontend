@@ -538,27 +538,3 @@
     gap: 0; /* Elimina el espacio cuando están apilados */
     }
 }
-
-.input-error-bubble {
-   position: absolute;
-    bottom: 100%; /* Posiciona la burbuja justo encima del input */
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background-color: #ffcccc; /* Fondo rojo claro */
-    color: #a12b2b; /* Texto rojo oscuro */
-    padding: 8px 12px;
-    border-radius: 5px;
-    font-size: 0.85em;
-    white-space: nowrap; /* Evita que el texto se parta en varias líneas */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 20;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.input-error-bubble.visible {
-     opacity: 1;
-      visibility: visible;
-      transform: translateX(-50%) translateY(0);
-}
