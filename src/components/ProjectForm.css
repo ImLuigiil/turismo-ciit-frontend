@@ -51,6 +51,11 @@
   border-radius: 5px;
   font-size: 1em;
   box-sizing: border-box;
+  font-family: inherit;
+}
+
+textarea {
+    font-family: inherit;
 }
 
 .form-group textarea {
