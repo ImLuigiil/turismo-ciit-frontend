@@ -18,6 +18,11 @@ function ProjectDetailPage() {
 
   const { showNotification } = useNotification(); // Usar hook de notificación
 
+  const formatNumber = (num) => {
+    if (num === null || num === undefined || num === '') return 'N/A';
+    return Number(num).toLocaleString('en-US'); // 'en-US' para usar comas como separador de miles
+  };
+
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
@@ -44,6 +49,8 @@ function ProjectDetailPage() {
       setLoading(false);
     }
   }, [idProyecto]);
+
+
 
   // Efecto para la rotación automática del carrusel
   useEffect(() => {
@@ -237,15 +244,12 @@ function ProjectDetailPage() {
           {project.comunidad && <p><strong>Comunidad:</strong> {project.comunidad.nombre}</p>}
           
           {project.poblacionBeneficiada !== null && project.poblacionBeneficiada !== undefined && (
-            <p><strong>Población Beneficiada:</strong> {project.poblacionBeneficiada}</p>
+          <p><strong>Población Beneficiada:</strong> {formatNumber(project.poblacionBeneficiada)}</p>
           )}
 
           {project.fechaInicio && <p><strong>Fecha Inicio:</strong> {new Date(project.fechaInicio).toLocaleDateString()}</p>}
           {project.fechaFinAprox && <p><strong>Fecha Fin Aprox:</strong> {new Date(project.fechaFinAprox).toLocaleDateString()}</p>}
 
-          {/* --- BOTÓN GENERAR REPORTE --- */}
-          {/* Solo visible si el usuario es administrador (puedes pasar isAdmin como prop si lo necesitas) */}
-          {/* Por ahora, asumimos que si está en esta página, puede generar reporte */}
           <button onClick={handleGenerateReport} className="generate-report-button">
             Generar Reporte PDF
           </button>
