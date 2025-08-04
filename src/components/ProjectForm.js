@@ -454,7 +454,7 @@ function ProjectForm() {
               onChange={(e) => {
                 const value = e.target.value.replace(/,/g, '');
                 const sanitizedValue = value.replace(/[^0-9]/g, '');
-                if (sanitizedValue.length <= 10) {
+                if (sanitizedValue.length <= 9) {
                   setPoblacionBeneficiada(sanitizedValue);
                   setShowLengthError(false);
                  } else {
