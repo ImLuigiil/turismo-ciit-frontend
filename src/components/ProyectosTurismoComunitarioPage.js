@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext'; // Importa el hook de notificación
+import { useNotification } from '../contexts/NotificationContext';
 
 import './ProyectosTurismoComunitarioPage.css';
 
@@ -12,14 +12,16 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { showNotification } = useNotification(); // Usa el hook de notificación
+  const { showNotification } = useNotification();
 
   // Función para obtener proyectos
   const fetchProyectos = async () => {
     setLoading(true);
     setError(null);
     try {
-      const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`;
+      // --- CAMBIO: Usar process.env.REACT_APP_API_URL ---
+      const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`; // Asegúrate de que esta URL sea correcta
+      // --- FIN CAMBIO ---
       const response = await axios.get(API_URL);
       setProyectos(response.data);
       setLoading(false);
@@ -33,27 +35,24 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   useEffect(() => {
     fetchProyectos();
 
-    // --- Lógica para mostrar notificación de nuevo proyecto ---
-    // Ahora lee de localStorage para persistir entre sesiones/pestañas
     const newProjectNotification = localStorage.getItem('newProjectNotification');
-    console.log('ProyectosTurismoPage: Valor de newProjectNotification en localStorage:', newProjectNotification); // <-- LOG AÑADIDO
+    console.log('ProyectosTurismoPage: Valor de newProjectNotification en localStorage:', newProjectNotification);
     if (newProjectNotification) {
       try {
         const { name } = JSON.parse(newProjectNotification);
-        console.log('ProyectosTurismoPage: Disparando notificación para:', name); // <-- LOG AÑADIDO
+        console.log('ProyectosTurismoPage: Disparando notificación para:', name);
         showNotification(`Se ha subido un nuevo proyecto "${name}"`, 'success');
-        localStorage.removeItem('newProjectNotification'); // Limpiar para que no se muestre de nuevo en futuras cargas
-        console.log('ProyectosTurismoPage: newProjectNotification eliminado de localStorage.'); // <-- LOG AÑADIDO
+        localStorage.removeItem('newProjectNotification');
+        console.log('ProyectosTurismoPage: newProjectNotification eliminado de localStorage.');
       } catch (e) {
         console.error("Error al parsear la notificación de nuevo proyecto:", e);
-        localStorage.removeItem('newProjectNotification'); // Limpiar incluso si hay error de parseo
+        localStorage.removeItem('newProjectNotification');
       }
     } else {
-      console.log('ProyectosTurismoPage: No se encontró newProjectNotification en localStorage.'); // <-- LOG AÑADIDO
+      console.log('ProyectosTurismoPage: No se encontró newProjectNotification en localStorage.');
     }
-    // --- FIN Lógica de notificación ---
 
-  }, [showNotification]); // Dependencia del hook de notificación
+  }, [showNotification]);
 
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
@@ -131,7 +130,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
         });
 
         alert(`Proyecto con ID ${proyectoId} eliminado con éxito.`);
-        fetchProyectos();
+        fetchProyectos(); // Vuelve a cargar la lista de proyectos después de eliminar
       } catch (err) {
         console.error(`Error al eliminar el proyecto con ID ${proyectoId}:`, err);
         if (err.response && err.response.status === 401) {
@@ -170,7 +169,9 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
               {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
                 <div className="proyecto-card-image-container">
                   <img
+                    // --- VERIFICACIÓN CLAVE: URL de la imagen de portada ---
                     src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
+                    // --- FIN VERIFICACIÓN ---
                     alt={`Imagen de ${proyecto.nombre}`}
                     className="proyecto-card-image"
                   />
