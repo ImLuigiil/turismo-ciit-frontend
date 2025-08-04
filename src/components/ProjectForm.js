@@ -37,7 +37,7 @@ function ProjectForm() {
   const MAX_NAME_CHANGES = 3;
 
   const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
-
+  //const [showLengthError, setShowLengthError] = useState(false);
 
   const [newImageFiles, setNewImageFiles] = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
@@ -456,9 +456,9 @@ function ProjectForm() {
                 const sanitizedValue = value.replace(/[^0-9]/g, '');
                 if (sanitizedValue.length <= 9) {
                   setPoblacionBeneficiada(sanitizedValue);
-                  setShowLengthError(false);
+                  //setShowLengthError(false);
                  } else {
-                  setShowLengthError(true);
+                  //setShowLengthError(true);
                  }
                 }}
                 placeholder="Número de personas beneficiadas"
