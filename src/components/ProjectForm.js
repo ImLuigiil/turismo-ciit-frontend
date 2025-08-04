@@ -419,7 +419,7 @@ function ProjectForm() {
             />
             {isEditing && (
               <p className="name-changes-info">
-                Cambios de nombre restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
+                Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
                 {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
               </p>
             )}
@@ -619,7 +619,7 @@ function ProjectForm() {
         <div className="justification-modal-overlay">
           <div className="justification-modal-content">
             <h3>Justificación de Cambio de Fase</h3>
-            <p>Por favor, explica por qué estás cambiando la fase del proyecto.</p>
+            <p>Por favor, indica los motivos por los cuales estas cambiando la fase.</p>
             <textarea
               value={justificationText}
               onChange={(e) => setJustificationText(e.target.value)}
