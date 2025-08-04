@@ -116,7 +116,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   };
 
   const handleEliminarProyecto = async (proyectoId) => {
-    if (window.confirm(`ADVERTENCIA: Al eliminar este proyecto se borrará todo registro que haya de el?`)) {
+    if (window.confirm(`ADVERTENCIA: Al eliminar este proyecto se borrará todo registro que haya de el`)) {
       try {
         const token = sessionStorage.getItem('access_token');
         if (!token) {
