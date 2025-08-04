@@ -51,6 +51,30 @@ function ProjectForm() {
 
   const fases = Array.from({ length: 7 }, (_, i) => i + 1);
 
+    // --- CORRECCIÓN EN LA FUNCIÓN: Formatear número con comas ---
+  const formatNumber = (num) => {
+    if (num === null || num === undefined || num === '') return '';
+    // Usamos toLocaleString para manejar el formato de comas correctamente.
+    // El 'undefined' como primer argumento usa la configuración regional del navegador.
+    return Number(num).toLocaleString('en-US'); 
+  };
+
+  // --- CORRECCIÓN EN LA FUNCIÓN: Limpiar y validar el input de población ---
+  const handlePoblacionChange = (e) => {
+    const rawValue = e.target.value.replace(/,/g, ''); // Elimina las comas para la validación
+
+    // Solo permite dígitos y limita la longitud a 9
+    if (rawValue.length <= 9 && /^\d*$/.test(rawValue)) {
+      setPoblacionBeneficiada(rawValue);
+      setError(null);
+    } else if (rawValue.length > 9) {
+      setError('La población beneficiada no puede exceder las 9 cifras.');
+    } else if (!/^\d*$/.test(rawValue)) {
+        setError('Solo se permiten dígitos numéricos.');
+    }
+  };
+  // --- FIN CORRECCIÓN ---
+
   useEffect(() => {
     const fetchComunidades = async () => {
       try {
@@ -438,26 +462,29 @@ function ProjectForm() {
             )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-            <input
-              type="number"
-              id="poblacionBeneficiada"
-              value={poblacionBeneficiada}
-              onChange={(e) => setPoblacionBeneficiada(e.target.value)}
-              placeholder="Número de personas beneficiadas"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="noCapitulos">Número de Capítulos:</label>
-            <input
-              type="number"
-              id="noCapitulos"
-              value={noCapitulos}
-              onChange={(e) => setNoCapitulos(e.target.value)}
-            />
-          </div>
+          {/* --- INICIO DEL CÓDIGO MODIFICADO --- */}
+<div className="double-form-group">
+    <div className="form-group">
+        <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
+        <input
+        type="text"
+        id="poblacionBeneficiada"
+        value={formatNumber(poblacionBeneficiada)}
+        onChange={handlePoblacionChange}
+        placeholder="Número de personas beneficiadas"
+        />
+    </div>
+    <div className="form-group">
+        <label htmlFor="noCapitulos">Número de Capítulos:</label>
+        <input
+        type="number"
+        id="noCapitulos"
+        value={noCapitulos}
+        onChange={(e) => setNoCapitulos(e.target.value)}
+        />
+    </div>
+</div>
+{/* --- FIN DEL CÓDIGO MODIFICADO --- */}
 
           {/* Campo para subir múltiples imágenes */}
           <div className="form-group">

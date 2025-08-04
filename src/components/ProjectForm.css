@@ -538,3 +538,13 @@
     gap: 0; /* Elimina el espacio cuando están apilados */
     }
 }
+
+.double-form-group {
+    display: flex;
+    gap: 20px; /* Espacio entre los dos campos */
+}
+
+/* Para que los campos dentro del contenedor doble ocupen el mismo espacio */
+.double-form-group .form-group {
+    flex: 1;
+}

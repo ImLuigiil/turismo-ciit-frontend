@@ -179,6 +179,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
               ) : (
                 <div className="proyecto-card-image-container">
                   <img
+                    src="https://placehold.co/300x180/e0e0e0/777?text=Sin+Imagen"
                     alt="Sin imagen"
                     className="proyecto-card-image"
                   />
