@@ -485,7 +485,7 @@ function ProjectForm() {
         >
           {capitulos.map((capitulo) => (
             <option key={capitulo} value={capitulo}>
-              Capitulos {capitulo}
+              {capitulo}
             </option>
     ))}
   </select>
