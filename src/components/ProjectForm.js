@@ -51,6 +51,10 @@ function ProjectForm() {
 
   const fases = Array.from({ length: 7 }, (_, i) => i + 1);
 
+  const formatNumber = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   useEffect(() => {
     const fetchComunidades = async () => {
       try {
@@ -445,9 +449,9 @@ function ProjectForm() {
                <input
                 type="text"
                 id="poblacionBeneficiada"
-                value={poblacionBeneficiada}
+                value={poblacionBeneficiada ? formatNumber(poblacionBeneficiada) : ''}
                 onChange={(e) => {
-                  const value = e.target.value;
+                  const value = e.target.value.replace(/,/g, '');
                    // Usa una expresión regular para validar que solo sean números y no más de 9 dígitos
                   const sanitizedValue = value.replace(/[^0-9]/g, '');
                   if (sanitizedValue.length <= 9) {
