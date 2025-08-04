@@ -37,7 +37,7 @@ function ProjectForm() {
   const MAX_NAME_CHANGES = 3;
 
   const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
-  const [showLengthError, setShowLengthError] = useState(false);
+
 
   const [newImageFiles, setNewImageFiles] = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
@@ -465,9 +465,6 @@ function ProjectForm() {
                  pattern="\d{1,9}"
                   title="Ingresa un número de hasta 9 dígitos"
                   />
-                  {showLengthError && (
-                    <div className="input-error-bubble">No se aceptan más de 9 dígitos</div>
-                    )}
             </div>
 
             <div className="form-group">
