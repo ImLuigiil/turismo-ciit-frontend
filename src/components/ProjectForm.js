@@ -52,6 +52,10 @@ function ProjectForm() {
 
   const fases = Array.from({ length: 7 }, (_, i) => i + 1);
 
+  const formatNumber = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   useEffect(() => {
     const fetchComunidades = async () => {
       try {
@@ -446,25 +450,25 @@ function ProjectForm() {
               <input
               type="text"
               id="poblacionBeneficiada"
-              value={poblacionBeneficiada}
+              value={poblacionBeneficiada ? formatNumber(poblacionBeneficiada) : ''}
               onChange={(e) => {
-                const value = e.target.value;
+                const value = e.target.value.replace(/,/g, '');
                 const sanitizedValue = value.replace(/[^0-9]/g, '');
                 if (sanitizedValue.length <= 9) {
                   setPoblacionBeneficiada(sanitizedValue);
-                  setShowLengthError(false); // Ocultar la burbuja si es válido
-                  } else {
-                    setShowLengthError(true); // Mostrar la burbuja si la longitud excede 9
-                    }
-                   }}
-                   placeholder="Número de personas beneficiadas"
-                   pattern="\d{1,9}"
-                   title="Ingresa un número de hasta 9 dígitos"
-                   />
-                   {showLengthError && (
+                  setShowLengthError(false);
+                 } else {
+                  setShowLengthError(true);
+                 }
+                }}
+                placeholder="Número de personas beneficiadas"
+                 pattern="\d{1,9}"
+                  title="Ingresa un número de hasta 9 dígitos"
+                  />
+                  {showLengthError && (
                     <div className="input-error-bubble">No se aceptan más de 9 dígitos</div>
                     )}
-                    </div>
+            </div>
 
             <div className="form-group">
               <label htmlFor="noCapitulos">Número de Capítulos:</label>
