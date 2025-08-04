@@ -234,7 +234,7 @@ function ProjectForm() {
     formData.append('nombre', nombre);
     formData.append('descripcion', descripcion);
     formData.append('comunidadIdComunidad', selectedCommunityId ? String(selectedCommunityId) : '');
-    formData.append('noCapitulos', noCapitulos);
+    formData.append('noCapitulos', noCapitulos ? String(noCapitulos) : '');
     formData.append('fechaInicio', fechaInicio);
     formData.append('fechaFinAprox', fechaFinAprox);
     formData.append('faseActual', String(faseActual));
