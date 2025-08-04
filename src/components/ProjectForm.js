@@ -475,14 +475,14 @@ function ProjectForm() {
         />
     </div>
     <div className="form-group">
-    <label htmlFor="noCapitulos">Número de Capítulos:</label>
-    <input
-    type="number"
-    id="noCapitulos"
-    value={noCapitulos}
-    onChange={(e) => setNoCapitulos(e.target.value)}
-    />
-</div>
+            <label htmlFor="noCapitulos">Número de Capítulos:</label>
+            <input
+              type="number"
+              id="noCapitulos"
+              value={noCapitulos}
+              onChange={(e) => setNoCapitulos(e.target.value)}
+            />
+          </div>
 </div>
 {/* --- FIN DEL CÓDIGO MODIFICADO --- */}
 
