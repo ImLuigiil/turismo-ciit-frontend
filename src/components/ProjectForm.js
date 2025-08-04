@@ -443,13 +443,22 @@ function ProjectForm() {
             <div className="form-group">
             <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
                <input
-                  type="number"
-                  id="poblacionBeneficiada"
-                  value={poblacionBeneficiada}
-                  onChange={(e) => setPoblacionBeneficiada(e.target.value)}
-                  placeholder="Número de personas beneficiadas"
-               />
-               </div>
+                type="text"
+                id="poblacionBeneficiada"
+                value={poblacionBeneficiada}
+                onChange={(e) => {
+                  const value = e.target.value;
+                   // Usa una expresión regular para validar que solo sean números y no más de 9 dígitos
+                  const sanitizedValue = value.replace(/[^0-9]/g, '');
+                  if (sanitizedValue.length <= 9) {
+                    setPoblacionBeneficiada(sanitizedValue);
+                  }
+                }}
+                placeholder="Número de personas beneficiadas"
+                pattern="\d{1,9}" // Ayuda a la validación del navegador, aunque la lógica en onChange es la principal
+                title="Ingresa un número de hasta 9 dígitos"
+                  />
+              </div>
 
             <div className="form-group">
               <label htmlFor="noCapitulos">Número de Capítulos:</label>
