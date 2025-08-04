@@ -1,7 +1,9 @@
 // src/components/ProjectForm.js
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+// --- CORRECCIÓN: Eliminar 'Link' de la importación ---
 import { useNavigate, useParams } from 'react-router-dom';
+// --- FIN CORRECCIÓN ---
 import { useNotification } from '../contexts/NotificationContext';
 
 import './ProjectForm.css';
@@ -49,13 +51,21 @@ function ProjectForm() {
 
   const fases = Array.from({ length: 7 }, (_, i) => i + 1);
 
+  const capitulos = Array.from({ length: 3 }, (_, i) => i + 1);
+
+    // --- CORRECCIÓN EN LA FUNCIÓN: Formatear número con comas ---
   const formatNumber = (num) => {
     if (num === null || num === undefined || num === '') return '';
-    return num.toLocaleString('en-US');
+    // Usamos toLocaleString para manejar el formato de comas correctamente.
+    // El 'undefined' como primer argumento usa la configuración regional del navegador.
+    return Number(num).toLocaleString('en-US'); 
   };
 
+  // --- CORRECCIÓN EN LA FUNCIÓN: Limpiar y validar el input de población ---
   const handlePoblacionChange = (e) => {
-    const rawValue = e.target.value.replace(/,/g, '');
+    const rawValue = e.target.value.replace(/,/g, ''); // Elimina las comas para la validación
+
+    // Solo permite dígitos y limita la longitud a 9
     if (rawValue.length <= 9 && /^\d*$/.test(rawValue)) {
       setPoblacionBeneficiada(rawValue);
       setError(null);
@@ -65,8 +75,7 @@ function ProjectForm() {
         setError('Solo se permiten dígitos numéricos.');
     }
   };
-
-
+  // --- FIN CORRECCIÓN ---
 
   useEffect(() => {
     const fetchComunidades = async () => {
@@ -156,7 +165,7 @@ function ProjectForm() {
       };
       fetchProjectData();
     }
-  }, [isEditing, idProyectoUrl, listaComunidades, setOriginalFaseActual]);
+  }, [isEditing, idProyectoUrl, listaComunidades]);
 
 
   const handleAddPersona = () => {
@@ -208,7 +217,6 @@ function ProjectForm() {
     setExistingImages(prevImages => prevImages.filter(img => img.idProyectoImagen !== imageIdToRemove));
   };
 
-
   const handleFormSubmit = async () => {
     setError(null);
     setLoading(true);
@@ -228,13 +236,11 @@ function ProjectForm() {
     formData.append('nombre', nombre);
     formData.append('descripcion', descripcion);
     formData.append('comunidadIdComunidad', selectedCommunityId ? String(selectedCommunityId) : '');
-    // --- CORRECCIÓN: El valor del estado 'noCapitulos' se adjunta aquí ---
     formData.append('noCapitulos', noCapitulos ? String(noCapitulos) : '');
-    // --- FIN CORRECCIÓN ---
     formData.append('fechaInicio', fechaInicio);
     formData.append('fechaFinAprox', fechaFinAprox);
     formData.append('faseActual', String(faseActual));
-    formData.append('poblacionBeneficiada', poblacionBeneficiada ? String(poblacionBeneficiada).replace(/,/g, '') : '');
+    formData.append('poblacionBeneficiada', poblacionBeneficiada ? String(poblacionBeneficiada) : '');
 
     if (justificationText) {
       formData.append('justificacionFase', justificationText);
@@ -458,26 +464,67 @@ function ProjectForm() {
             )}
           </div>
 
-          <div className="double-form-group">
-            <div className="form-group">
-              <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-              <input
-                type="text"
-                id="poblacionBeneficiada"
-                value={formatNumber(poblacionBeneficiada)}
-                onChange={handlePoblacionChange}
-                placeholder="Número de personas beneficiadas"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="noCapitulos">Número de Capítulos:</label>
-              <input
-                type="number"
-                 id="noCapitulos"
-                value={noCapitulos}
-              onChange={(e) => setNoCapitulos(e.target.value)}
-            />
+          {/* --- INICIO DEL CÓDIGO MODIFICADO --- */}
+<div className="double-form-group">
+    <div className="form-group">
+        <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
+        <input
+        type="text"
+        id="poblacionBeneficiada"
+        value={formatNumber(poblacionBeneficiada)}
+        onChange={handlePoblacionChange}
+        placeholder="Número de personas beneficiadas"
+        />
+    </div>
+    <div className="form-group">
+        <label htmlFor="noCapitulos">Número de Capítulos:</label>
+        <select
+          id="noCapitulos"
+          value={noCapitulos}
+          onChange={(e) => setNoCapitulos(e.target.value)}
+        >
+          {capitulos.map((capitulo) => (
+            <option key={capitulo} value={capitulo}>
+              Capitulos {capitulo}
+            </option>
+    ))}
+  </select>
 </div>
+</div>
+{/* --- FIN DEL CÓDIGO MODIFICADO --- */}
+
+          {/* Campo para subir múltiples imágenes */}
+          <div className="form-group">
+            <label htmlFor="projectImages">Imágenes del Proyecto:</label>
+            <input
+              type="file"
+              id="projectImages"
+              accept="image/*" // Acepta cualquier tipo de imagen
+              multiple // Permite seleccionar múltiples archivos
+              onChange={handleNewImageChange}
+            />
+              <p className="image-specs-text">
+                  Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
+              </p>
+            <div className="image-previews-container">
+              {/* Previsualizaciones de imágenes existentes */}
+              {existingImages.map(img => (
+                <div key={img.idProyectoImagen} className="image-preview-item">
+                  <img src={`${process.env.REACT_APP_API_URL}${img.fullUrl}`} alt="Existente" className="image-preview" />
+                  <button type="button" onClick={() => handleRemoveExistingImage(img.idProyectoImagen)} className="remove-image-button">X</button>
+                </div>
+              ))}
+              {/* Previsualizaciones de nuevas imágenes seleccionadas */}
+              {newImagePreviews.map((previewUrl, index) => (
+                <div key={`new-${index}`} className="image-preview-item">
+                  <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
+                  <button type="button" onClick={() => handleRemoveNewImage(index)} className="remove-image-button">X</button>
+                </div>
+              ))}
+            </div>
+            {(existingImages.length === 0 && newImageFiles.length === 0) && (
+                <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
+            )}
           </div>
 
           <div className="personas-directorio-section">
@@ -574,11 +621,12 @@ function ProjectForm() {
         </form>
       </div>
 
+      {/* MODAL DE JUSTIFICACIÓN */}
       {showJustificationModal && (
         <div className="justification-modal-overlay">
           <div className="justification-modal-content">
             <h3>Justificación de Cambio de Fase</h3>
-            <p>Por favor, explica por qué estás cambiando la fase del proyecto.</p>
+            <p>Por favor, indica los motivos por los cuales estas cambiando la fase.</p>
             <textarea
               value={justificationText}
               onChange={(e) => setJustificationText(e.target.value)}
