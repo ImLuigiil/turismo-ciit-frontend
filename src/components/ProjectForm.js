@@ -37,7 +37,6 @@ function ProjectForm() {
   const MAX_NAME_CHANGES = 3;
 
   const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
-  //const [showLengthError, setShowLengthError] = useState(false);
 
   const [newImageFiles, setNewImageFiles] = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
@@ -51,10 +50,6 @@ function ProjectForm() {
   const { showNotification } = useNotification();
 
   const fases = Array.from({ length: 7 }, (_, i) => i + 1);
-
-  const formatNumber = (num) => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
 
   useEffect(() => {
     const fetchComunidades = async () => {
@@ -446,26 +441,15 @@ function ProjectForm() {
 {/* INICIO DE CÓDIGO MODIFICADO */}
             <div className="form-row">
             <div className="form-group">
-              <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-              <input
-              type="text"
-              id="poblacionBeneficiada"
-              value={poblacionBeneficiada ? formatNumber(poblacionBeneficiada) : ''}
-              onChange={(e) => {
-                const value = e.target.value.replace(/,/g, '');
-                const sanitizedValue = value.replace(/[^0-9]/g, '');
-                if (sanitizedValue.length <= 9) {
-                  setPoblacionBeneficiada(sanitizedValue);
-                  //setShowLengthError(false);
-                 } else {
-                  //setShowLengthError(true);
-                 }
-                }}
-                placeholder="Número de personas beneficiadas"
-                 pattern="\d{1,9}"
-                  title="Ingresa un número de hasta 9 dígitos"
-                  />
-            </div>
+            <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
+               <input
+                  type="number"
+                  id="poblacionBeneficiada"
+                  value={poblacionBeneficiada}
+                  onChange={(e) => setPoblacionBeneficiada(e.target.value)}
+                  placeholder="Número de personas beneficiadas"
+               />
+               </div>
 
             <div className="form-group">
               <label htmlFor="noCapitulos">Número de Capítulos:</label>
