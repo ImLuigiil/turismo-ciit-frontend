@@ -224,7 +224,7 @@ function ProjectDetailPage() {
           ></div>
           </div>
 
-          <h2>Personas del Directorio:</h2>
+          <p>Personas del Directorio:</p>
           {personasDirectorio.length > 0 ? (
             <ul className="directorio-personas-list">
               {personasDirectorio.map(persona => (
