@@ -76,8 +76,7 @@ function ProjectDetailPage() {
     }
   };
 
-  const calcularAvance = (faseActual) => {
-
+  const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
     if (faseActual > 7) return 100;
 
@@ -87,6 +86,41 @@ function ProjectDetailPage() {
       const percentagePerSubPhase = 25 / 4;
       return 75 + (faseActual - 3) * percentagePerSubPhase;
     }
+  };
+  // --- FIN CÓDIGO AÑADIDO ---
+
+  // --- CÓDIGO AÑADIDO: Función de avance que combina fechas y fase ---
+  const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
+    if (faseActual === 7) {
+      return 100;
+    }
+
+    let timeBasedPercentage = 0;
+    if (fechaInicio && fechaFinAprox) {
+      const startDate = new Date(fechaInicio);
+      const endDate = new Date(fechaFinAprox);
+      const currentDate = new Date();
+
+      if (currentDate < startDate) {
+        timeBasedPercentage = 0;
+      } else if (currentDate > endDate) {
+        timeBasedPercentage = 100;
+      } else {
+        const totalDuration = endDate.getTime() - startDate.getTime();
+        const elapsedDuration = currentDate.getTime() - startDate.getTime();
+        if (totalDuration === 0) {
+          timeBasedPercentage = 100;
+        } else {
+          timeBasedPercentage = (elapsedDuration / totalDuration) * 100;
+        }
+      }
+    }
+
+    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
+
+    const finalPercentage = (timeBasedPercentage * 0.7) + (phaseTargetPercentage * 0.3);
+
+    return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
 
   // --- NUEVA FUNCIÓN: Generar Reporte PDF ---
@@ -176,12 +210,11 @@ function ProjectDetailPage() {
           <p><strong>Estado Actual:</strong> Activo</p>
           <p><strong>Porcentaje:</strong> {calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%</p>
           <p><strong>Avance:</strong> Fase {project.faseActual}</p>
-          
           <div className="sidebar-progress-bar-container">
-            <div
-              className="sidebar-progress-bar"
-              style={{ width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%` }}
-            ></div>
+          <div
+          className="sidebar-progress-bar"
+          style={{ width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%` }}
+          ></div>
           </div>
 
           <h3>Personas del Directorio:</h3>
