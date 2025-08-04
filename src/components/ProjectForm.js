@@ -1,7 +1,9 @@
 // src/components/ProjectForm.js
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+// --- CORRECCIÓN: Eliminar 'Link' de la importación ---
 import { useNavigate, useParams } from 'react-router-dom';
+// --- FIN CORRECCIÓN ---
 import { useNotification } from '../contexts/NotificationContext';
 
 import './ProjectForm.css';
@@ -48,46 +50,6 @@ function ProjectForm() {
   const { showNotification } = useNotification();
 
   const fases = Array.from({ length: 7 }, (_, i) => i + 1);
-
-  const formatNumber = (num) => {
-    if (num === null || num === undefined || num === '') return '';
-    return num.toLocaleString('en-US');
-  };
-
-  const handlePoblacionChange = (e) => {
-    const rawValue = e.target.value.replace(/,/g, '');
-    if (rawValue.length <= 9 && /^\d*$/.test(rawValue)) {
-      setPoblacionBeneficiada(rawValue);
-      setError(null);
-    } else if (rawValue.length > 9) {
-      setError('La población beneficiada no puede exceder las 9 cifras.');
-    } else if (!/^\d*$/.test(rawValue)) {
-        setError('Solo se permiten dígitos numéricos.');
-    }
-  };
-
-  const handleNewImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-
-    setNewImageFiles(prevFiles => [...prevFiles, ...files]);
-    setNewImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
-    setError(null);
-  };
-
-  const handleRemoveNewImage = (indexToRemove) => {
-    setNewImageFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
-    setNewImagePreviews(prevPreviews => {
-      URL.revokeObjectURL(prevPreviews[indexToRemove]);
-      return prevPreviews.filter((_, index) => index !== indexToRemove);
-    });
-  };
-
-  const handleRemoveExistingImage = (imageIdToRemove) => {
-    setImagesToDeleteIds(prevIds => [...prevIds, imageIdToRemove]);
-    setExistingImages(prevImages => prevImages.filter(img => img.idProyectoImagen !== imageIdToRemove));
-  };
-
 
   useEffect(() => {
     const fetchComunidades = async () => {
@@ -175,11 +137,9 @@ function ProjectForm() {
           setFormLoading(false);
         }
       };
-      // --- CORRECCIÓN: Añadido setOriginalFaseActual y showNotification a las dependencias ---
       fetchProjectData();
     }
-  }, [isEditing, idProyectoUrl, listaComunidades, setOriginalFaseActual, showNotification]);
-  // --- FIN CORRECCIÓN ---
+  }, [isEditing, idProyectoUrl, listaComunidades]);
 
 
   const handleAddPersona = () => {
@@ -209,6 +169,28 @@ function ProjectForm() {
     setShowDropdown(false);
   };
 
+  const handleNewImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+
+    setNewImageFiles(prevFiles => [...prevFiles, ...files]);
+    setNewImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    setError(null);
+  };
+
+  const handleRemoveNewImage = (indexToRemove) => {
+    setNewImageFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+    setNewImagePreviews(prevPreviews => {
+      URL.revokeObjectURL(prevPreviews[indexToRemove]);
+      return prevPreviews.filter((_, index) => index !== indexToRemove);
+    });
+  };
+
+  const handleRemoveExistingImage = (imageIdToRemove) => {
+    setImagesToDeleteIds(prevIds => [...prevIds, imageIdToRemove]);
+    setExistingImages(prevImages => prevImages.filter(img => img.idProyectoImagen !== imageIdToRemove));
+  };
+
   const handleFormSubmit = async () => {
     setError(null);
     setLoading(true);
@@ -232,7 +214,7 @@ function ProjectForm() {
     formData.append('fechaInicio', fechaInicio);
     formData.append('fechaFinAprox', fechaFinAprox);
     formData.append('faseActual', String(faseActual));
-    formData.append('poblacionBeneficiada', poblacionBeneficiada ? String(poblacionBeneficiada).replace(/,/g, '') : '');
+    formData.append('poblacionBeneficiada', poblacionBeneficiada ? String(poblacionBeneficiada) : '');
 
     if (justificationText) {
       formData.append('justificacionFase', justificationText);
@@ -413,7 +395,7 @@ function ProjectForm() {
             />
             {isEditing && (
               <p className="name-changes-info">
-                Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
+                Cambios de nombre restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
                 {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
               </p>
             )}
@@ -456,26 +438,56 @@ function ProjectForm() {
             )}
           </div>
 
-          <div className="double-form-group">
-            <div className="form-group">
-              <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-              <input
-                type="text"
-                id="poblacionBeneficiada"
-                value={formatNumber(poblacionBeneficiada)}
-                onChange={handlePoblacionChange}
-                placeholder="Número de personas beneficiadas"
-              />
+          <div className="form-group">
+            <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
+            <input
+              type="number"
+              id="poblacionBeneficiada"
+              value={poblacionBeneficiada}
+              onChange={(e) => setPoblacionBeneficiada(e.target.value)}
+              placeholder="Número de personas beneficiadas"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="noCapitulos">Número de Capítulos:</label>
+            <input
+              type="number"
+              id="noCapitulos"
+              value={noCapitulos}
+              onChange={(e) => setNoCapitulos(e.target.value)}
+            />
+          </div>
+
+          {/* Campo para subir múltiples imágenes */}
+          <div className="form-group">
+            <label htmlFor="projectImages">Imágenes del Proyecto:</label>
+            <input
+              type="file"
+              id="projectImages"
+              accept="image/*" // Acepta cualquier tipo de imagen
+              multiple // Permite seleccionar múltiples archivos
+              onChange={handleNewImageChange}
+            />
+            <div className="image-previews-container">
+              {/* Previsualizaciones de imágenes existentes */}
+              {existingImages.map(img => (
+                <div key={img.idProyectoImagen} className="image-preview-item">
+                  <img src={`${process.env.REACT_APP_API_URL}${img.fullUrl}`} alt="Existente" className="image-preview" />
+                  <button type="button" onClick={() => handleRemoveExistingImage(img.idProyectoImagen)} className="remove-image-button">X</button>
+                </div>
+              ))}
+              {/* Previsualizaciones de nuevas imágenes seleccionadas */}
+              {newImagePreviews.map((previewUrl, index) => (
+                <div key={`new-${index}`} className="image-preview-item">
+                  <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
+                  <button type="button" onClick={() => handleRemoveNewImage(index)} className="remove-image-button">X</button>
+                </div>
+              ))}
             </div>
-            <div className="form-group">
-              <label htmlFor="noCapitulos">Número de Capítulos:</label>
-              <input
-                type="number"
-                id="noCapitulos"
-                value={noCapitulos}
-                onChange={(e) => setNoCapitulos(e.target.value)}
-              />
-            </div>
+            {(existingImages.length === 0 && newImageFiles.length === 0) && (
+                <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
+            )}
           </div>
 
           <div className="personas-directorio-section">
@@ -572,6 +584,7 @@ function ProjectForm() {
         </form>
       </div>
 
+      {/* MODAL DE JUSTIFICACIÓN */}
       {showJustificationModal && (
         <div className="justification-modal-overlay">
           <div className="justification-modal-content">
