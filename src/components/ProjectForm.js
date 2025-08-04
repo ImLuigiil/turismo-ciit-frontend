@@ -496,6 +496,9 @@ function ProjectForm() {
               multiple // Permite seleccionar múltiples archivos
               onChange={handleNewImageChange}
             />
+              <p className="image-specs-text">
+                  Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
+              </p>
             <div className="image-previews-container">
               {/* Previsualizaciones de imágenes existentes */}
               {existingImages.map(img => (

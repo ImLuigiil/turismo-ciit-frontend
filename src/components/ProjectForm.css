@@ -548,3 +548,9 @@
 .double-form-group .form-group {
     flex: 1;
 }
+
+.image-specs-text {
+  font-size: 0.85em; /* Tamaño de fuente más pequeño */
+  color: #6c757d;    /* Color gris para un tono más sutil */
+  margin-top: 5px;   /* Espaciado superior */
+}
