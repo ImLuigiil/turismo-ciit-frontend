@@ -34,9 +34,7 @@ function AddDiplomadoForm() {
       return;
     }
 
-    // --- CAMBIO CLAVE AQUÍ: De localStorage a sessionStorage ---
     const token = sessionStorage.getItem('access_token');
-    // --- FIN CAMBIO CLAVE ---
     if (!token) {
       setError('No autorizado. Por favor, inicia sesión.');
       setLoading(false);

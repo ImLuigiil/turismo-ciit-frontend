@@ -25,7 +25,7 @@
 
 .municipio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Cuadrícula de tarjetas de municipio */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
   gap: 25px;
   justify-content: center;
 }
@@ -34,7 +34,7 @@
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
-  overflow: hidden; /* Para que la imagen no se desborde */
+  overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease-in-out;
   display: flex;
@@ -49,12 +49,12 @@
 
 .municipio-card-image-container {
   width: 100%;
-  height: 180px; /* Altura fija para la imagen de la tarjeta */
+  height: 180px; 
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e0e0e0; /* Fondo si no hay imagen */
+  background-color: #e0e0e0;
   border-bottom: 1px solid #eee;
 }
 
@@ -66,7 +66,7 @@
 .municipio-card-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Recorta para cubrir el espacio */
+  object-fit: cover; 
 }
 
 .municipio-card-title {

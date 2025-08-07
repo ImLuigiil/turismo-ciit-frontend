@@ -5,31 +5,30 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilos para la Capa Superior del Sándwich (#611232) */
 .header-top-bar {
-  background-color: #611232; /* Color vino/morado */
+  background-color: #611232; 
   color: white;
   padding: 10px 20px;
-  display: flex; /* Para alinear el logo y las acciones */
-  justify-content: space-between; /* Espacia el logo de las acciones */
+  display: flex; 
+  justify-content: space-between; 
   align-items: center;
-  font-size: 0.85em; /* Fuente más pequeña para esta barra */
+  font-size: 0.85em;
 }
 
 .header-logo-top {
-    height: 60px; /* Tamaño del logo en la barra superior */
+    height: 60px; 
     width: auto;
 }
 
 .header-top-actions {
   display: flex;
   align-items: center;
-  gap: 15px; /* Espacio entre Trámites, Gobierno, Icono */
+  gap: 15px; 
 }
 
 .header-action-item-top {
   cursor: pointer;
-  padding: 3px 8px; /* Padding más pequeño para esta barra */
+  padding: 3px 8px; 
   border-radius: 3px;
   transition: background-color 0.3s ease;
 }
@@ -39,34 +38,33 @@
 }
 
 .user-icon-top {
-  font-size: 1.8em; /* Tamaño del ícono de usuario en la barra superior */
+  font-size: 1.8em; 
   cursor: pointer;
   color: white;
 }
 
-/* Estilos para la Capa Media del Sándwich (Blanca) */
+
 .header-middle-bar {
-  background-color: white; /* Color blanco */
-  color: #333; /* Color de texto para los elementos dentro de esta barra */
+  background-color: white; 
+  color: #333; 
   padding: 10px 20px;
   display: flex;
-  justify-content: center; /* Alinea los logos al centro */
+  justify-content: center; 
   align-items: center;
-  gap: 30px; /* Espacio entre los logos */
-  flex-wrap: nowrap; /* ¡IMPORTANTE! Evita que los logos se envuelvan en múltiples líneas */
-  overflow-x: auto; /* Permite scroll horizontal si los logos son demasiados grandes */
-  -webkit-overflow-scrolling: touch; /* Suaviza el scroll en iOS */
+  gap: 30px; 
+  flex-wrap: nowrap; 
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; 
 }
 
 .header-logo-middle {
-  height: 80px; /* Tamaño de los logos en la barra media para PC */
+  height: 80px; 
   width: auto;
-  flex-shrink: 0; /* Evita que los logos se encojan más allá de su contenido inicial */
+  flex-shrink: 0; 
 }
 
-/* Estilos para la Capa Inferior del Sándwich (Navegación Principal - Azul #1B396A) */
 .main-nav {
-  background-color: #1B396A; /* Se mantiene el color azul */
+  background-color: #1B396A; 
   color: white;
   padding: 10px 20px;
 }
@@ -107,7 +105,7 @@
   margin: 0;
   display: flex;
   justify-content: flex-start;
-  flex-wrap: wrap; /* Permitir envolver en PC */
+  flex-wrap: wrap;
   gap: 20px;
 }
 
@@ -139,56 +137,55 @@
   width: 100%;
 }
 
-/* --- MEDIA QUERIES PARA DISPOSITIVOS MÓVILES --- */
-@media (max-width: 768px) { /* Para pantallas de hasta 768px de ancho (tablets y móviles) */
+@media (max-width: 768px) { 
   .header-logo-top {
-    height: 45px; /* Reduce el tamaño del logo superior */
+    height: 45px; 
   }
   .user-icon-top {
-    font-size: 1.5em; /* Reduce el tamaño del icono de usuario superior */
+    font-size: 1.5em; 
   }
 
   .header-middle-bar {
-    padding: 8px 10px; /* Reduce el padding en móviles */
-    gap: 15px; /* Reduce el espacio entre logos en móviles */
-    justify-content: flex-start; /* Alinea a la izquierda en móviles si hay scroll */
+    padding: 8px 10px; 
+    gap: 15px; 
+    justify-content: flex-start; 
   }
 
   .header-logo-middle {
-    height: 50px; /* Reduce el tamaño de los logos en la barra media para móviles */
+    height: 50px; 
   }
 
   .main-nav {
-    padding: 8px 10px; /* Reduce el padding de la barra de navegación */
+    padding: 8px 10px;
   }
   
-  /* --- CAMBIO CLAVE AQUÍ: Estilos para el menú de navegación en móviles --- */
+
   .nav-container {
-    flex-direction: column; /* Apila "Inicio" y el menú en columnas */
-    align-items: flex-start; /* Alinea todo a la izquierda */
+    flex-direction: column;
+    align-items: flex-start; 
     gap: 10px;
   }
 
   .nav-home {
     font-size: 1.2em;
-    margin-right: 0; /* Elimina el margen derecho */
+    margin-right: 0; 
     padding-bottom: 5px;
   }
 
   .nav-list {
-    flex-direction: column; /* Apila los ítems del menú en columnas */
-    align-items: flex-start; /* Alinea los ítems a la izquierda */
-    gap: 5px; /* Reduce el espacio entre ítems */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px; 
   }
 
   .nav-item a {
     font-size: 1em;
     padding: 2px 0;
   }
-  /* --- FIN CAMBIO CLAVE --- */
+
 }
 
-@media (max-width: 480px) { /* Ajustes adicionales para móviles muy pequeños */
+@media (max-width: 480px) { 
   .header-top-actions {
     gap: 8px;
   }
@@ -201,7 +198,7 @@
     gap: 10px;
   }
   .header-logo-middle {
-    height: 40px; /* Logos aún más pequeños en pantallas muy pequeñas */
+    height: 40px; 
   }
   .nav-home {
     font-size: 1.1em;

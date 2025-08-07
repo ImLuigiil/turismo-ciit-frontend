@@ -1,8 +1,8 @@
 /* src/App.css */
 body {
   margin: 0;
-  font-family: 'Arial', sans-serif; /* Puedes cambiar la fuente si tienes una específica */
-  background-color: #f0f2f5; /* Un gris claro para el fondo general */
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f2f5;
 }
 
 .app-container {

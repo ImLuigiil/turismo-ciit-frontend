@@ -1,12 +1,11 @@
 // src/components/HomePage.js
 import React from 'react';
-import './HomePage.css'; // Crearemos este archivo CSS en el Paso 5
+import './HomePage.css'; 
 
 function HomePage() {
   return (
     <div className="home-page-content">
       <section className="hero-section">
-        {/* Aquí puedes usar una imagen de fondo o un elemento de imagen */}
         <img
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOZzoCSj8h9l239l0bYNtBby5lQ_JxushFiw&s"
           alt="San Pedro Juameluca"
@@ -31,7 +30,6 @@ function HomePage() {
           turismo comunitario se presenta como una solución crucial para abordar esta
           problemática de desinformación, permitiendo una gestión centralizada y eficiente de la información.
         </p>
-        {/* Puedes añadir más texto aquí de tu documentación si lo deseas */}
       </section>
     </div>
   );

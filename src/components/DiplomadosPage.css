@@ -16,9 +16,8 @@
   font-size: 2.2em;
 }
 
-/* --- Estilos para el botón Agregar Nuevo Diplomado --- */
 .add-new-diplomado-button {
-  background-color: #4CAF50; /* Un verde para "Agregar" */
+  background-color: #4CAF50;
   color: white;
   border: none;
   padding: 12px 20px;
@@ -26,17 +25,17 @@
   cursor: pointer;
   font-size: 1.1em;
   transition: background-color 0.3s ease;
-  margin-bottom: 25px; /* Espacio debajo del botón */
-  display: block; /* Para que ocupe su propia línea */
-  width: fit-content; /* Ajusta el ancho al contenido */
-  margin-left: auto; /* Alinea el botón a la derecha o lo centra si es el único elemento */
-  margin-right: auto; /* Ayuda a centrarlo con margin-left auto */
+  margin-bottom: 25px;
+  display: block; 
+  width: fit-content; 
+  margin-left: auto; 
+  margin-right: auto; 
 }
 
 .add-new-diplomado-button:hover {
   background-color: #45a049;
 }
-/* --- Fin Estilos Botón Agregar --- */
+
 
 
 .diplomados-list {
@@ -100,17 +99,16 @@
   padding: 20px;
 }
 
-/* --- Estilos para acciones de administrador en tarjetas de Diplomado --- */
 .admin-actions {
     display: flex;
-    justify-content: center; /* Centra los botones de admin */
+    justify-content: center;
     gap: 10px;
     margin-top: 15px;
     width: 100%;
 }
 
-.admin-delete-button { /* Asumiendo que solo habrá botón de eliminar por ahora */
-    background-color: #f44336; /* Rojo para eliminar */
+.admin-delete-button { 
+    background-color: #f44336; 
     color: white;
     border: none;
     padding: 8px 12px;
@@ -118,7 +116,7 @@
     cursor: pointer;
     font-size: 0.9em;
     transition: background-color 0.3s ease;
-    flex: 0; /* No expandir */
+    flex: 0; 
     width: fit-content;
 }
 

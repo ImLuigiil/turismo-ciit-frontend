@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './FotosPage.css'; // Crearemos/actualizaremos este CSS
+import './FotosPage.css'; 
 
 function FotosPage() {
-  const [municipalitiesData, setMunicipalitiesData] = useState([]); // Agrupará { comunidadId: { nombre: '...', imagenes: [] } }
+  const [municipalitiesData, setMunicipalitiesData] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -13,11 +13,11 @@ function FotosPage() {
   useEffect(() => {
     const fetchProjectImagesGrouped = async () => {
       try {
-        const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`; // Endpoint para obtener todos los proyectos
+        const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`;
         const response = await axios.get(API_URL);
         const projects = response.data;
 
-        const grouped = {}; // Objeto para agrupar por comunidad/municipio
+        const grouped = {}; 
 
         projects.forEach(project => {
           if (project.comunidad && project.imagenes && project.imagenes.length > 0) {
@@ -25,25 +25,21 @@ function FotosPage() {
             const comunidadNombre = project.comunidad.nombre;
 
             if (!grouped[comunidadId]) {
-              // --- CORRECCIÓN CLAVE AQUÍ ---
-              grouped[comunidadId] = { // ¡Eliminado 'com' antes de comunidadId!
+              grouped[comunidadId] = { 
                 id: comunidadId,
                 nombre: comunidadNombre,
                 count: 0,
-                firstImageUrl: '', // Para mostrar una miniatura representativa
+                firstImageUrl: '',
               };
-              // --- FIN CORRECCIÓN ---
             }
             grouped[comunidadId].count += project.imagenes.length;
 
-            // Si aún no hay una imagen principal, toma la primera del proyecto
             if (!grouped[comunidadId].firstImageUrl) {
               grouped[comunidadId].firstImageUrl = `${process.env.REACT_APP_API_URL}${project.imagenes[0].url}`;
             }
           }
         });
         
-        // Convertir el objeto agrupado a un array para renderizar
         setMunicipalitiesData(Object.values(grouped));
         setLoading(false);
       } catch (err) {
@@ -57,7 +53,7 @@ function FotosPage() {
   }, []);
 
   const handleViewGallery = (municipioId) => {
-    navigate(`/fotos/municipio/${municipioId}`); // Redirige a la nueva página de galería por municipio
+    navigate(`/fotos/municipio/${municipioId}`);
   };
 
   if (loading) {
@@ -85,7 +81,7 @@ function FotosPage() {
                 <p>Sin imagen</p>
               </div>
             )}
-            <h3 className="municipio-card-title">{municipio.nombre}</h3> {/* Nombre del municipio */}
+            <h3 className="municipio-card-title">{municipio.nombre}</h3>
             <p className="municipio-card-count">{municipio.count} fotos</p>
             <button onClick={() => handleViewGallery(municipio.id)} className="municipio-card-button">
               Ver Galería

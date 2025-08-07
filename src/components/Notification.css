@@ -1,43 +1,41 @@
     /* src/components/Notification.css */
     .notification-container {
-      position: fixed; /* Fija la notificación en la ventana */
-      top: 20px;       /* A 20px del borde superior */
-      right: 20px;     /* A 20px del borde derecho */
-      background-color: #4CAF50; /* Color de fondo verde por defecto (para éxito) */
-      color: white;    /* Color del texto */
-      padding: 15px 25px; /* Espaciado interno */
-      border-radius: 8px; /* Bordes redondeados */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
-      z-index: 10000; /* Asegura que esté por encima de casi todo lo demás */
-      display: flex;   /* Usa flexbox para alinear contenido */
-      align-items: center; /* Centra verticalmente los elementos */
-      gap: 15px;       /* Espacio entre el texto y el botón de cierre */
-      opacity: 0;      /* Inicialmente invisible */
-      transform: translateY(-20px); /* Ligeramente arriba para la animación de entrada */
-      animation: fadeInSlideDown 0.5s forwards; /* Animación de entrada */
+      position: fixed; 
+      top: 20px;       
+      right: 20px;     
+      background-color: #4CAF50; 
+      color: white;    
+      padding: 15px 25px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+      z-index: 10000; 
+      display: flex;   
+      align-items: center; 
+      gap: 15px;       
+      opacity: 0;      
+      transform: translateY(-20px); 
+      animation: fadeInSlideDown 0.5s forwards;
     }
 
-    /* Estilo para notificaciones de tipo 'error' */
     .notification-container.error {
-      background-color: #f44336; /* Rojo para errores */
+      background-color: #f44336; 
     }
 
     .notification-container p {
-      margin: 0; /* Elimina el margen predeterminado del párrafo */
-      font-size: 1.1em; /* Tamaño de fuente */
-      font-weight: bold; /* Texto en negrita */
+      margin: 0; 
+      font-size: 1.1em; 
+      font-weight: bold; 
     }
 
     .notification-close-btn {
-      background: none; /* Sin fondo */
-      border: none;     /* Sin borde */
-      color: white;     /* Color del icono/texto de cierre */
-      font-size: 1.2em; /* Tamaño del icono de cierre */
-      cursor: pointer;  /* Cursor de puntero al pasar el ratón */
-      margin-left: 10px; /* Margen a la izquierda del botón */
+      background: none; 
+      border: none;     
+      color: white;    
+      font-size: 1.2em;
+      cursor: pointer;  
+      margin-left: 10px;
     }
 
-    /* Animación de entrada: se desliza hacia abajo y aparece */
     @keyframes fadeInSlideDown {
       from {
         opacity: 0;

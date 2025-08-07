@@ -1,6 +1,6 @@
 // src/components/Notification.js
 import React, { useEffect, useState } from 'react';
-import './Notification.css'; // Crearemos este archivo CSS
+import './Notification.css';
 
 function Notification({ message, type, duration = 3000, onClose }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -8,10 +8,10 @@ function Notification({ message, type, duration = 3000, onClose }) {
   useEffect(() => {
     if (message) {
       setIsVisible(true);
-      console.log('Notification Component: Haciendo visible. Mensaje:', message); // <-- LOG AÑADIDO
+      console.log('Notification Component: Haciendo visible. Mensaje:', message);
       const timer = setTimeout(() => {
         setIsVisible(false);
-        console.log('Notification Component: Ocultando después de duración.'); // <-- LOG AÑADIDO
+        console.log('Notification Component: Ocultando después de duración.');
         if (onClose) {
           onClose();
         }
@@ -19,7 +19,7 @@ function Notification({ message, type, duration = 3000, onClose }) {
       return () => clearTimeout(timer);
     } else {
       setIsVisible(false);
-      console.log('Notification Component: No visible (sin mensaje).'); // <-- LOG AÑADIDO
+      console.log('Notification Component: No visible (sin mensaje).');
     }
   }, [message, duration, onClose]);
 

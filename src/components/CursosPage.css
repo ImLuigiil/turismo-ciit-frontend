@@ -16,7 +16,6 @@
   font-size: 2.2em;
 }
 
-/* Botón "Agregar Nuevo Curso" */
 .add-new-curso-button {
   background-color: #4CAF50;
   color: white;
@@ -83,7 +82,7 @@
   cursor: pointer;
   font-size: 1em;
   transition: background-color 0.3s ease;
-  margin-top: auto; /* Empuja el botón al final */
+  margin-top: auto; 
 }
 
 .curso-card-button:hover {
@@ -98,7 +97,6 @@
   padding: 20px;
 }
 
-/* Estilos para los botones de administrador en las tarjetas */
 .admin-actions {
   display: flex;
   justify-content: space-around;
@@ -120,7 +118,7 @@
 }
 
 .admin-edit-button {
-  background-color: #2196F3; /* Azul para editar */
+  background-color: #2196F3; 
 }
 
 .admin-edit-button:hover {
@@ -128,7 +126,7 @@
 }
 
 .admin-delete-button {
-  background-color: #f44336; /* Rojo para eliminar */
+  background-color: #f44336; 
 }
 
 .admin-delete-button:hover {

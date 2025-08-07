@@ -2,18 +2,18 @@
     import React, { useState, useEffect } from 'react';
     import axios from 'axios';
     import { useParams, useNavigate } from 'react-router-dom';
-    import './MunicipioGalleryPage.css'; // Crearemos este CSS
+    import './MunicipioGalleryPage.css'; 
 
     function MunicipioGalleryPage() {
-      const { municipioId } = useParams(); // Obtener el ID del municipio de la URL
+      const { municipioId } = useParams(); 
       const navigate = useNavigate();
       const [municipioName, setMunicipioName] = useState('');
-      const [allMunicipioImages, setAllMunicipioImages] = useState([]); // Todas las imágenes de los proyectos de este municipio
+      const [allMunicipioImages, setAllMunicipioImages] = useState([]);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
 
       const [currentImageIndex, setCurrentImageIndex] = useState(0);
-      const CAROUSEL_ROTATION_SPEED = 5000; // 5 segundos
+      const CAROUSEL_ROTATION_SPEED = 5000;
 
       useEffect(() => {
         const fetchMunicipioImages = async () => {
@@ -27,13 +27,13 @@
 
             projects.forEach(project => {
               if (project.comunidad && String(project.comunidad.idComunidad) === municipioId) {
-                foundMunicipioName = project.comunidad.nombre; // Obtener el nombre del municipio
+                foundMunicipioName = project.comunidad.nombre; 
                 if (project.imagenes && project.imagenes.length > 0) {
                   project.imagenes.forEach(img => {
                     imagesForThisMunicipio.push({
                       id: img.idProyectoImagen,
                       url: img.url,
-                      projectName: project.nombre, // Para mostrar el nombre del proyecto en la galería
+                      projectName: project.nombre, 
                     });
                   });
                 }
@@ -62,7 +62,6 @@
         }
       }, [municipioId]);
 
-      // Efecto para la rotación automática del carrusel
       useEffect(() => {
         let intervalId;
         if (allMunicipioImages.length > 1) {
@@ -124,7 +123,6 @@
                     <button onClick={goToNextImage} className="gallery-nav-button">→</button>
                   </div>
                 )}
-                {/* Opcional: Mostrar el nombre del proyecto al que pertenece la imagen actual */}
                 {allMunicipioImages[currentImageIndex]?.projectName && (
                     <p className="current-image-project-name">
                         Proyecto: {allMunicipioImages[currentImageIndex].projectName}

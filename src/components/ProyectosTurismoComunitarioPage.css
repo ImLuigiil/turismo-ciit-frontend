@@ -11,16 +11,16 @@
 
 .proyectos-container h2 {
   text-align: center;
-  color: #1B396A; /* El color azul de tu navbar */
+  color: #1B396A;
   margin-bottom: 30px;
   font-size: 2.2em;
 }
 
 .proyectos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Columnas responsivas */
-  gap: 25px; /* Espacio entre las tarjetas */
-  justify-content: center; /* Centra las tarjetas si no llenan la fila */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  justify-content: center; 
 }
 
 .proyecto-card {
@@ -35,7 +35,7 @@
 }
 
 .proyecto-card:hover {
-  transform: translateY(-5px); /* Pequeño efecto al pasar el ratón */
+  transform: translateY(-5px);
 }
 
 .proyecto-card-title {
@@ -49,19 +49,17 @@
   color: #666;
   font-size: 0.95em;
   line-height: 1.5;
-  flex-grow: 1; /* Permite que la descripción ocupe el espacio disponible */
+  flex-grow: 1;
   margin-bottom: 15px;
 
-  /* --- NUEVOS ESTILOS: Para asegurar que la descripción truncada se vea bien --- */
-  overflow: hidden; /* Oculta cualquier texto que se desborde */
-  text-overflow: ellipsis; /* Añade puntos suspensivos (...) al final del texto truncado */
-  display: -webkit-box; /* Para compatibilidad con navegadores basados en WebKit */
-  -webkit-line-clamp: 3; /* Limita el texto a 3 líneas (ajusta según necesites) */
-  -webkit-box-orient: vertical; /* Necesario con -webkit-line-clamp */
-  /* --- FIN NUEVOS ESTILOS --- */
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  display: -webkit-box;
+  -webkit-line-clamp: 3; 
+  -webkit-box-orient: vertical;
 }
 
-.proyecto-card-community { /* Estilo para el nombre de la comunidad */
+.proyecto-card-community { 
     font-size: 0.9em;
     color: #555;
     margin-bottom: 10px;
@@ -73,7 +71,7 @@
   border-radius: 5px;
   overflow: hidden;
   margin-bottom: 10px;
-  height: 25px; /* Altura de la barra de progreso */
+  height: 25px;
   display: flex;
   align-items: center;
   position: relative;
@@ -81,7 +79,7 @@
 
 .progress-bar {
   height: 100%;
-  background-color: #4CAF50; /* Verde para el progreso, puedes cambiarlo */
+  background-color: #4CAF50;
   border-radius: 5px;
   text-align: right;
   transition: width 0.5s ease-in-out;
@@ -91,24 +89,23 @@
 }
 
 .progress-text {
-  position: relative; /* Asegura que el texto esté sobre la barra */
+  position: relative;
   width: 100%;
   text-align: center;
   font-weight: bold;
-  color: #333; /* Color de texto que contraste con el fondo */
+  color: #333; 
   font-size: 0.9em;
-  z-index: 1; /* Asegura que el texto esté encima de la barra de progreso */
+  z-index: 1;
 }
 
-/* Opcional: ajustar el color del texto de progreso si la barra es muy oscura */
 .progress-bar[style*="width: 50%"] + .progress-text,
 .progress-bar[style*="width: 75%"] + .progress-text,
 .progress-bar[style*="width: 100%"] + .progress-text {
-    color: white; /* Ejemplo: si la barra es más de la mitad, el texto es blanco */
+    color: white;
 }
 
 .proyecto-card-button {
-  background-color: #1B396A; /* Azul de tu navbar */
+  background-color: #1B396A;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -116,23 +113,22 @@
   cursor: pointer;
   font-size: 1em;
   transition: background-color 0.3s ease;
-  align-self: flex-end; /* Alinea el botón a la derecha en la parte inferior */
-  margin-top: auto; /* Empuja el botón al final de la tarjeta */
+  align-self: flex-end; 
+  margin-top: auto; 
 }
 
 .proyecto-card-button:hover {
-  background-color: #2a5796; /* Un tono más oscuro de azul al pasar el ratón */
+  background-color: #2a5796;
 }
 
 .no-proyectos {
-  grid-column: 1 / -1; /* Ocupa todas las columnas */
+  grid-column: 1 / -1; 
   text-align: center;
   color: #777;
   font-size: 1.1em;
   padding: 20px;
 }
 
-/* Estilos para el botón Agregar Nuevo Proyecto */
 .add-new-project-button {
   background-color: #4CAF50;
   color: white;
@@ -153,7 +149,6 @@
   background-color: #45a049;
 }
 
-/* Estilos para los botones de administrador en las tarjetas */
 .admin-actions {
   display: flex;
   justify-content: space-around;
@@ -190,7 +185,6 @@
   background-color: #da190b;
 }
 
-/* Estilos para la imagen principal en la tarjeta del proyecto */
 .proyecto-card-image-container {
     width: 100%;
     height: 180px;

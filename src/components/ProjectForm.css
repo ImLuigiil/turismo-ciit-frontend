@@ -32,7 +32,7 @@
 
 .form-group {
   text-align: left;
-  position: relative; /* Para posicionar el dropdown de comunidad */
+  position: relative;
 }
 
 .form-group label {
@@ -113,18 +113,17 @@ textarea {
     color: #1B396A;
 }
 
-/* Estilos para el campo de búsqueda de Comunidad */
 .community-dropdown {
   position: absolute;
-  top: 100%; /* Justo debajo del input */
+  top: 100%;
   left: 0;
   right: 0;
   background-color: white;
   border: 1px solid #ddd;
   border-top: none;
-  max-height: 200px; /* Altura máxima para el scroll */
-  overflow-y: auto; /* Scroll si hay muchos resultados */
-  z-index: 10; /* Asegura que esté por encima de otros elementos */
+  max-height: 200px;
+  overflow-y: auto; 
+  z-index: 10;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -157,7 +156,6 @@ textarea {
     background-color: #f9f9f9;
 }
 
-/* Estilos para la sección de Personas del Directorio */
 .personas-directorio-section {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
@@ -231,7 +229,7 @@ textarea {
 }
 
 .name-changes-limit-reached {
-    color: #f44336; /* Rojo para indicar que el límite ha sido alcanzado */
+    color: #f44336;
     font-weight: bold;
 }
 
@@ -253,22 +251,21 @@ textarea {
 
 .persona-input-group {
   display: flex;
-  flex-wrap: wrap; /* Permite que los inputs se envuelvan en filas si no hay espacio */
-  gap: 10px; /* Espacio entre los inputs */
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 10px;
   align-items: center;
-  border: 1px solid #f0f0f0; /* Borde sutil para agrupar */
+  border: 1px solid #f0f0f0;
   padding: 10px;
   border-radius: 5px;
   background-color: #ffffff;
 }
 
 .persona-input-group input {
-  flex: 1; /* Permite que los inputs se expandan */
-  min-width: 100px; /* Ancho mínimo para cada input */
-  /* Asegúrate de que el padding y border no afecten el flex-basis */
+  flex: 1;
+  min-width: 100px;
   box-sizing: border-box;
-  padding: 8px 10px; /* Ajusta el padding para inputs más pequeños */
+  padding: 8px 10px; 
   font-size: 0.9em;
 }
 
@@ -281,8 +278,8 @@ textarea {
   cursor: pointer;
   font-size: 0.8em;
   transition: background-color 0.3s ease;
-  flex-shrink: 0; /* No se encoge */
-  margin-left: auto; /* Empuja el botón a la derecha si hay espacio */
+  flex-shrink: 0; 
+  margin-left: auto;
 }
 
 .remove-persona-button:hover {
@@ -309,10 +306,9 @@ textarea {
   background-color: #45a049;
 }
 
-/* Media query para apilar inputs en pantallas muy pequeñas */
 @media (max-width: 480px) {
   .persona-input-group input {
-    flex-basis: 100%; /* Cada input ocupa su propia línea */
+    flex-basis: 100%; 
     min-width: unset;
   }
   .remove-persona-button {
@@ -326,30 +322,30 @@ textarea {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 15px;
-  justify-content: center; /* Centra las miniaturas */
-  border: 1px dashed #ccc; /* Borde para el área de previsualización */
+  justify-content: center;
+  border: 1px dashed #ccc;
   padding: 10px;
   border-radius: 5px;
   background-color: #f9f9f9;
-  min-height: 80px; /* Altura mínima si no hay imágenes */
-  align-items: center; /* Centra verticalmente */
+  min-height: 80px;
+  align-items: center; 
 }
 
 .image-preview-item {
   position: relative;
-  width: 100px; /* Tamaño fijo para la miniatura */
+  width: 100px;
   height: 100px;
   border: 1px solid #ddd;
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  flex-shrink: 0; /* No se encoge */
+  flex-shrink: 0; 
 }
 
 .image-preview {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Recorta para cubrir el área */
+  object-fit: cover;
   display: block;
 }
 
@@ -357,10 +353,10 @@ textarea {
   position: absolute;
   top: 2px;
   right: 2px;
-  background-color: rgba(244, 67, 54, 0.8); /* Rojo semitransparente */
+  background-color: rgba(244, 67, 54, 0.8); 
   color: white;
   border: none;
-  border-radius: 50%; /* Botón redondo */
+  border-radius: 50%;
   width: 24px;
   height: 24px;
   font-size: 0.8em;
@@ -369,7 +365,7 @@ textarea {
   display: flex;
   justify-content: center;
   align-items: center;
-  line-height: 1; /* Para centrar la X */
+  line-height: 1;
   padding: 0;
   transition: background-color 0.2s ease;
 }
@@ -385,9 +381,8 @@ textarea {
     width: 100%;
 }
 
-/* Ajustes para el input type="file" */
 .form-group input[type="file"] {
-    padding: 8px; /* Ajusta el padding para que se vea mejor */
+    padding: 8px; 
     border: 1px solid #ccc;
     border-radius: 5px;
 }
@@ -397,18 +392,18 @@ textarea {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 15px;
-  justify-content: center; /* Centra las miniaturas */
-  border: 1px dashed #ccc; /* Borde para el área de previsualización */
+  justify-content: center;
+  border: 1px dashed #ccc; 
   padding: 10px;
   border-radius: 5px;
   background-color: #f9f9f9;
-  min-height: 80px; /* Altura mínima si no hay imágenes */
-  align-items: center; /* Centra verticalmente */
+  min-height: 80px; 
+  align-items: center; 
 }
 
 .image-preview-item {
   position: relative;
-  width: 100px; /* Tamaño fijo para la miniatura */
+  width: 100px;
   height: 100px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -528,34 +523,31 @@ textarea {
 
 .form-row {
     display: flex;
-    gap: 20px; /* Espacio entre los dos campos */
+    gap: 20px;
 }
 
-/* Asegura que los campos dentro de form-row crezcan para ocupar el espacio */
 .form-row .form-group {
     flex: 1;
 }
 
-/* Media query para hacer que los campos se apilen en pantallas pequeñas */
 @media (max-width: 600px) {
     .form-row {
     flex-direction: column;
-    gap: 0; /* Elimina el espacio cuando están apilados */
+    gap: 0; 
     }
 }
 
 .double-form-group {
     display: flex;
-    gap: 20px; /* Espacio entre los dos campos */
+    gap: 20px; 
 }
 
-/* Para que los campos dentro del contenedor doble ocupen el mismo espacio */
 .double-form-group .form-group {
     flex: 1;
 }
 
 .image-specs-text {
-  font-size: 0.85em; /* Tamaño de fuente más pequeño */
-  color: #6c757d;    /* Color gris para un tono más sutil */
-  margin-top: 5px;   /* Espaciado superior */
+  font-size: 0.85em; 
+  color: #6c757d;   
+  margin-top: 5px;  
 }

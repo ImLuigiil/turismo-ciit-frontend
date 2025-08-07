@@ -26,10 +26,7 @@ function LoginPage({ onLoginSuccess }) {
       });
 
       const { access_token } = response.data;
-
-      // --- CAMBIO CLAVE AQUÍ: De localStorage a sessionStorage ---
       sessionStorage.setItem('access_token', access_token);
-      // --- FIN CAMBIO CLAVE ---
 
       setLoading(false);
       if (onLoginSuccess) {

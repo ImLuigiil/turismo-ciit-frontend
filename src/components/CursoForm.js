@@ -2,19 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext'; // Para notificaciones
+import { useNotification } from '../contexts/NotificationContext'; 
 
-import './CursoForm.css'; // Crearemos este CSS
+import './CursoForm.css'; 
 
 function CursoForm() {
-  const { idCursoUrl } = useParams(); // Para modo edición
+  const { idCursoUrl } = useParams(); 
   const isEditing = !!idCursoUrl;
 
   const [nombre, setNombre] = useState('');
-  const [tipo, setTipo] = useState('video'); // 'video' o 'pdf'
-  const [link, setLink] = useState(''); // Para enlaces de video
-  const [selectedFile, setSelectedFile] = useState(null); // Para archivos PDF
-  const [currentFileUrl, setCurrentFileUrl] = useState(''); // URL del archivo existente en edición
+  const [tipo, setTipo] = useState('video');
+  const [link, setLink] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null); 
+  const [currentFileUrl, setCurrentFileUrl] = useState('');
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,6 @@ function CursoForm() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
-  // Precargar datos en modo edición
   useEffect(() => {
     if (isEditing) {
       setFormLoading(true);
@@ -34,9 +33,8 @@ function CursoForm() {
 
           setNombre(curso.nombre || '');
           setTipo(curso.tipo || 'video');
-          setLink(curso.link || ''); // Precarga el link (sea URL o path)
+          setLink(curso.link || '');
           
-          // Si el curso tiene un link y es de tipo PDF, lo guardamos como currentFileUrl
           if (curso.tipo === 'pdf' && curso.link) {
             setCurrentFileUrl(`${process.env.REACT_APP_API_URL}${curso.link}`);
           } else {
@@ -59,7 +57,7 @@ function CursoForm() {
     if (file) {
       setSelectedFile(file);
       setError(null);
-      setLink(''); // Limpiar el link si se selecciona un archivo
+      setLink(''); 
     } else {
       setSelectedFile(null);
     }
@@ -68,7 +66,7 @@ function CursoForm() {
   const handleLinkChange = (e) => {
     setLink(e.target.value);
     setError(null);
-    setSelectedFile(null); // Limpiar el archivo si se escribe un link
+    setSelectedFile(null);
   };
 
   const handleSubmit = async (e) => {
@@ -97,12 +95,9 @@ function CursoForm() {
       formData.append('link', link);
     } else if (tipo === 'pdf') {
       if (selectedFile) {
-        formData.append('file', selectedFile); // 'file' debe coincidir con FileInterceptor
+        formData.append('file', selectedFile);
       } else if (isEditing && currentFileUrl) {
-        // Si estamos editando y no se subió un nuevo archivo, pero ya había uno,
-        // necesitamos enviar el link existente para que el backend no lo borre.
-        // Opcional: Podrías añadir un botón "Eliminar PDF" si quieres esa funcionalidad.
-        formData.append('link', link); // El link actual del curso (que es la ruta del PDF)
+        formData.append('link', link);
       } else {
         setError('Para cursos PDF, se requiere un archivo PDF.');
         setLoading(false);
@@ -132,7 +127,7 @@ function CursoForm() {
       }
 
       setLoading(false);
-      navigate('/cursos'); // Redirigir de vuelta a la lista de cursos
+      navigate('/cursos');
     } catch (err) {
       setLoading(false);
       if (err.response && err.response.data && err.response.data.message) {
@@ -180,7 +175,7 @@ function CursoForm() {
             <div className="form-group">
               <label htmlFor="link">Enlace de Video (URL):</label>
               <input
-                type="url" // Tipo url para validación básica del navegador
+                type="url"
                 id="link"
                 value={link}
                 onChange={handleLinkChange}
@@ -198,13 +193,12 @@ function CursoForm() {
                 id="file"
                 accept=".pdf"
                 onChange={handleFileChange}
-                required={!isEditing || !currentFileUrl} // Requerido si no estamos editando o no hay URL actual
+                required={!isEditing || !currentFileUrl}
               />
               {selectedFile && <p className="selected-file-name">Archivo seleccionado: {selectedFile.name}</p>}
               {isEditing && currentFileUrl && !selectedFile && (
                 <p className="current-file-info">
                   PDF actual: <a href={currentFileUrl} target="_blank" rel="noopener noreferrer">Ver PDF</a>
-                  {/* Opcional: botón para eliminar PDF existente */}
                 </p>
               )}
             </div>

@@ -3,20 +3,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PdfViewer from './PdfViewer';
 import { useNavigate } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext'; // Para notificaciones
+import { useNotification } from '../contexts/NotificationContext'; 
 
 import './DiplomadosPage.css';
 
-// Recibe la prop isAdmin
+
 function DiplomadosPage({ isAdmin }) {
   const [diplomados, setDiplomados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
   const navigate = useNavigate();
-  const { showNotification } = useNotification(); // Usa el hook de notificación
+  const { showNotification } = useNotification(); 
 
-  // Función para obtener diplomados (refactorizada para recargar)
+
   const fetchDiplomados = async () => {
     setLoading(true);
     setError(null);
@@ -73,7 +73,7 @@ function DiplomadosPage({ isAdmin }) {
               });
 
               showNotification(`Diplomado con ID ${idDiplomado} eliminado con éxito.`, 'success');
-              fetchDiplomados(); // Recargar lista
+              fetchDiplomados();
           } catch (err) {
               console.error(`Error al eliminar el diplomado con ID ${idDiplomado}:`, err);
               showNotification('Error al eliminar el diplomado.', 'error');

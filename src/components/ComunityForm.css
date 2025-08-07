@@ -4,7 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 60px); /* Ajusta según la altura de tu navbar */
+    min-height: calc(100vh - 60px);
     background-color: #f4f7f6;
     padding: 20px;
 }
@@ -46,11 +46,11 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1em;
-    box-sizing: border-box; /* Asegura que el padding no aumente el ancho */
+    box-sizing: border-box;
 }
 
 .community-form .form-group textarea {
-    resize: vertical; /* Permite redimensionar verticalmente */
+    resize: vertical;
     min-height: 80px;
 }
 
@@ -67,7 +67,7 @@
 .community-form .form-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 15px; /* Espacio entre los botones */
+    gap: 15px;
     margin-top: 30px;
 }
 
@@ -80,11 +80,11 @@
     font-size: 1em;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    flex: 1; /* Para que los botones ocupen el mismo ancho */
+    flex: 1;
 }
 
 .community-form .submit-button {
-    background-color: #28a745; /* Verde para agregar/actualizar */
+    background-color: #28a745;
     color: white;
 }
 
@@ -99,7 +99,7 @@
 }
 
 .community-form .cancel-button {
-    background-color: #6c757d; /* Gris para cancelar */
+    background-color: #6c757d;
     color: white;
 }
 

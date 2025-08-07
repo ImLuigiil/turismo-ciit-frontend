@@ -1,9 +1,7 @@
 // src/components/ProjectForm.js
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-// --- CORRECCIÓN: Eliminar 'Link' de la importación ---
 import { useNavigate, useParams } from 'react-router-dom';
-// --- FIN CORRECCIÓN ---
 import { useNotification } from '../contexts/NotificationContext';
 
 import './ProjectForm.css';
@@ -53,19 +51,14 @@ function ProjectForm() {
 
   const capitulos = Array.from({ length: 3 }, (_, i) => i + 1);
 
-    // --- CORRECCIÓN EN LA FUNCIÓN: Formatear número con comas ---
   const formatNumber = (num) => {
     if (num === null || num === undefined || num === '') return '';
-    // Usamos toLocaleString para manejar el formato de comas correctamente.
-    // El 'undefined' como primer argumento usa la configuración regional del navegador.
     return Number(num).toLocaleString('en-US'); 
   };
 
-  // --- CORRECCIÓN EN LA FUNCIÓN: Limpiar y validar el input de población ---
   const handlePoblacionChange = (e) => {
-    const rawValue = e.target.value.replace(/,/g, ''); // Elimina las comas para la validación
+    const rawValue = e.target.value.replace(/,/g, '');
 
-    // Solo permite dígitos y limita la longitud a 9
     if (rawValue.length <= 9 && /^\d*$/.test(rawValue)) {
       setPoblacionBeneficiada(rawValue);
       setError(null);
@@ -75,7 +68,6 @@ function ProjectForm() {
         setError('Solo se permiten dígitos numéricos.');
     }
   };
-  // --- FIN CORRECCIÓN ---
 
   useEffect(() => {
     const fetchComunidades = async () => {
@@ -464,7 +456,6 @@ function ProjectForm() {
             )}
           </div>
 
-          {/* --- INICIO DEL CÓDIGO MODIFICADO --- */}
 <div className="double-form-group">
     <div className="form-group">
         <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
@@ -491,30 +482,26 @@ function ProjectForm() {
   </select>
 </div>
 </div>
-{/* --- FIN DEL CÓDIGO MODIFICADO --- */}
 
-          {/* Campo para subir múltiples imágenes */}
           <div className="form-group">
             <label htmlFor="projectImages">Imágenes del Proyecto:</label>
             <input
               type="file"
               id="projectImages"
-              accept="image/*" // Acepta cualquier tipo de imagen
-              multiple // Permite seleccionar múltiples archivos
+              accept="image/*"
+              multiple
               onChange={handleNewImageChange}
             />
               <p className="image-specs-text">
                   Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
               </p>
             <div className="image-previews-container">
-              {/* Previsualizaciones de imágenes existentes */}
               {existingImages.map(img => (
                 <div key={img.idProyectoImagen} className="image-preview-item">
                   <img src={`${process.env.REACT_APP_API_URL}${img.fullUrl}`} alt="Existente" className="image-preview" />
                   <button type="button" onClick={() => handleRemoveExistingImage(img.idProyectoImagen)} className="remove-image-button">X</button>
                 </div>
               ))}
-              {/* Previsualizaciones de nuevas imágenes seleccionadas */}
               {newImagePreviews.map((previewUrl, index) => (
                 <div key={`new-${index}`} className="image-preview-item">
                   <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
@@ -621,7 +608,6 @@ function ProjectForm() {
         </form>
       </div>
 
-      {/* MODAL DE JUSTIFICACIÓN */}
       {showJustificationModal && (
         <div className="justification-modal-overlay">
           <div className="justification-modal-content">

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './CommunityForm.css'; // Crearemos este CSS en el siguiente paso
+import './CommunityForm.css'; 
 
 function CommunityForm() {
   const [idComunidad, setIdComunidad] = useState('');
@@ -41,7 +41,7 @@ function CommunityForm() {
       });
       alert('Comunidad agregada con éxito!');
       setLoading(false);
-      navigate('/proyectos/nuevo'); // Redirige de vuelta al formulario de proyectos
+      navigate('/proyectos/nuevo');
     } catch (err) {
       setLoading(false);
       if (err.response && err.response.data && err.response.data.message) {

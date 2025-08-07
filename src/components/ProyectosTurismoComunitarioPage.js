@@ -6,7 +6,6 @@ import { useNotification } from '../contexts/NotificationContext';
 
 import './ProyectosTurismoComunitarioPage.css';
 
-// Recibe la prop isAdmin
 function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,14 +13,11 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
-  // Función para obtener proyectos
   const fetchProyectos = async () => {
     setLoading(true);
     setError(null);
     try {
-      // --- CAMBIO: Usar process.env.REACT_APP_API_URL ---
-      const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`; // Asegúrate de que esta URL sea correcta
-      // --- FIN CAMBIO ---
+      const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`;
       const response = await axios.get(API_URL);
       setProyectos(response.data);
       setLoading(false);
@@ -130,7 +126,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
         });
 
         alert(`Proyecto con ID ${proyectoId} eliminado con éxito.`);
-        fetchProyectos(); // Vuelve a cargar la lista de proyectos después de eliminar
+        fetchProyectos();
       } catch (err) {
         console.error(`Error al eliminar el proyecto con ID ${proyectoId}:`, err);
         if (err.response && err.response.status === 401) {
@@ -169,9 +165,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
               {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
                 <div className="proyecto-card-image-container">
                   <img
-                    // --- VERIFICACIÓN CLAVE: URL de la imagen de portada ---
                     src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
-                    // --- FIN VERIFICACIÓN ---
                     alt={`Imagen de ${proyecto.nombre}`}
                     className="proyecto-card-image"
                   />

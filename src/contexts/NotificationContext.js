@@ -9,20 +9,20 @@ export const useNotification = () => {
 };
 
 export const NotificationProvider = ({ children }) => {
-  const [notification, setNotification] = useState(null); // { message, type }
+  const [notification, setNotification] = useState(null);
 
   const showNotification = useCallback((message, type = 'success', duration = 3000) => {
-    console.log('NotificationContext: showNotification llamado con:', { message, type, duration }); // <-- LOG AÑADIDO
+    console.log('NotificationContext: showNotification llamado con:', { message, type, duration });
     setNotification({ message, type });
     
     setTimeout(() => {
       setNotification(null);
-      console.log('NotificationContext: Notificación oculta después de duración.'); // <-- LOG AÑADIDO
+      console.log('NotificationContext: Notificación oculta después de duración.');
     }, duration);
   }, []);
 
   const closeNotification = useCallback(() => {
-    console.log('NotificationContext: closeNotification llamado.'); // <-- LOG AÑADIDO
+    console.log('NotificationContext: closeNotification llamado.');
     setNotification(null);
   }, []);
 

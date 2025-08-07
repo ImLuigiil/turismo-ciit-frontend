@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: calc(100vh - 150px); /* Ajusta según la altura de tu header */
+  min-height: calc(100vh - 150px);
   background-color: #f0f2f5;
   padding: 30px 20px;
 }

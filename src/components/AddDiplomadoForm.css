@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: calc(100vh - 150px); /* Ajusta según la altura de tu header */
+  min-height: calc(100vh - 150px);
   background-color: #f0f2f5;
   padding: 30px 20px;
 }
@@ -14,7 +14,7 @@
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 500px; /* Ancho máximo para el formulario */
+  max-width: 500px;
   text-align: center;
 }
 
@@ -51,9 +51,8 @@
   box-sizing: border-box;
 }
 
-/* Estilo específico para input type="file" si es necesario */
 .form-group input[type="file"] {
-  padding: 5px; /* Un poco menos de padding para que se vea mejor */
+  padding: 5px;
 }
 
 .selected-file-name {

@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 200px); /* Ajusta la altura para que el header y footer no lo molesten */
+  min-height: calc(100vh - 200px);
   background-color: #f0f2f5;
   padding: 20px;
 }
@@ -47,7 +47,7 @@
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 1em;
-  box-sizing: border-box; /* Incluye padding y border en el ancho total */
+  box-sizing: border-box; 
 }
 
 .login-button {
@@ -71,7 +71,7 @@
 }
 
 .error-message {
-  color: #d32f2f; /* Un rojo para mensajes de error */
+  color: #d32f2f;
   margin-top: -10px;
   margin-bottom: 10px;
   font-size: 0.9em;

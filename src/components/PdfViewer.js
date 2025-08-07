@@ -1,16 +1,11 @@
 // src/components/PdfViewer.js
 import React, { useState } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf'; // Importamos pdfjs directamente
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css'; // Estilos para las anotaciones
-import 'react-pdf/dist/esm/Page/TextLayer.css'; // Estilos para la capa de texto
-import './PdfViewer.css'; // Tu archivo CSS personalizado
+import { Document, Page, pdfjs } from 'react-pdf'; 
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css'; 
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+import './PdfViewer.css'; 
 
-// --- CONFIGURACIÓN CRÍTICA DEL WORKER PARA CREATE REACT APP ---
-// Apunta directamente al archivo worker que has COPIADO en la carpeta 'public'.
-// Create React App sirve los archivos de la carpeta 'public' directamente desde la raíz.
-// Asegúrate de que el archivo pdf.worker.min.mjs (o .js) esté en tu carpeta public/.
-pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`; // <-- ¡VERIFICA LA EXTENSIÓN! Podría ser .js o .mjs
-// --- FIN CONFIGURACIÓN CRÍTICA ---
+pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
 
 function PdfViewer({ pdfUrl, onClose }) {
   const [numPages, setNumPages] = useState(null);
@@ -34,10 +29,10 @@ function PdfViewer({ pdfUrl, onClose }) {
         <button onClick={onClose} className="pdf-viewer-close-btn">X</button>
         <div className="pdf-document-container">
           <Document
-            file={pdfUrl} // La URL del PDF a cargar
-            onLoadSuccess={onDocumentLoadSuccess} // Callback al cargar exitosamente
-            onLoadError={(error) => console.error('Error al cargar PDF:', error)} // Callback en caso de error
-            className="pdf-document" // Clase para estilos del contenedor del documento
+            file={pdfUrl} 
+            onLoadSuccess={onDocumentLoadSuccess}
+            onLoadError={(error) => console.error('Error al cargar PDF:', error)}
+            className="pdf-document" 
           >
             <Page
               pageNumber={pageNumber}

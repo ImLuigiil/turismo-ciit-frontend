@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext'; // Para notificaciones
-import './CursosPage.css'; // Crearemos este CSS
+import { useNotification } from '../contexts/NotificationContext'; 
+import './CursosPage.css';
 
 function CursosPage({ isAdmin }) {
   const [cursos, setCursos] = useState([]);
@@ -33,11 +33,10 @@ function CursosPage({ isAdmin }) {
 
   const handleViewCourse = (curso) => {
     if (curso.tipo === 'video' && curso.link) {
-      window.open(curso.link, '_blank'); // Abrir enlace de video en nueva pestaña
+      window.open(curso.link, '_blank');
     } else if (curso.tipo === 'pdf' && curso.link) {
-      // Construir la URL completa para el PDF
       const fullLink = curso.link.startsWith('http') ? curso.link : `${process.env.REACT_APP_API_URL}${curso.link}`;
-      window.open(fullLink, '_blank'); // Abrir PDF en nueva pestaña
+      window.open(fullLink, '_blank');
     } else {
       showNotification('No hay contenido disponible para este curso.', 'error');
     }
@@ -66,7 +65,7 @@ function CursosPage({ isAdmin }) {
         });
 
         showNotification(`Curso con ID ${cursoId} eliminado con éxito.`, 'success');
-        fetchCursos(); // Recargar la lista
+        fetchCursos();
       } catch (err) {
         console.error(`Error al eliminar el curso con ID ${cursoId}:`, err);
         showNotification('Error al eliminar el curso.', 'error');

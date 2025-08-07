@@ -1,8 +1,8 @@
 /* src/components/HomePage.css */
 .home-page-content {
   padding: 20px;
-  max-width: 1200px; /* Ancho máximo del contenido */
-  margin: 20px auto; /* Centra el contenido y le da margen */
+  max-width: 1200px;
+  margin: 20px auto; 
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);

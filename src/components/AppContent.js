@@ -2,7 +2,6 @@
     import React, { useState, useEffect } from 'react';
     import { Routes, Route, Navigate } from 'react-router-dom';
 
-    // Importa los componentes
     import Header from './Header';
     import HomePage from './HomePage';
     import ProyectosTurismoComunitarioPage from './ProyectosTurismoComunitarioPage';
@@ -57,18 +56,13 @@
               <Route path="/diplomados" element={<DiplomadosPage isAdmin={isAdmin} />} />
               <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
 
-              {/* Rutas de Cursos */}
               <Route path="/cursos" element={<CursosPage isAdmin={isAdmin} />} />
               <Route path="/cursos/nuevo" element={<ProtectedRoute adminOnly><CursoForm /></ProtectedRoute>} />
               <Route path="/cursos/editar/:idCursoUrl" element={<ProtectedRoute adminOnly><CursoForm /></ProtectedRoute>} />
               
-              {/* Ruta de Fotos (cuadrícula de municipios) */}
               <Route path="/fotos" element={<FotosPage />} />
-              {/* --- NUEVA RUTA DE GALERÍA POR MUNICIPIO --- */}
               <Route path="/fotos/municipio/:municipioId" element={<MunicipioGalleryPage />} />
-              {/* --- FIN NUEVA RUTA --- */}
 
-              {/* Rutas protegidas para administradores */}
               <Route path="/proyectos/nuevo" element={<ProtectedRoute adminOnly><ProjectForm /></ProtectedRoute>} />
               <Route path="/proyectos/editar/:idProyectoUrl" element={<ProtectedRoute adminOnly><ProjectForm /></ProtectedRoute>} />
               <Route path="/diplomados/nuevo" element={<ProtectedRoute adminOnly><AddDiplomadoForm /></ProtectedRoute>} />
