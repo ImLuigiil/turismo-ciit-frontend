@@ -81,51 +81,35 @@ function ProjectDetailPage() {
     }
   };
 
-  // --- FUNCIÓN AÑADIDA: Obtener el porcentaje objetivo de la fase ---
+  // --- FUNCIÓN MODIFICADA: Obtener el porcentaje objetivo de la fase ---
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
     if (faseActual >= 7) return 100; // Si la fase es 7 o más, es 100%
 
-    if (faseActual <= 3) {
-      return faseActual * 25; // Fase 1=25%, 2=50%, 3=75%
-    } else {
-      const percentagePerSubPhase = 25 / 4; // 6.25%
-      return 75 + (faseActual - 3) * percentagePerSubPhase;
+    switch (faseActual) {
+      case 1: return 1;
+      case 2: return 26; // 1 + 25
+      case 3: return 51; // 26 + 25
+      case 4: return 76; // 51 + 25
+      case 5: return 82; // 76 + 6.25 (redondeado)
+      case 6: return 88; // 82 + 6.25 (redondeado)
+      // La fase 7 ya se maneja con el >= 7
+      default: return 0; // En caso de fase no reconocida
     }
   };
-  // --- FIN FUNCIÓN AÑADIDA ---
+  // --- FIN FUNCIÓN MODIFICADA ---
 
-  // --- FUNCIÓN MODIFICADA: calcularAvance basada en fechas y fase con límite estricto ---
+  // --- FUNCIÓN MODIFICADA: calcularAvance basada solo en la fase ---
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
+    // Si la fase es 7, el avance es 100% inmediatamente.
     if (faseActual === 7) {
       return 100;
     }
 
-    let timeBasedPercentage = 0;
-    if (fechaInicio && fechaFinAprox) {
-      const startDate = new Date(fechaInicio);
-      const endDate = new Date(fechaFinAprox);
-      const currentDate = new Date();
+    // El porcentaje final se basa directamente en el porcentaje objetivo de la fase
+    const finalPercentage = getPhaseTargetPercentage(faseActual);
 
-      if (currentDate < startDate) {
-        timeBasedPercentage = 0;
-      } else if (currentDate > endDate) {
-        timeBasedPercentage = 100;
-      } else {
-        const totalDuration = endDate.getTime() - startDate.getTime();
-        const elapsedDuration = currentDate.getTime() - startDate.getTime();
-        if (totalDuration === 0) {
-          timeBasedPercentage = 100;
-        } else {
-          timeBasedPercentage = (elapsedDuration / totalDuration) * 100;
-        }
-      }
-    }
-
-    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
-
-    let finalPercentage = Math.min(timeBasedPercentage, phaseTargetPercentage);
-
+    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
   // --- FIN FUNCIÓN MODIFICADA ---
