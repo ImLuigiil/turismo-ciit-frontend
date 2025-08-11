@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
+
 import './ProjectDetailPage.css';
 
 function ProjectDetailPage() {
@@ -14,13 +15,13 @@ function ProjectDetailPage() {
   const [error, setError] = useState(null);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const CAROUSEL_ROTATION_SPEED = 5000; 
+  const CAROUSEL_ROTATION_SPEED = 5000; // 5 segundos
 
-  const { showNotification } = useNotification(); 
+  const { showNotification } = useNotification();
 
   const formatNumber = (num) => {
-    if (num === null || num === undefined || num === '') return 'N/A';
-    return Number(num).toLocaleString('en-US'); 
+    if (num === null || num === undefined) return 'N/A';
+    return num.toLocaleString('en-US');
   };
 
   useEffect(() => {
@@ -49,8 +50,6 @@ function ProjectDetailPage() {
       setLoading(false);
     }
   }, [idProyecto]);
-
-
 
   useEffect(() => {
     let intervalId;
@@ -82,18 +81,21 @@ function ProjectDetailPage() {
     }
   };
 
+  // --- FUNCIÓN AÑADIDA: Obtener el porcentaje objetivo de la fase ---
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
-    if (faseActual > 7) return 100;
+    if (faseActual >= 7) return 100; // Si la fase es 7 o más, es 100%
 
     if (faseActual <= 3) {
-      return faseActual * 25;
+      return faseActual * 25; // Fase 1=25%, 2=50%, 3=75%
     } else {
-      const percentagePerSubPhase = 25 / 4;
+      const percentagePerSubPhase = 25 / 4; // 6.25%
       return 75 + (faseActual - 3) * percentagePerSubPhase;
     }
   };
+  // --- FIN FUNCIÓN AÑADIDA ---
 
+  // --- FUNCIÓN MODIFICADA: calcularAvance basada en fechas y fase con límite estricto ---
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
     if (faseActual === 7) {
       return 100;
@@ -122,10 +124,11 @@ function ProjectDetailPage() {
 
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
 
-    const finalPercentage = (timeBasedPercentage * 0.7) + (phaseTargetPercentage * 0.3);
+    let finalPercentage = Math.min(timeBasedPercentage, phaseTargetPercentage);
 
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
+  // --- FIN FUNCIÓN MODIFICADA ---
 
   const handleGenerateReport = async () => {
     try {
@@ -142,13 +145,13 @@ function ProjectDetailPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: 'blob', 
+        responseType: 'blob',
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `reporte_proyecto_${project.idProyecto}.pdf`); 
+      link.setAttribute('download', `reporte_proyecto_${project.idProyecto}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -162,7 +165,6 @@ function ProjectDetailPage() {
         showNotification('No autorizado para generar reportes. Tu sesión ha expirado.', 'error');
         navigate('/login');
       } else if (err.response && err.response.data) {
-
         const reader = new FileReader();
         reader.onload = function() {
           try {
@@ -205,19 +207,19 @@ function ProjectDetailPage() {
       <h2>"{project.nombre}"</h2>
 
       <div className="project-detail-content">
-        
         <div className="project-detail-sidebar">
           <p><strong>Estado Actual:</strong> Activo</p>
           <p><strong>Porcentaje:</strong> {calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%</p>
           <p><strong>Avance:</strong> Fase {project.faseActual}</p>
+          
           <div className="sidebar-progress-bar-container">
-          <div
-          className="sidebar-progress-bar"
-          style={{ width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%` }}
-          ></div>
+            <div
+              className="sidebar-progress-bar"
+              style={{ width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%` }}
+            ></div>
           </div>
 
-          <p><strong>Personas del Directorio:</strong></p>
+          <h3>Personas del Directorio:</h3>
           {personasDirectorio.length > 0 ? (
             <ul className="directorio-personas-list">
               {personasDirectorio.map(persona => (
@@ -237,7 +239,7 @@ function ProjectDetailPage() {
           {project.comunidad && <p><strong>Comunidad:</strong> {project.comunidad.nombre}</p>}
           
           {project.poblacionBeneficiada !== null && project.poblacionBeneficiada !== undefined && (
-          <p><strong>Población Beneficiada:</strong> {formatNumber(project.poblacionBeneficiada)}</p>
+            <p><strong>Población Beneficiada:</strong> {formatNumber(project.poblacionBeneficiada)}</p>
           )}
 
           {project.fechaInicio && <p><strong>Fecha Inicio:</strong> {new Date(project.fechaInicio).toLocaleDateString()}</p>}

@@ -6,6 +6,7 @@ import { useNotification } from '../contexts/NotificationContext';
 
 import './ProyectosTurismoComunitarioPage.css';
 
+// Recibe la prop isAdmin
 function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,6 +14,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
+  // Función para obtener proyectos
   const fetchProyectos = async () => {
     setLoading(true);
     setError(null);
@@ -50,23 +52,29 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
   }, [showNotification]);
 
+  // --- FUNCIÓN MODIFICADA: Obtener el porcentaje objetivo de la fase ---
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
-    if (faseActual > 7) return 100;
+    if (faseActual >= 7) return 100; // Si la fase es 7 o más, es 100%
 
     if (faseActual <= 3) {
-      return faseActual * 25;
+      return faseActual * 25; // Fase 1=25%, 2=50%, 3=75%
     } else {
-      const percentagePerSubPhase = 25 / 4;
+      // Fases 4 a 6 (inclusive)
+      const percentagePerSubPhase = 25 / 4; // 6.25%
       return 75 + (faseActual - 3) * percentagePerSubPhase;
     }
   };
+  // --- FIN FUNCIÓN MODIFICADA ---
 
+  // --- FUNCIÓN MODIFICADA: calcularAvance basada en fechas y fase con límite estricto ---
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
+    // Si la fase es 7, el avance es 100% inmediatamente, sin importar el tiempo.
     if (faseActual === 7) {
       return 100;
     }
 
+    // Calcular el progreso basado en el tiempo transcurrido
     let timeBasedPercentage = 0;
     if (fechaInicio && fechaFinAprox) {
       const startDate = new Date(fechaInicio);
@@ -88,12 +96,17 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
       }
     }
 
+    // Obtener el porcentaje máximo permitido para la fase actual
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
 
-    const finalPercentage = (timeBasedPercentage * 0.7) + (phaseTargetPercentage * 0.3);
+    // El porcentaje final es el mínimo entre el progreso basado en tiempo
+    // y el porcentaje objetivo de la fase actual. Esto asegura que el avance no "salte" fases.
+    let finalPercentage = Math.min(timeBasedPercentage, phaseTargetPercentage);
 
+    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
+  // --- FIN FUNCIÓN MODIFICADA ---
 
   const truncateDescription = (description, maxLength) => {
     if (!description) return '';
@@ -112,7 +125,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   };
 
   const handleEliminarProyecto = async (proyectoId) => {
-    if (window.confirm(`ADVERTENCIA: Al eliminar este proyecto se borrará todo registro que haya de el`)) {
+    if (window.confirm(`¿Estás seguro de que quieres eliminar el proyecto con ID: ${proyectoId}?`)) {
       try {
         const token = sessionStorage.getItem('access_token');
         if (!token) {
