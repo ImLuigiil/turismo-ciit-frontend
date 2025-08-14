@@ -81,7 +81,7 @@ function ProjectDetailPage() {
     }
   };
 
-  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
+  // --- FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
 
   // Define el porcentaje mínimo que debería tener un proyecto en cada fase
   const getPhaseTargetPercentage = (faseActual) => {
@@ -134,6 +134,15 @@ function ProjectDetailPage() {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
+    const endDate = new Date(fechaFinAprox); // Necesario para la nueva lógica
+    const currentDate = new Date(); // Necesario para la nueva lógica
+
+    // --- NUEVA LÓGICA: Si el tiempo se acabó y no es fase 7, el porcentaje es el de la fase ---
+    if (currentDate > endDate && faseActual < 7) {
+        return Math.min(100, Math.max(0, Math.round(phaseTargetPercentage)));
+    }
+    // --- FIN NUEVA LÓGICA ---
+
     // El porcentaje que se muestra en la barra es el MÁXIMO entre:
     // 1. El avance basado en el tiempo.
     // 2. El porcentaje mínimo que la fase actual debería tener.
@@ -154,6 +163,15 @@ function ProjectDetailPage() {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
+    const endDate = new Date(fechaFinAprox); // Necesario para la nueva lógica
+    const currentDate = new Date(); // Necesario para la nueva lógica
+
+    // --- NUEVA LÓGICA: Si el tiempo se acabó y no es fase 7, el color es rojo ---
+    if (currentDate > endDate && faseActual < 7) {
+        return '#dc3545'; // Rojo: Tiempo agotado, no completado
+    }
+    // --- FIN NUEVA LÓGICA ---
+
     const RED_THRESHOLD = 10; // Si está más de 10% por debajo de la fase, es rojo
     
     if (timeBasedPercentage < (phaseTargetPercentage - RED_THRESHOLD)) {

@@ -52,6 +52,9 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
   }, [showNotification]);
 
+  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
+
+  // Define el porcentaje mínimo que debería tener un proyecto en cada fase
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
     if (faseActual >= 7) return 100;
@@ -67,6 +70,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     }
   };
 
+  // Calcula el porcentaje de avance basado solo en el tiempo transcurrido
   const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
     if (!fechaInicio || !fechaFinAprox) return 0;
 
@@ -91,7 +95,9 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     return (elapsedDuration / totalDuration) * 100;
   };
   
+  // Función principal para calcular el avance final y el color de la barra
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
+    // Si la fase es 7, el avance es 100% inmediatamente, sin importar el tiempo.
     if (faseActual === 7) {
       return 100;
     }
@@ -99,12 +105,26 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
+    const endDate = new Date(fechaFinAprox);
+    const currentDate = new Date();
+
+    // Si el tiempo se acabó y no es fase 7, el porcentaje es el de la fase (y será rojo)
+    if (currentDate > endDate && faseActual < 7) {
+        return Math.min(100, Math.max(0, Math.round(phaseTargetPercentage)));
+    }
+
+    // El porcentaje que se muestra en la barra es el MÁXIMO entre:
+    // 1. El avance basado en el tiempo.
+    // 2. El porcentaje mínimo que la fase actual debería tener.
+    // Esto asegura que la barra "salte" a la fase si se avanza manualmente,
+    // y luego siga avanzando por tiempo desde ese punto.
     let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
     
+    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
 
-  // --- FUNCIÓN MODIFICADA: getProgressColor con tres estados ---
+  // Función para determinar el color de la barra de progreso
   const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
     if (faseActual === 7) {
       return '#28a745'; // Verde: Proyecto completado
@@ -113,6 +133,14 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
+    const endDate = new Date(fechaFinAprox);
+    const currentDate = new Date();
+
+    // Si el tiempo se acabó y no es fase 7, el color es rojo
+    if (currentDate > endDate && faseActual < 7) {
+        return '#dc3545'; // Rojo: Tiempo agotado, no completado
+    }
+
     const RED_THRESHOLD = 10; // Si está más de 10% por debajo de la fase, es rojo
     
     if (timeBasedPercentage < (phaseTargetPercentage - RED_THRESHOLD)) {
@@ -123,7 +151,8 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
       return '#28a745'; // Verde: En tiempo o adelantado
     }
   };
-  // --- FIN FUNCIÓN MODIFICADA ---
+
+  // --- FIN NUEVAS FUNCIONES ---
 
   const truncateDescription = (description, maxLength) => {
     if (!description) return '';
