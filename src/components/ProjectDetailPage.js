@@ -83,22 +83,23 @@ function ProjectDetailPage() {
 
   // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
 
-  // Define el porcentaje máximo que puede alcanzar cada fase
+  // Define el porcentaje mínimo que debería tener un proyecto en cada fase
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
-    if (faseActual >= 7) return 100;
-    
-    // Asignación de porcentajes por fase
-    if (faseActual <= 3) {
-      return faseActual * 25; // Fase 1=25%, 2=50%, 3=75%
-    } else {
-      // Fases 4 a 6 (inclusive)
-      const percentagePerSubPhase = 25 / 4; // 6.25%
-      return 75 + (faseActual - 3) * percentagePerSubPhase;
+    if (faseActual >= 7) return 100; // Si la fase es 7 o más, es 100%
+
+    switch (faseActual) {
+      case 1: return 1;
+      case 2: return 26; // 1 + 25
+      case 3: return 51; // 26 + 25
+      case 4: return 76; // 51 + 25
+      case 5: return 82; // 76 + 6.25 (redondeado)
+      case 6: return 88; // 82 + 6.25 (redondeado)
+      default: return 0; // Para cualquier otra fase no definida, o si es menor a 1
     }
   };
 
-  // Calcula el porcentaje de avance basado en el tiempo
+  // Calcula el porcentaje de avance basado solo en el tiempo transcurrido
   const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
     if (!fechaInicio || !fechaFinAprox) return 0;
 
@@ -107,21 +108,25 @@ function ProjectDetailPage() {
     const currentDate = new Date();
 
     if (currentDate < startDate) {
-      return 0;
+      return 0; // El proyecto aún no ha iniciado
+    }
+    if (currentDate > endDate) {
+      return 100; // El proyecto ya finalizó
     }
     
     const totalDuration = endDate.getTime() - startDate.getTime();
     const elapsedDuration = currentDate.getTime() - startDate.getTime();
 
-    if (totalDuration <= 0) {
+    if (totalDuration <= 0) { // Evitar división por cero si las fechas son iguales
       return 100;
     }
 
     return (elapsedDuration / totalDuration) * 100;
   };
   
-  // Función principal para calcular el avance final, limitado por la fase
+  // Función principal para calcular el avance final y el color de la barra
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
+    // Si la fase es 7, el avance es 100% inmediatamente, sin importar el tiempo.
     if (faseActual === 7) {
       return 100;
     }
@@ -129,26 +134,31 @@ function ProjectDetailPage() {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
-    // El avance final es el mínimo entre el progreso por tiempo y el límite de la fase
-    let finalPercentage = Math.min(timeBasedPercentage, phaseTargetPercentage);
+    // El porcentaje que se muestra en la barra es el MÁXIMO entre:
+    // 1. El avance basado en el tiempo.
+    // 2. El porcentaje mínimo que la fase actual debería tener.
+    // Esto asegura que la barra "salte" a la fase si se avanza manualmente,
+    // y luego siga avanzando por tiempo desde ese punto.
+    let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
     
+    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
 
-  // Función para determinar el color de la barra
+  // Función para determinar el color de la barra de progreso
   const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
     if (faseActual === 7) {
-      return '#28a745'; // Verde
+      return '#28a745'; // Verde: Proyecto completado
     }
     
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
-    // Si el avance por tiempo excede el límite de la fase, el color es rojo
-    if (timeBasedPercentage > phaseTargetPercentage) {
-      return '#dc3545'; // Rojo
+    // Si el avance por tiempo está por debajo del mínimo de la fase actual, es rojo (atrasado)
+    if (timeBasedPercentage < phaseTargetPercentage) {
+      return '#dc3545'; // Rojo: Atrasado
     } else {
-      return '#ffc107'; // Amarillo
+      return '#ffc107'; // Amarillo: En curso / en tiempo
     }
   };
 
@@ -241,7 +251,7 @@ function ProjectDetailPage() {
               className="sidebar-progress-bar"
               style={{ 
                 width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%`,
-                backgroundColor: getProgressColor(project.fechaInicio, project.fechaFinAprox, project.faseActual)
+                backgroundColor: getProgressColor(project.fechaInicio, project.fechaFinAprox, project.faseActual) // Color dinámico
               }}
             ></div>
           </div>

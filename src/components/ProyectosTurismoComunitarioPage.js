@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext';
+import { useNotification } from '../contexts/NotificationContext'; // Importa el hook de notificación
 
 import './ProyectosTurismoComunitarioPage.css';
 
@@ -12,7 +12,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { showNotification } = useNotification();
+  const { showNotification } = useNotification(); // Usa el hook de notificación
 
   // Función para obtener proyectos
   const fetchProyectos = async () => {
@@ -52,61 +52,76 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
   }, [showNotification]);
 
-  // --- FUNCIÓN MODIFICADA: Obtener el porcentaje objetivo de la fase ---
+  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR (IDÉNTICAS A ProjectDetailPage.js) ---
+
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
-    if (faseActual >= 7) return 100; // Si la fase es 7 o más, es 100%
+    if (faseActual >= 7) return 100;
 
-    if (faseActual <= 3) {
-      return faseActual * 25; // Fase 1=25%, 2=50%, 3=75%
-    } else {
-      // Fases 4 a 6 (inclusive)
-      const percentagePerSubPhase = 25 / 4; // 6.25%
-      return 75 + (faseActual - 3) * percentagePerSubPhase;
+    switch (faseActual) {
+      case 1: return 1;
+      case 2: return 26;
+      case 3: return 51;
+      case 4: return 76;
+      case 5: return 82;
+      case 6: return 88;
+      default: return 0;
     }
   };
-  // --- FIN FUNCIÓN MODIFICADA ---
 
-  // --- FUNCIÓN MODIFICADA: calcularAvance basada en fechas y fase con límite estricto ---
+  const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
+    if (!fechaInicio || !fechaFinAprox) return 0;
+
+    const startDate = new Date(fechaInicio);
+    const endDate = new Date(fechaFinAprox);
+    const currentDate = new Date();
+
+    if (currentDate < startDate) {
+      return 0;
+    }
+    if (currentDate > endDate) {
+      return 100;
+    }
+    
+    const totalDuration = endDate.getTime() - startDate.getTime();
+    const elapsedDuration = currentDate.getTime() - startDate.getTime();
+
+    if (totalDuration <= 0) {
+      return 100;
+    }
+
+    return (elapsedDuration / totalDuration) * 100;
+  };
+  
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
-    // Si la fase es 7, el avance es 100% inmediatamente, sin importar el tiempo.
     if (faseActual === 7) {
       return 100;
     }
 
-    // Calcular el progreso basado en el tiempo transcurrido
-    let timeBasedPercentage = 0;
-    if (fechaInicio && fechaFinAprox) {
-      const startDate = new Date(fechaInicio);
-      const endDate = new Date(fechaFinAprox);
-      const currentDate = new Date();
-
-      if (currentDate < startDate) {
-        timeBasedPercentage = 0;
-      } else if (currentDate > endDate) {
-        timeBasedPercentage = 100;
-      } else {
-        const totalDuration = endDate.getTime() - startDate.getTime();
-        const elapsedDuration = currentDate.getTime() - startDate.getTime();
-        if (totalDuration === 0) {
-          timeBasedPercentage = 100;
-        } else {
-          timeBasedPercentage = (elapsedDuration / totalDuration) * 100;
-        }
-      }
-    }
-
-    // Obtener el porcentaje máximo permitido para la fase actual
+    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
-
-    // El porcentaje final es el mínimo entre el progreso basado en tiempo
-    // y el porcentaje objetivo de la fase actual. Esto asegura que el avance no "salte" fases.
-    let finalPercentage = Math.min(timeBasedPercentage, phaseTargetPercentage);
-
-    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
+    
+    let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
+    
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
-  // --- FIN FUNCIÓN MODIFICADA ---
+
+  const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
+    if (faseActual === 7) {
+      return '#28a745'; // Verde
+    }
+    
+    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
+    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
+    
+    if (timeBasedPercentage < phaseTargetPercentage) {
+      return '#dc3545'; // Rojo
+    } else {
+      return '#ffc107'; // Amarillo
+    }
+  };
+
+  // --- FIN NUEVAS FUNCIONES ---
 
   const truncateDescription = (description, maxLength) => {
     if (!description) return '';
@@ -202,7 +217,10 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
               <div className="proyecto-card-progress">
                 <div
                   className="progress-bar"
-                  style={{ width: `${calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%` }}
+                  style={{ 
+                    width: `${calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%`,
+                    backgroundColor: getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual) // Color dinámico
+                  }}
                 ></div>
                 <span className="progress-text">
                   Avance: {calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%
