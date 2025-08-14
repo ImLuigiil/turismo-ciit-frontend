@@ -81,38 +81,78 @@ function ProjectDetailPage() {
     }
   };
 
-  // --- FUNCIÓN MODIFICADA: Obtener el porcentaje objetivo de la fase ---
+  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
+
+  // Define el porcentaje máximo que puede alcanzar cada fase
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
-    if (faseActual >= 7) return 100; // Si la fase es 7 o más, es 100%
-
-    switch (faseActual) {
-      case 1: return 1;
-      case 2: return 26; // 1 + 25
-      case 3: return 51; // 26 + 25
-      case 4: return 76; // 51 + 25
-      case 5: return 82; // 76 + 6.25 (redondeado)
-      case 6: return 88; // 82 + 6.25 (redondeado)
-      // La fase 7 ya se maneja con el >= 7
-      default: return 0; // En caso de fase no reconocida
+    if (faseActual >= 7) return 100;
+    
+    // Asignación de porcentajes por fase
+    if (faseActual <= 3) {
+      return faseActual * 25; // Fase 1=25%, 2=50%, 3=75%
+    } else {
+      // Fases 4 a 6 (inclusive)
+      const percentagePerSubPhase = 25 / 4; // 6.25%
+      return 75 + (faseActual - 3) * percentagePerSubPhase;
     }
   };
-  // --- FIN FUNCIÓN MODIFICADA ---
 
-  // --- FUNCIÓN MODIFICADA: calcularAvance basada solo en la fase ---
+  // Calcula el porcentaje de avance basado en el tiempo
+  const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
+    if (!fechaInicio || !fechaFinAprox) return 0;
+
+    const startDate = new Date(fechaInicio);
+    const endDate = new Date(fechaFinAprox);
+    const currentDate = new Date();
+
+    if (currentDate < startDate) {
+      return 0;
+    }
+    
+    const totalDuration = endDate.getTime() - startDate.getTime();
+    const elapsedDuration = currentDate.getTime() - startDate.getTime();
+
+    if (totalDuration <= 0) {
+      return 100;
+    }
+
+    return (elapsedDuration / totalDuration) * 100;
+  };
+  
+  // Función principal para calcular el avance final, limitado por la fase
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
-    // Si la fase es 7, el avance es 100% inmediatamente.
     if (faseActual === 7) {
       return 100;
     }
 
-    // El porcentaje final se basa directamente en el porcentaje objetivo de la fase
-    const finalPercentage = getPhaseTargetPercentage(faseActual);
-
-    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
+    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
+    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
+    
+    // El avance final es el mínimo entre el progreso por tiempo y el límite de la fase
+    let finalPercentage = Math.min(timeBasedPercentage, phaseTargetPercentage);
+    
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
-  // --- FIN FUNCIÓN MODIFICADA ---
+
+  // Función para determinar el color de la barra
+  const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
+    if (faseActual === 7) {
+      return '#28a745'; // Verde
+    }
+    
+    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
+    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
+    
+    // Si el avance por tiempo excede el límite de la fase, el color es rojo
+    if (timeBasedPercentage > phaseTargetPercentage) {
+      return '#dc3545'; // Rojo
+    } else {
+      return '#ffc107'; // Amarillo
+    }
+  };
+
+  // --- FIN NUEVAS FUNCIONES ---
 
   const handleGenerateReport = async () => {
     try {
@@ -199,7 +239,10 @@ function ProjectDetailPage() {
           <div className="sidebar-progress-bar-container">
             <div
               className="sidebar-progress-bar"
-              style={{ width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%` }}
+              style={{ 
+                width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%`,
+                backgroundColor: getProgressColor(project.fechaInicio, project.fechaFinAprox, project.faseActual)
+              }}
             ></div>
           </div>
 
