@@ -52,8 +52,6 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
   }, [showNotification]);
 
-  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR (IDÉNTICAS A ProjectDetailPage.js) ---
-
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
     if (faseActual >= 7) return 100;
@@ -106,22 +104,26 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
 
+  // --- FUNCIÓN MODIFICADA: getProgressColor con tres estados ---
   const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
     if (faseActual === 7) {
-      return '#28a745'; // Verde
+      return '#28a745'; // Verde: Proyecto completado
     }
     
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
-    if (timeBasedPercentage < phaseTargetPercentage) {
-      return '#dc3545'; // Rojo
+    const RED_THRESHOLD = 10; // Si está más de 10% por debajo de la fase, es rojo
+    
+    if (timeBasedPercentage < (phaseTargetPercentage - RED_THRESHOLD)) {
+      return '#dc3545'; // Rojo: Muy atrasado
+    } else if (timeBasedPercentage < phaseTargetPercentage) {
+      return '#ffc107'; // Amarillo: Ligeramente atrasado
     } else {
-      return '#ffc107'; // Amarillo
+      return '#28a745'; // Verde: En tiempo o adelantado
     }
   };
-
-  // --- FIN NUEVAS FUNCIONES ---
+  // --- FIN FUNCIÓN MODIFICADA ---
 
   const truncateDescription = (description, maxLength) => {
     if (!description) return '';

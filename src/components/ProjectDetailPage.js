@@ -154,11 +154,14 @@ function ProjectDetailPage() {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
-    // Si el avance por tiempo está por debajo del mínimo de la fase actual, es rojo (atrasado)
-    if (timeBasedPercentage < phaseTargetPercentage) {
-      return '#dc3545'; // Rojo: Atrasado
+    const RED_THRESHOLD = 10; // Si está más de 10% por debajo de la fase, es rojo
+    
+    if (timeBasedPercentage < (phaseTargetPercentage - RED_THRESHOLD)) {
+      return '#dc3545'; // Rojo: Muy atrasado
+    } else if (timeBasedPercentage < phaseTargetPercentage) {
+      return '#ffc107'; // Amarillo: Ligeramente atrasado
     } else {
-      return '#ffc107'; // Amarillo: En curso / en tiempo
+      return '#28a745'; // Verde: En tiempo o adelantado
     }
   };
 
