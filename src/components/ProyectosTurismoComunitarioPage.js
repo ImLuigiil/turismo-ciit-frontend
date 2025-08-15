@@ -52,7 +52,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
   }, [showNotification]);
 
-  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
+  // --- FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
 
   // Define el porcentaje mínimo que debería tener un proyecto en cada fase
   const getPhaseTargetPercentage = (faseActual) => {
