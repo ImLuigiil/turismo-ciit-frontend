@@ -6,6 +6,112 @@ import { useNotification } from '../contexts/NotificationContext';
 
 import './ProjectDetailPage.css';
 
+
+// ===================================================================================
+// INICIO: LÓGICA DE PROGRESO ACTUALIZADA
+// Estas funciones ahora coinciden con las de la página principal de proyectos.
+// ===================================================================================
+
+const getPhaseSchedule = (fechaInicio, fechaFinAprox) => {
+  if (!fechaInicio || !fechaFinAprox) {
+    return [];
+  }
+  const startDate = new Date(fechaInicio);
+  const endDate = new Date(fechaFinAprox);
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || startDate >= endDate) {
+    return [];
+  }
+  const totalDurationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+  const timeForFirstThreePhases = totalDurationDays * 0.75;
+  const daysPerEarlyPhase = timeForFirstThreePhases / 3;
+  const timeForLastFourPhases = totalDurationDays * 0.25;
+  const daysPerLatePhase = timeForLastFourPhases / 4;
+  const phaseEndDates = [];
+  let cumulativeDays = 0;
+  for (let i = 0; i < 3; i++) {
+    cumulativeDays += daysPerEarlyPhase;
+    const phaseEndDate = new Date(startDate);
+    phaseEndDate.setDate(startDate.getDate() + cumulativeDays);
+    phaseEndDates.push(phaseEndDate);
+  }
+  for (let i = 0; i < 4; i++) {
+    cumulativeDays += daysPerLatePhase;
+    const phaseEndDate = new Date(startDate);
+    phaseEndDate.setDate(startDate.getDate() + Math.round(cumulativeDays));
+    phaseEndDates.push(phaseEndDate);
+  }
+  return phaseEndDates;
+};
+
+const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
+  if (!fechaInicio || !fechaFinAprox) return 0;
+  const startDate = new Date(fechaInicio);
+  const endDate = new Date(fechaFinAprox);
+  const currentDate = new Date();
+  if (currentDate < startDate) return 0;
+  if (currentDate > endDate) return 100;
+  const totalDuration = endDate.getTime() - startDate.getTime();
+  const elapsedDuration = currentDate.getTime() - startDate.getTime();
+  if (totalDuration <= 0) return 100;
+  return (elapsedDuration / totalDuration) * 100;
+};
+
+const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
+    if (faseActual === 7) {
+      return 100;
+    }
+    const getPhaseProgress = (fase) => {
+        if (fase <= 1) return 0;
+        const progressMap = { 2: 25, 3: 50, 4: 75, 5: 81.25, 6: 87.5, 7: 100 };
+        return progressMap[fase] || 0;
+    };
+    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
+    const phaseTargetPercentage = getPhaseProgress(faseActual);
+    const endDate = new Date(fechaFinAprox);
+    const currentDate = new Date();
+    if (currentDate > endDate && faseActual < 7) {
+        return Math.min(100, Math.max(0, Math.round(phaseTargetPercentage)));
+    }
+    let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
+    return Math.min(100, Math.max(0, Math.round(finalPercentage)));
+};
+
+const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
+  if (!fechaInicio || !fechaFinAprox || !faseActual || faseActual < 1) {
+    return '#28a745';
+  }
+  if (faseActual === 7) {
+    return '#28a745';
+  }
+  const currentDate = new Date();
+  const endDate = new Date(fechaFinAprox);
+  if (currentDate > endDate) {
+    return '#dc3545';
+  }
+  const schedule = getPhaseSchedule(fechaInicio, fechaFinAprox);
+  if (schedule.length === 0) {
+    return '#28a745';
+  }
+  const expectedEndDateForCurrentPhase = schedule[faseActual - 1];
+  const timeDifference = currentDate.getTime() - expectedEndDateForCurrentPhase.getTime();
+  const daysBehind = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  if (daysBehind <= 0) {
+    return '#28a745';
+  }
+  if (daysBehind >= 5) {
+    return '#dc3545';
+  }
+  if (daysBehind >= 1 && daysBehind <= 4) {
+    return '#ffc107';
+  }
+  return '#28a745';
+};
+
+// ===================================================================================
+// FIN: LÓGICA DE PROGRESO ACTUALIZADA
+// ===================================================================================
+
+
 function ProjectDetailPage() {
   const { idProyecto } = useParams();
   const navigate = useNavigate();
@@ -13,10 +119,8 @@ function ProjectDetailPage() {
   const [personasDirectorio, setPersonasDirectorio] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const CAROUSEL_ROTATION_SPEED = 5000; // 5 segundos
-
+  const CAROUSEL_ROTATION_SPEED = 5000;
   const { showNotification } = useNotification();
 
   const formatNumber = (num) => {
@@ -28,13 +132,10 @@ function ProjectDetailPage() {
     const fetchProjectDetails = async () => {
       try {
         const API_URL_BASE = `${process.env.REACT_APP_API_URL}`;
-
         const projectResponse = await axios.get(`${API_URL_BASE}/proyectos/${idProyecto}`);
         setProject(projectResponse.data);
-
         const personasResponse = await axios.get(`${API_URL_BASE}/personas-proyecto/by-project/${idProyecto}`);
         setPersonasDirectorio(personasResponse.data);
-
         setLoading(false);
       } catch (err) {
         console.error(`Error al obtener detalles del proyecto con ID ${idProyecto}:`, err);
@@ -42,7 +143,6 @@ function ProjectDetailPage() {
         setLoading(false);
       }
     };
-
     if (idProyecto) {
       fetchProjectDetails();
     } else {
@@ -58,14 +158,12 @@ function ProjectDetailPage() {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % project.imagenes.length);
       }, CAROUSEL_ROTATION_SPEED);
     }
-
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
       }
     };
   }, [project, CAROUSEL_ROTATION_SPEED]);
-
 
   const goToNextImage = () => {
     if (project && project.imagenes && project.imagenes.length > 0) {
@@ -81,106 +179,6 @@ function ProjectDetailPage() {
     }
   };
 
-  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
-
-  const getPhaseTargetPercentage = (faseActual) => {
-    if (faseActual < 1) return 0;
-    if (faseActual >= 7) return 100;
-
-    switch (faseActual) {
-      case 1: return 1;
-      case 2: return 26;
-      case 3: return 51;
-      case 4: return 76;
-      case 5: return 82;
-      case 6: return 88;
-      default: return 0;
-    }
-  };
-
-  const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
-    if (!fechaInicio || !fechaFinAprox) return 0;
-
-    const startDate = new Date(fechaInicio);
-    const endDate = new Date(fechaFinAprox);
-    const currentDate = new Date();
-
-    if (currentDate < startDate) {
-      return 0;
-    }
-    if (currentDate > endDate) {
-      return 100;
-    }
-    
-    const totalDuration = endDate.getTime() - startDate.getTime();
-    const elapsedDuration = currentDate.getTime() - startDate.getTime();
-
-    if (totalDuration <= 0) {
-      return 100;
-    }
-
-    return (elapsedDuration / totalDuration) * 100;
-  };
-  
-  const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
-    if (faseActual === 7) {
-      return 100;
-    }
-
-    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
-    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
-    
-    const endDate = new Date(fechaFinAprox);
-    const currentDate = new Date();
-
-    if (currentDate > endDate && faseActual < 7) {
-        return Math.min(100, Math.max(0, Math.round(phaseTargetPercentage)));
-    }
-
-    let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
-    
-    return Math.min(100, Math.max(0, Math.round(finalPercentage)));
-  };
-
-  const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
-    if (faseActual === 7) {
-      return '#28a745'; // Verde: Proyecto completado
-    }
-    
-    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
-    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
-    
-    const startDate = new Date(fechaInicio);
-    const endDate = new Date(fechaFinAprox);
-    const currentDate = new Date();
-
-    // Si el tiempo se acabó y no es fase 7, el color es rojo
-    if (currentDate > endDate && faseActual < 7) {
-        return '#dc3545'; // Rojo: Tiempo agotado, no completado
-    }
-
-    const percentageBehind = phaseTargetPercentage - timeBasedPercentage;
-    let daysBehind = 0;
-    const totalProjectDurationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-    
-    if (totalProjectDurationDays > 0 && percentageBehind > 0) {
-        daysBehind = (percentageBehind / 100) * totalProjectDurationDays;
-    }
-
-    const YELLOW_THRESHOLD_DAYS = 1;
-    const RED_THRESHOLD_DAYS = 5;
-    
-    if (daysBehind >= RED_THRESHOLD_DAYS) {
-        return '#dc3545'; // Rojo: Muy atrasado
-    } else if (daysBehind >= YELLOW_THRESHOLD_DAYS) {
-        return '#ffc107'; // Amarillo: Ligeramente atrasado
-    } else {
-        return '#28a745'; // Verde: En tiempo o adelantado
-    }
-  };
-
-  // --- FIN NUEVAS FUNCIONES ---
-
   const handleGenerateReport = async () => {
     try {
       const token = sessionStorage.getItem('access_token');
@@ -189,16 +187,13 @@ function ProjectDetailPage() {
         navigate('/login');
         return;
       }
-
       showNotification('Generando reporte PDF...', 'success', 5000);
-
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/${idProyecto}/report`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         responseType: 'blob',
       });
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -207,9 +202,7 @@ function ProjectDetailPage() {
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
-
       showNotification('Reporte PDF generado y descargado con éxito!', 'success');
-
     } catch (err) {
       console.error("Error al generar el reporte PDF:", err);
       if (err.response && err.response.status === 401) {
@@ -248,7 +241,6 @@ function ProjectDetailPage() {
     ? `${process.env.REACT_APP_API_URL}${project.imagenes[currentImageIndex].url}`
     : 'https://placehold.co/600x300/e0e0e0/777?text=Sin+Imagen';
 
-
   return (
     <div className="project-detail-container">
       <button onClick={() => navigate('/proyectos-turismo')} className="back-button">
@@ -268,7 +260,7 @@ function ProjectDetailPage() {
               className="sidebar-progress-bar"
               style={{ 
                 width: `${calcularAvance(project.fechaInicio, project.fechaFinAprox, project.faseActual)}%`,
-                backgroundColor: getProgressColor(project.fechaInicio, project.fechaFinAprox, project.faseActual) // Color dinámico
+                backgroundColor: getProgressColor(project.fechaInicio, project.fechaFinAprox, project.faseActual)
               }}
             ></div>
           </div>
