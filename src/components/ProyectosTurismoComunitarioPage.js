@@ -6,6 +6,58 @@ import { useNotification } from '../contexts/NotificationContext'; // Importa el
 
 import './ProyectosTurismoComunitarioPage.css';
 
+// ===================================================================================
+// PASO 1: NUEVA FUNCIÓN AUXILIAR AÑADIDA
+// Esta función calcula las fechas de finalización esperadas para cada fase.
+// ===================================================================================
+const getPhaseSchedule = (fechaInicio, fechaFinAprox) => {
+  if (!fechaInicio || !fechaFinAprox) {
+    return []; // Retorna un array vacío si las fechas no son válidas
+  }
+
+  const startDate = new Date(fechaInicio);
+  const endDate = new Date(fechaFinAprox);
+
+  // Validar que las fechas sean correctas
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || startDate >= endDate) {
+    return [];
+  }
+  
+  const totalDurationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+
+  // Calculamos la duración en días para cada grupo de fases según tus reglas
+  const timeForFirstThreePhases = totalDurationDays * 0.75;
+  const daysPerEarlyPhase = timeForFirstThreePhases / 3; // 25% del total para c/u
+
+  const timeForLastFourPhases = totalDurationDays * 0.25;
+  const daysPerLatePhase = timeForLastFourPhases / 4; // El 25% restante dividido en 4
+
+  const phaseEndDates = [];
+  let cumulativeDays = 0;
+
+  // Fases 1, 2, 3
+  for (let i = 0; i < 3; i++) {
+    cumulativeDays += daysPerEarlyPhase;
+    const phaseEndDate = new Date(startDate);
+    phaseEndDate.setDate(startDate.getDate() + cumulativeDays);
+    phaseEndDates.push(phaseEndDate);
+  }
+
+  // Fases 4, 5, 6, 7
+  for (let i = 0; i < 4; i++) {
+    cumulativeDays += daysPerLatePhase;
+    const phaseEndDate = new Date(startDate);
+    // Redondeamos los días acumulados para evitar problemas con fracciones de día
+    phaseEndDate.setDate(startDate.getDate() + Math.round(cumulativeDays));
+    phaseEndDates.push(phaseEndDate);
+  }
+
+  // El array 'phaseEndDates' tendrá 7 fechas, una para el final de cada fase.
+  // El índice 0 es el final de la fase 1, el índice 1 el final de la fase 2, etc.
+  return phaseEndDates;
+};
+
+
 // Recibe la prop isAdmin
 function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const [proyectos, setProyectos] = useState([]);
@@ -52,21 +104,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
   }, [showNotification]);
 
-  // Define el porcentaje mínimo que debería tener un proyecto en cada fase
-  const getPhaseTargetPercentage = (faseActual) => {
-    if (faseActual < 1) return 0;
-    if (faseActual >= 7) return 100;
-
-    switch (faseActual) {
-      case 1: return 1;
-      case 2: return 26;
-      case 3: return 51;
-      case 4: return 76;
-      case 5: return 82;
-      case 6: return 88;
-      default: return 0;
-    }
-  };
+  // FUNCIÓN ELIMINADA: getPhaseTargetPercentage ya no es necesaria.
 
   // Calcula el porcentaje de avance basado solo en el tiempo transcurrido
   const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
@@ -93,80 +131,92 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     return (elapsedDuration / totalDuration) * 100;
   };
   
-  // Función principal para calcular el avance final y el color de la barra
+  // Función para calcular el ANCHO de la barra de avance. Se mantiene sin cambios.
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
-    // Si la fase es 7, el avance es 100% inmediatamente, sin importar el tiempo.
     if (faseActual === 7) {
       return 100;
     }
+    
+    // El avance por fase se puede calcular con una regla simple
+    const getPhaseProgress = (fase) => {
+        if (fase <= 1) return 0;
+        const progressMap = { 2: 25, 3: 50, 4: 75, 5: 81.25, 6: 87.5, 7: 100 };
+        return progressMap[fase] || 0;
+    };
 
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
-    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
-    
+    const phaseTargetPercentage = getPhaseProgress(faseActual);
+
     const endDate = new Date(fechaFinAprox);
     const currentDate = new Date();
 
-    // Si el tiempo se acabó y no es fase 7, el porcentaje es el de la fase (y será rojo)
     if (currentDate > endDate && faseActual < 7) {
         return Math.min(100, Math.max(0, Math.round(phaseTargetPercentage)));
     }
 
-    // El porcentaje que se muestra en la barra es el MÁXIMO entre:
-    // 1. El avance basado en el tiempo.
-    // 2. El porcentaje mínimo que la fase actual debería tener.
-    // Esto asegura que la barra "salte" a la fase si se avanza manualmente,
-    // y luego siga avanzando por tiempo desde ese punto.
     let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
     
-    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
 
-  // --- FUNCIÓN MODIFICADA: getProgressColor con lógica de días de atraso ---
+  // ===================================================================================
+  // PASO 2: FUNCIÓN getProgressColor COMPLETAMENTE REEMPLAZADA
+  // Utiliza la nueva lógica de cálculo de fechas para asignar el color.
+  // ===================================================================================
   const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
+    // Si no hay datos o la fase es inválida, no se puede calcular. Devolver verde por defecto.
+    if (!fechaInicio || !fechaFinAprox || !faseActual || faseActual < 1) {
+      return '#28a745'; 
+    }
+
+    // Caso 1: Proyecto completado (Fase 7). Siempre es verde.
     if (faseActual === 7) {
       return '#28a745'; // Verde: Proyecto completado
     }
-    
-    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
-    const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
-    
-    const startDate = new Date(fechaInicio);
-    const endDate = new Date(fechaFinAprox);
+
     const currentDate = new Date();
+    const endDate = new Date(fechaFinAprox);
 
-    // Si el tiempo se acabó y no es fase 7, el color es rojo
-    if (currentDate > endDate && faseActual < 7) {
-        return '#dc3545'; // Rojo: Tiempo agotado, no completado
+    // Caso 2: La fecha de finalización aproximada ya pasó y el proyecto no está en Fase 7.
+    // Esto es un retraso definitivo, por lo tanto, rojo.
+    if (currentDate > endDate) {
+      return '#dc3545'; // Rojo: Tiempo total agotado, no completado
     }
 
-    // Calcular la diferencia en porcentaje entre el avance esperado por fase y el avance real por tiempo
-    // Si timeBasedPercentage es mayor que phaseTargetPercentage, percentageBehind será negativo o cero.
-    const percentageBehind = phaseTargetPercentage - timeBasedPercentage;
-
-    // Convertir la diferencia de porcentaje a días de atraso
-    // Solo si el proyecto tiene una duración total positiva
-    let daysBehind = 0;
-    const totalProjectDurationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+    // --- Lógica principal ---
+    // Obtenemos el cronograma de fechas de finalización esperadas para cada fase.
+    const schedule = getPhaseSchedule(fechaInicio, fechaFinAprox);
     
-    if (totalProjectDurationDays > 0 && percentageBehind > 0) {
-        daysBehind = (percentageBehind / 100) * totalProjectDurationDays;
+    // Si el cronograma no se pudo generar, no podemos determinar el estado.
+    if (schedule.length === 0) {
+        return '#28a745'; // Verde por defecto si no hay fechas para calcular
     }
 
-    // Definir umbrales de días para los colores
-    const YELLOW_THRESHOLD_DAYS = 1; // 1 a 4 días de atraso = amarillo
-    const RED_THRESHOLD_DAYS = 5;    // 5 o más días de atraso = rojo
-    
-    if (daysBehind >= RED_THRESHOLD_DAYS) {
-        return '#dc3545'; // Rojo: Muy atrasado
-    } else if (daysBehind >= YELLOW_THRESHOLD_DAYS) {
-        return '#ffc107'; // Amarillo: Ligeramente atrasado
-    } else {
-        // Si daysBehind es 0 o negativo (adelantado/en tiempo)
-        return '#28a745'; // Verde: En tiempo o adelantado
+    // Obtenemos la fecha de entrega esperada para la fase ACTUAL.
+    // Restamos 1 porque los arrays empiezan en 0 (fase 1 -> índice 0).
+    const expectedEndDateForCurrentPhase = schedule[faseActual - 1];
+
+    // Calculamos la diferencia en milisegundos y luego la convertimos a días.
+    const timeDifference = currentDate.getTime() - expectedEndDateForCurrentPhase.getTime();
+    const daysBehind = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    // Si 'daysBehind' es negativo o cero, el proyecto está en tiempo o adelantado.
+    if (daysBehind <= 0) {
+      return '#28a745'; // Verde: En tiempo o adelantado
     }
+
+    // Aplicamos las reglas de color según los días de retraso.
+    if (daysBehind >= 5) {
+      return '#dc3545'; // Rojo: 5 o más días de retraso
+    } 
+    
+    if (daysBehind >= 1 && daysBehind <= 4) {
+      return '#ffc107'; // Amarillo: 1 a 4 días de retraso
+    }
+
+    // Por si acaso, si llega aquí es que está en tiempo.
+    return '#28a745';
   };
-  // --- FIN FUNCIÓN MODIFICADA ---
 
   const truncateDescription = (description, maxLength) => {
     if (!description) return '';
@@ -261,12 +311,16 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
               )}
               <div className="proyecto-card-progress">
                 <div
-                  className="progress-bar"
-                  style={{ 
-                    width: `${calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%`,
-                    backgroundColor: getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual) // Color dinámico
-                  }}
-                ></div>
+                  className="progress-bar-container" /* Contenedor para la barra y el texto */
+                >
+                  <div
+                    className="progress-bar"
+                    style={{ 
+                      width: `${calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%`,
+                      backgroundColor: getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual) // Color dinámico
+                    }}
+                  ></div>
+                </div>
                 <span className="progress-text">
                   Avance: {calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%
                   {proyecto.faseActual && ` (Fase ${proyecto.faseActual})`}
