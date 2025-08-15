@@ -152,7 +152,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     }
 
     // Definir umbrales de días para los colores
-    const YELLOW_DAYS_THRESHOLD = 1; // 1 día de atraso = amarillo
+    const YELLOW_DAYS_THRESHOLD = 4; // 1 día de atraso = amarillo
     const RED_DAYS_THRESHOLD = 5;    // 5 o más días de atraso = rojo
     
     if (daysBehind >= RED_DAYS_THRESHOLD) {
