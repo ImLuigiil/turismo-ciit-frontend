@@ -81,25 +81,23 @@ function ProjectDetailPage() {
     }
   };
 
-  // --- FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
+  // --- NUEVAS FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
 
-  // Define el porcentaje mínimo que debería tener un proyecto en cada fase
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
-    if (faseActual >= 7) return 100; // Si la fase es 7 o más, es 100%
+    if (faseActual >= 7) return 100;
 
     switch (faseActual) {
       case 1: return 1;
-      case 2: return 26; // 1 + 25
-      case 3: return 51; // 26 + 25
-      case 4: return 76; // 51 + 25
-      case 5: return 82; // 76 + 6.25 (redondeado)
-      case 6: return 88; // 82 + 6.25 (redondeado)
-      default: return 0; // Para cualquier otra fase no definida, o si es menor a 1
+      case 2: return 26;
+      case 3: return 51;
+      case 4: return 76;
+      case 5: return 82;
+      case 6: return 88;
+      default: return 0;
     }
   };
 
-  // Calcula el porcentaje de avance basado solo en el tiempo transcurrido
   const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
     if (!fechaInicio || !fechaFinAprox) return 0;
 
@@ -108,25 +106,23 @@ function ProjectDetailPage() {
     const currentDate = new Date();
 
     if (currentDate < startDate) {
-      return 0; // El proyecto aún no ha iniciado
+      return 0;
     }
     if (currentDate > endDate) {
-      return 100; // El proyecto ya finalizó
+      return 100;
     }
     
     const totalDuration = endDate.getTime() - startDate.getTime();
     const elapsedDuration = currentDate.getTime() - startDate.getTime();
 
-    if (totalDuration <= 0) { // Evitar división por cero si las fechas son iguales
+    if (totalDuration <= 0) {
       return 100;
     }
 
     return (elapsedDuration / totalDuration) * 100;
   };
   
-  // Función principal para calcular el avance final y el color de la barra
   const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
-    // Si la fase es 7, el avance es 100% inmediatamente, sin importar el tiempo.
     if (faseActual === 7) {
       return 100;
     }
@@ -134,27 +130,18 @@ function ProjectDetailPage() {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
-    const endDate = new Date(fechaFinAprox); // Necesario para la nueva lógica
-    const currentDate = new Date(); // Necesario para la nueva lógica
+    const endDate = new Date(fechaFinAprox);
+    const currentDate = new Date();
 
-    // --- NUEVA LÓGICA: Si el tiempo se acabó y no es fase 7, el porcentaje es el de la fase ---
     if (currentDate > endDate && faseActual < 7) {
         return Math.min(100, Math.max(0, Math.round(phaseTargetPercentage)));
     }
-    // --- FIN NUEVA LÓGICA ---
 
-    // El porcentaje que se muestra en la barra es el MÁXIMO entre:
-    // 1. El avance basado en el tiempo.
-    // 2. El porcentaje mínimo que la fase actual debería tener.
-    // Esto asegura que la barra "salte" a la fase si se avanza manualmente,
-    // y luego siga avanzando por tiempo desde ese punto.
     let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
     
-    // Asegurar que el porcentaje final esté entre 0 y 100 y redondear
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
 
-  // Función para determinar el color de la barra de progreso
   const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
     if (faseActual === 7) {
       return '#28a745'; // Verde: Proyecto completado
@@ -163,23 +150,32 @@ function ProjectDetailPage() {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
-    const endDate = new Date(fechaFinAprox); // Necesario para la nueva lógica
-    const currentDate = new Date(); // Necesario para la nueva lógica
+    const startDate = new Date(fechaInicio);
+    const endDate = new Date(fechaFinAprox);
+    const currentDate = new Date();
 
-    // --- NUEVA LÓGICA: Si el tiempo se acabó y no es fase 7, el color es rojo ---
+    // Si el tiempo se acabó y no es fase 7, el color es rojo
     if (currentDate > endDate && faseActual < 7) {
         return '#dc3545'; // Rojo: Tiempo agotado, no completado
     }
-    // --- FIN NUEVA LÓGICA ---
 
-    const RED_THRESHOLD = 10; // Si está más de 10% por debajo de la fase, es rojo
+    const percentageBehind = phaseTargetPercentage - timeBasedPercentage;
+    let daysBehind = 0;
+    const totalProjectDurationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
     
-    if (timeBasedPercentage < (phaseTargetPercentage - RED_THRESHOLD)) {
-      return '#dc3545'; // Rojo: Muy atrasado
-    } else if (timeBasedPercentage < phaseTargetPercentage) {
-      return '#ffc107'; // Amarillo: Ligeramente atrasado
+    if (totalProjectDurationDays > 0 && percentageBehind > 0) {
+        daysBehind = (percentageBehind / 100) * totalProjectDurationDays;
+    }
+
+    const YELLOW_THRESHOLD_DAYS = 1;
+    const RED_THRESHOLD_DAYS = 5;
+    
+    if (daysBehind >= RED_THRESHOLD_DAYS) {
+        return '#dc3545'; // Rojo: Muy atrasado
+    } else if (daysBehind >= YELLOW_THRESHOLD_DAYS) {
+        return '#ffc107'; // Amarillo: Ligeramente atrasado
     } else {
-      return '#28a745'; // Verde: En tiempo o adelantado
+        return '#28a745'; // Verde: En tiempo o adelantado
     }
   };
 

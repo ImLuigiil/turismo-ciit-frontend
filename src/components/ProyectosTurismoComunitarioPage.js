@@ -131,6 +131,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
     const phaseTargetPercentage = getPhaseTargetPercentage(faseActual);
     
+    const startDate = new Date(fechaInicio);
     const endDate = new Date(fechaFinAprox);
     const currentDate = new Date();
 
@@ -140,27 +141,29 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     }
 
     // Calcular la diferencia en porcentaje entre el avance esperado por fase y el avance real por tiempo
+    // Si timeBasedPercentage es mayor que phaseTargetPercentage, percentageBehind será negativo o cero.
     const percentageBehind = phaseTargetPercentage - timeBasedPercentage;
 
     // Convertir la diferencia de porcentaje a días de atraso
-    const startDate = new Date(fechaInicio);
+    // Solo si el proyecto tiene una duración total positiva
+    let daysBehind = 0;
     const totalProjectDurationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
     
-    let daysBehind = 0;
     if (totalProjectDurationDays > 0 && percentageBehind > 0) {
         daysBehind = (percentageBehind / 100) * totalProjectDurationDays;
     }
 
     // Definir umbrales de días para los colores
-    const YELLOW_DAYS_THRESHOLD = 4; // 1 día de atraso = amarillo
-    const RED_DAYS_THRESHOLD = 5;    // 5 o más días de atraso = rojo
+    const YELLOW_THRESHOLD_DAYS = 1; // 1 a 4 días de atraso = amarillo
+    const RED_THRESHOLD_DAYS = 5;    // 5 o más días de atraso = rojo
     
-    if (daysBehind >= RED_DAYS_THRESHOLD) {
+    if (daysBehind >= RED_THRESHOLD_DAYS) {
         return '#dc3545'; // Rojo: Muy atrasado
-    } else if (daysBehind >= YELLOW_DAYS_THRESHOLD) {
+    } else if (daysBehind >= YELLOW_THRESHOLD_DAYS) {
         return '#ffc107'; // Amarillo: Ligeramente atrasado
     } else {
-        return '#28a745'; // Verde: En tiempo o adelantado (incluye recién iniciados)
+        // Si daysBehind es 0 o negativo (adelantado/en tiempo)
+        return '#28a745'; // Verde: En tiempo o adelantado
     }
   };
   // --- FIN FUNCIÓN MODIFICADA ---
