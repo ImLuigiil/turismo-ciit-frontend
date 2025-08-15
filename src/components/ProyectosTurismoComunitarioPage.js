@@ -52,8 +52,6 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
   }, [showNotification]);
 
-  // --- FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ---
-
   // Define el porcentaje mínimo que debería tener un proyecto en cada fase
   const getPhaseTargetPercentage = (faseActual) => {
     if (faseActual < 1) return 0;
@@ -124,7 +122,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     return Math.min(100, Math.max(0, Math.round(finalPercentage)));
   };
 
-  // Función para determinar el color de la barra de progreso
+  // --- FUNCIÓN MODIFICADA: getProgressColor con lógica de días de atraso ---
   const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
     if (faseActual === 7) {
       return '#28a745'; // Verde: Proyecto completado
@@ -141,18 +139,31 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
         return '#dc3545'; // Rojo: Tiempo agotado, no completado
     }
 
-    const RED_THRESHOLD = 10; // Si está más de 10% por debajo de la fase, es rojo
+    // Calcular la diferencia en porcentaje entre el avance esperado por fase y el avance real por tiempo
+    const percentageBehind = phaseTargetPercentage - timeBasedPercentage;
+
+    // Convertir la diferencia de porcentaje a días de atraso
+    const startDate = new Date(fechaInicio);
+    const totalProjectDurationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
     
-    if (timeBasedPercentage < (phaseTargetPercentage - RED_THRESHOLD)) {
-      return '#dc3545'; // Rojo: Muy atrasado
-    } else if (timeBasedPercentage < phaseTargetPercentage) {
-      return '#ffc107'; // Amarillo: Ligeramente atrasado
+    let daysBehind = 0;
+    if (totalProjectDurationDays > 0 && percentageBehind > 0) {
+        daysBehind = (percentageBehind / 100) * totalProjectDurationDays;
+    }
+
+    // Definir umbrales de días para los colores
+    const YELLOW_DAYS_THRESHOLD = 1; // 1 día de atraso = amarillo
+    const RED_DAYS_THRESHOLD = 5;    // 5 o más días de atraso = rojo
+    
+    if (daysBehind >= RED_DAYS_THRESHOLD) {
+        return '#dc3545'; // Rojo: Muy atrasado
+    } else if (daysBehind >= YELLOW_DAYS_THRESHOLD) {
+        return '#ffc107'; // Amarillo: Ligeramente atrasado
     } else {
-      return '#28a745'; // Verde: En tiempo o adelantado
+        return '#28a745'; // Verde: En tiempo o adelantado (incluye recién iniciados)
     }
   };
-
-  // --- FIN NUEVAS FUNCIONES ---
+  // --- FIN FUNCIÓN MODIFICADA ---
 
   const truncateDescription = (description, maxLength) => {
     if (!description) return '';
