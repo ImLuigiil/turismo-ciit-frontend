@@ -457,24 +457,24 @@ function ProjectForm() {
             )}
           </div>
 
-          <div className="double-form-group">
-            <div className="form-group">
-              <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
-              <input
-                type="text"
-                id="poblacionBeneficiada"
-                value={formatNumber(poblacionBeneficiada)}
-                onChange={handlePoblacionChange}
-                placeholder="Número de personas beneficiadas"
-              />
-            </div>
-            <div className="form-group">
-            <label htmlFor="noCapitulos">Número de Capítulos:</label>
-            <select
-            id="noCapitulos"
-            value={noCapitulos}
-            onChange={(e) => setNoCapitulos(e.target.value)}
-          >
+             <div className="double-form-group">
+    <div className="form-group">
+        <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
+        <input
+        type="text"
+        id="poblacionBeneficiada"
+        value={formatNumber(poblacionBeneficiada)}
+        onChange={handlePoblacionChange}
+        placeholder="Número de personas beneficiadas"
+        />
+    </div>
+    <div className="form-group">
+        <label htmlFor="noCapitulos">Número de Capítulos:</label>
+        <select
+          id="noCapitulos"
+          value={noCapitulos}
+          onChange={(e) => setNoCapitulos(e.target.value)}
+        >
           {capitulos.map((capitulo) => (
             <option key={capitulo} value={capitulo}>
               {capitulo}
@@ -482,6 +482,8 @@ function ProjectForm() {
     ))}
   </select>
 </div>
+</div>
+
           <div className="form-group">
             <label htmlFor="projectImages">Imágenes del Proyecto:</label>
             <input
@@ -511,7 +513,6 @@ function ProjectForm() {
             {(existingImages.length === 0 && newImageFiles.length === 0) && (
                 <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
             )}
-          </div>
           </div>
 
           <div className="personas-directorio-section">
