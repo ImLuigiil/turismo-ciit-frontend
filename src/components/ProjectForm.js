@@ -29,6 +29,10 @@ function ProjectForm() {
   const [showJustificationModal, setShowJustificationModal] = useState(false);
   const [justificationText, setJustificationText] = useState('');
 
+  const [showConcludePhaseModal, setShowConcludePhaseModal] = useState(false);
+  const [concludeJustificationText, setConcludeJustificationText] = useState('');
+  const [concludeDocumentFile, setConcludeDocumentFile] = useState(null);
+
   const [personasDirectorio, setPersonasDirectorio] = useState([]);
 
   const [nombreCambiosCount, setNombreCambiosCount] = useState(0);
@@ -350,17 +354,97 @@ function ProjectForm() {
     }
   };
 
-  const handleSubmit = async (e) => {
+    const handleJustificationModalOpen = async (e) => {
     e.preventDefault();
 
-    if (isEditing && String(faseActual) !== String(originalFaseActual)) {
-      setShowJustificationModal(true);
+    if (parseInt(faseActual) >= 7) {
+      showNotification('El proyecto ya ha alcanzado la fase final (7).', 'info');
+      return;
+    }
+    if (!isEditing) return; 
+
+    setConcludeJustificationText('');
+    setConcludeDocumentFile(null); 
+    setError(null);
+    setShowConcludePhaseModal(true);
+  };
+
+  const handleConcludeDocumentChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') { 
+      setConcludeDocumentFile(file);
+      setError(null);
     } else {
-      handleFormSubmit();
+      setConcludeDocumentFile(null);
+      setError('Solo se permiten archivos PDF como documento de justificación.');
     }
   };
 
-  const handleJustificationSubmit = () => {
+  const handleConcludePhaseSubmit = async () => {
+    if (!concludeJustificationText.trim()) {
+      setError('La justificación es obligatoria para avanzar de fase.');
+      return;
+    }
+    if (!concludeDocumentFile) {
+        setError('Se requiere un documento PDF que avale el cambio de fase.');
+        return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const token = sessionStorage.getItem('access_token');
+    if (!token) {
+      setError('No autorizado. Por favor, inicia sesión.');
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('justificacion', concludeJustificationText);
+    formData.append('documento', concludeDocumentFile);
+
+    try {
+      const API_URL = `${process.env.REACT_APP_API_URL}/proyectos/${idProyectoUrl}/concluir-fase`;
+      const response = await axios.patch(API_URL, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setFaseActual(String(response.data.faseActual)); 
+      setOriginalFaseActual(String(response.data.faseActual)); 
+      showNotification(`Fase del proyecto "${nombre}" avanzada a Fase ${response.data.faseActual}!`, 'success');
+      
+      setShowConcludePhaseModal(false);
+      setLoading(false);
+
+
+    } catch (err) {
+      setLoading(false);
+      if (err.response && err.response.data && err.response.data.message) {
+        if (Array.isArray(err.response.data.message)) {
+          setError(err.response.data.message.join(', '));
+        } else {
+          setError(err.response.data.message);
+        }
+      } else {
+        setError('Error al avanzar de fase. Revisa la consola para más detalles.');
+      }
+      console.error('Error al avanzar de fase:', err.response || err);
+    }
+  };
+
+  const handleConcludePhaseCancel = () => {
+    setShowConcludePhaseModal(false);
+    setConcludeJustificationText('');
+    setConcludeDocumentFile(null);
+    setError(null);
+  };
+
+    const handleJustificationSubmit = () => {
     if (!justificationText.trim()) {
       setError('La justificación es obligatoria si se cambia la fase.');
       return;
@@ -369,7 +453,7 @@ function ProjectForm() {
     handleFormSubmit();
   };
 
-  const handleJustificationCancel = () => {
+    const handleJustificationCancel = () => {
     setShowJustificationModal(false);
     setJustificationText('');
     setFaseActual(originalFaseActual);
@@ -377,11 +461,18 @@ function ProjectForm() {
   };
 
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    handleFormSubmit();
+  };
+
   if (formLoading) {
     return <div className="project-form-loading">Cargando datos del proyecto...</div>;
   }
 
   const isNameFieldDisabled = isEditing && nombreCambiosCount >= MAX_NAME_CHANGES;
+
+  const isConcludePhaseButtonDisabled = parseInt(faseActual) >= 7;
 
   return (
     <div className="project-form-page">
@@ -580,21 +671,17 @@ function ProjectForm() {
               onChange={(e) => setFechaFinAprox(e.target.value)}
             />
           </div>
-
           {isEditing && (
             <div className="form-group">
-              <label htmlFor="faseActual">Fase Actual:</label>
-              <select
-                id="faseActual"
-                value={faseActual}
-                onChange={(e) => setFaseActual(e.target.value)}
+              <label>Fase Actual: {faseActual}</label>
+              <button
+                type="button"
+                onClick={handleJustificationModalOpen}
+                className="concluir-fase-button"
+                disabled={isConcludePhaseButtonDisabled}
               >
-                {fases.map((fase) => (
-                  <option key={fase} value={fase}>
-                    Fase {fase}
-                  </option>
-                ))}
-              </select>
+                {parseInt(faseActual) < 7 ? 'Concluir Fase' : 'Proyecto Finalizado'}
+              </button>
             </div>
           )}
 
@@ -611,11 +698,55 @@ function ProjectForm() {
         </form>
       </div>
 
-      {showJustificationModal && (
+     {showConcludePhaseModal && (
         <div className="justification-modal-overlay">
           <div className="justification-modal-content">
-            <h3>Justificación de Cambio de Fase</h3>
-            <p>Por favor, explica por qué estás cambiando la fase del proyecto.</p>
+            <h3>Concluir Fase {faseActual} a Fase {parseInt(faseActual) + 1}</h3>
+            <p>Por favor, explica por qué estás concluyendo esta fase y sube un documento de respaldo (PDF).</p>
+            
+            <div className="form-group">
+                <label htmlFor="concludeJustification">Justificación:</label>
+                <textarea
+                    id="concludeJustification"
+                    value={concludeJustificationText}
+                    onChange={(e) => setConcludeJustificationText(e.target.value)}
+                    placeholder="Escribe tu justificación aquí..."
+                    rows="5"
+                    required
+                ></textarea>
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
+                <input
+                    type="file"
+                    id="concludeDocument"
+                    accept=".pdf"
+                    onChange={handleConcludeDocumentChange}
+                    required
+                />
+                {concludeDocumentFile && <p className="selected-file-name">Archivo seleccionado: {concludeDocumentFile.name}</p>}
+            </div>
+
+            {error && <p className="error-message">{error}</p>}
+            
+            <div className="modal-buttons">
+              <button onClick={handleConcludePhaseSubmit} className="submit-button" disabled={loading}>
+                {loading ? 'Enviando...' : 'Confirmar Avance de Fase'}
+              </button>
+              <button onClick={handleConcludePhaseCancel} className="cancel-button" disabled={loading}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showJustificationModal && ( 
+        <div className="justification-modal-overlay">
+          <div className="justification-modal-content">
+            <h3>Justificación de Cambio General</h3>
+            <p>Por favor, explica los motivos de estos cambios.</p>
             <textarea
               value={justificationText}
               onChange={(e) => setJustificationText(e.target.value)}
