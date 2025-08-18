@@ -51,7 +51,6 @@ function ProjectForm() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
-  const fases = Array.from({ length: 7 }, (_, i) => i + 1); // Fases de 1 a 7
 
   const capitulos = Array.from({ length: 3 }, (_, i) => i + 1);
 
