@@ -356,7 +356,7 @@ function ProjectForm() {
     const handleJustificationModalOpen = async (e) => {
     e.preventDefault();
 
-    if (parseInt(faseActual) = 7) {
+    if (parseInt(faseActual) === 7) {
       showNotification('El proyecto ya ha alcanzado la fase final (7).', 'info');
       return;
     }
