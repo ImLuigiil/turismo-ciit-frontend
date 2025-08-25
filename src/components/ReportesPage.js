@@ -1,104 +1,105 @@
-    // src/components/ReportesPage.js
-    import React, { useState, useEffect } from 'react';
-    import axios from 'axios';
-    import { useNavigate } from 'react-router-dom';
-    import { useNotification } from '../contexts/NotificationContext'; // Para notificaciones
+// src/components/ReportesPage.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../contexts/NotificationContext'; // Para notificaciones
 
-    import './ReportesPage.css'; // Crearemos este CSS
+import './ReportesPage.css'; // Crearemos este CSS
 
-    function ReportesPage() {
-      const [proyectos, setProyectos] = useState([]);
-      const [loading, setLoading] = useState(true);
-      const [error, setError] = useState(null);
-      const navigate = useNavigate();
-      const { showNotification } = useNotification();
+function ReportesPage() {
+  const [proyectos, setProyectos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
-      // Función para obtener todos los proyectos
-      const fetchProyectos = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const token = sessionStorage.getItem('access_token');
-          if (!token) {
-            showNotification('No autorizado. Por favor, inicia sesión para ver los reportes.', 'error');
-            navigate('/login');
-            return;
-          }
-          const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`;
-          const response = await axios.get(API_URL, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setProyectos(response.data);
-        } catch (err) {
-          console.error("Error al obtener los proyectos para reportes:", err);
-          setError("No se pudieron cargar los proyectos para generar reportes.");
-          if (err.response && err.response.status === 401) {
-            showNotification('Tu sesión ha expirado. Por favor, inicia sesión.', 'error');
-            navigate('/login');
-          }
-        } finally {
-          setLoading(false);
+  useEffect(() => {
+    // --- CORRECCIÓN: fetchProyectos movido dentro del useEffect ---
+    const fetchProyectos = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = sessionStorage.getItem('access_token');
+        if (!token) {
+          showNotification('No autorizado. Por favor, inicia sesión para ver los reportes.', 'error');
+          navigate('/login');
+          return;
         }
-      };
+        const API_URL = `${process.env.REACT_APP_API_URL}/proyectos`;
+        const response = await axios.get(API_URL, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setProyectos(response.data);
+      } catch (err) {
+        console.error("Error al obtener los proyectos para reportes:", err);
+        setError("No se pudieron cargar los proyectos para generar reportes.");
+        if (err.response && err.response.status === 401) {
+          showNotification('Tu sesión ha expirado. Por favor, inicia sesión.', 'error');
+          navigate('/login');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    // --- FIN CORRECCIÓN ---
 
-      useEffect(() => {
-        fetchProyectos();
-      }, []);
+    fetchProyectos();
+  }, [navigate, showNotification]); // Dependencias actualizadas: navigate y showNotification
 
-      // Función para generar un reporte PDF de un proyecto específico
-      const handleGenerateProjectReport = async (projectId, projectName) => {
-        try {
-          const token = sessionStorage.getItem('access_token');
-          if (!token) {
-            showNotification('No estás autenticado para generar reportes.', 'error');
-            navigate('/login');
-            return;
-          }
+  // Función para generar un reporte PDF de un proyecto específico
+  const handleGenerateProjectReport = async (projectId, projectName) => {
+    try {
+      const token = sessionStorage.getItem('access_token');
+      if (!token) {
+        showNotification('No estás autenticado para generar reportes.', 'error');
+        navigate('/login');
+        return;
+      }
 
-          showNotification(`Generando reporte PDF para "${projectName}"...`, 'info', 5000);
+      showNotification(`Generando reporte PDF para "${projectName}"...`, 'info', 5000);
 
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/${projectId}/report`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            responseType: 'blob', // Importante: indica a Axios que espere un blob (archivo binario)
-          });
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/${projectId}/report`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob', // Importante: indica a Axios que espere un blob (archivo binario)
+      });
 
-          // Crear un objeto URL para el blob y descargar el archivo
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `reporte_proyecto_${projectName.replace(/\s/g, '_')}.pdf`); // Nombre del archivo
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode.removeChild(link);
-          window.URL.revokeObjectURL(url); // Libera el objeto URL
+      // Crear un objeto URL para el blob y descargar el archivo
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reporte_proyecto_${projectName.replace(/\s/g, '_')}.pdf`); // Nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url); // Libera el objeto URL
 
-          showNotification(`Reporte PDF para "${projectName}" generado y descargado con éxito!`, 'success');
+      showNotification(`Reporte PDF para "${projectName}" generado y descargado con éxito!`, 'success');
 
-        } catch (err) {
-          console.error("Error al generar el reporte PDF:", err);
-          if (axios.isAxiosError(err) && err.response) {
-            if (err.response.status === 401) {
-              showNotification('No autorizado para generar reportes. Tu sesión ha expirado.', 'error');
-              navigate('/login');
-            } else if (err.response.data) {
-              const reader = new FileReader();
-              reader.onload = function() {
-                try {
-                  const errorData = JSON.parse(reader.result);
-                  showNotification(`Error al generar reporte: ${errorData.message || 'Error desconocido'}`, 'error');
-                } catch (parseError) {
-                  showNotification('Error al generar reporte. Formato de error inesperado.', 'error');
-                }
-              };
-              reader.readAsText(err.response.data);
+    } catch (err) {
+      console.error("Error al generar el reporte PDF:", err);
+      if (axios.isAxiosError(err) && err.response) {
+        if (err.response.status === 401) {
+          showNotification('No autorizado para generar reportes. Tu sesión ha expirado.', 'error');
+          navigate('/login');
+        } else if (err.response.data) {
+          const reader = new FileReader();
+          reader.onload = function() {
+            try {
+              const errorData = JSON.parse(reader.result);
+              showNotification(`Error al generar reporte: ${errorData.message || 'Error desconocido'}`, 'error');
+            } catch (parseError) {
+              showNotification('Error al generar reporte. Formato de error inesperado.', 'error');
             }
-          } else {
-            showNotification('Ocurrió un error al generar el reporte PDF.', 'error');
-          }
+          };
+          reader.readAsText(err.response.data);
         }
-      };
+      } else {
+        showNotification('Ocurrió un error al generar el reporte PDF.', 'error');
+      }
+    }
+  };
 
       if (loading) {
         return <div className="reportes-loading">Cargando opciones de reportes...</div>;
@@ -165,4 +166,3 @@
     }
 
     export default ReportesPage;
-    
