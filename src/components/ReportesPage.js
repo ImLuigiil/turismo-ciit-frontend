@@ -14,7 +14,6 @@ function ReportesPage() {
   const { showNotification } = useNotification();
 
   useEffect(() => {
-    // --- CORRECCIÓN: fetchProyectos movido dentro del useEffect ---
     const fetchProyectos = async () => {
       setLoading(true);
       setError(null);
@@ -41,10 +40,17 @@ function ReportesPage() {
         setLoading(false);
       }
     };
-    // --- FIN CORRECCIÓN ---
 
     fetchProyectos();
-  }, [navigate, showNotification]); // Dependencias actualizadas: navigate y showNotification
+  }, [navigate, showNotification]);
+
+  // --- FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ELIMINADAS (No utilizadas en este componente) ---
+  // Las funciones getPhaseTargetPercentage, calculateTimeBasedProgress, calcularAvance, y getProgressColor
+  // no son necesarias en ReportesPage.js porque la lógica de avance y color de la barra
+  // se utiliza para la visualización en ProyectosTurismoComunitarioPage.js y ProjectDetailPage.js,
+  // y para la generación de reportes PDF en el backend.
+  // --- FIN ELIMINACIÓN ---
+
 
   // Función para generar un reporte PDF de un proyecto específico
   const handleGenerateProjectReport = async (projectId, projectName) => {
@@ -101,6 +107,63 @@ function ReportesPage() {
     }
   };
 
+  // --- NUEVA FUNCIÓN: Generar Reporte General de Proyectos ---
+  const handleGenerateGeneralReport = async () => {
+    try {
+      const token = sessionStorage.getItem('access_token');
+      if (!token) {
+        showNotification('No estás autenticado para generar reportes.', 'error');
+        navigate('/login');
+        return;
+      }
+
+      showNotification('Generando reporte general de proyectos...', 'info', 5000);
+
+      // Endpoint para generar el reporte general (lo crearemos en el backend)
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/report/general`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob', // Esperar un archivo binario
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reporte_general_proyectos_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      showNotification('Reporte general de proyectos generado y descargado con éxito!', 'success');
+
+    } catch (err) {
+      console.error("Error al generar el reporte general PDF:", err);
+      if (axios.isAxiosError(err) && err.response) {
+        if (err.response.status === 401) {
+          showNotification('No autorizado para generar reportes. Tu sesión ha expirado.', 'error');
+          navigate('/login');
+        } else if (err.response.data) {
+          const reader = new FileReader();
+          reader.onload = function() {
+            try {
+              const errorData = JSON.parse(reader.result);
+              showNotification(`Error al generar reporte general: ${errorData.message || 'Error desconocido'}`, 'error');
+            } catch (parseError) {
+              showNotification('Error al generar reporte general. Formato de error inesperado.', 'error');
+            }
+          };
+          reader.readAsText(err.response.data);
+        }
+      } else {
+        showNotification('Ocurrió un error al generar el reporte general PDF.', 'error');
+      }
+    }
+  };
+  // --- FIN NUEVA FUNCIÓN ---
+
+
       if (loading) {
         return <div className="reportes-loading">Cargando opciones de reportes...</div>;
       }
@@ -139,8 +202,12 @@ function ReportesPage() {
           <div className="report-section">
             <h3>Reporte de Avance General de Proyectos</h3>
             <p>Un resumen del estado actual de todos los proyectos, incluyendo su fase, porcentaje de avance y estado (en tiempo, atrasado).</p>
-            <button className="generate-button disabled" disabled>
-              Generar Reporte General (Próximamente)
+            <button 
+              onClick={handleGenerateGeneralReport} 
+              className="generate-button"
+              disabled={proyectos.length === 0} // Deshabilitar si no hay proyectos
+            >
+              Generar Reporte General
             </button>
           </div>
 
