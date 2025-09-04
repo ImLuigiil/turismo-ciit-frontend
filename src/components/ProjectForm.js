@@ -520,7 +520,7 @@ function ProjectForm() {
           </div>
 
           <div className="form-group" ref={dropdownRef}>
-            <label htmlFor="comunidadSearch">Comunidad:</label>
+            <label htmlFor="comunidadSearch">Municipio:</label>
             <input
               type="text"
               id="comunidadSearch"
