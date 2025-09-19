@@ -211,22 +211,6 @@ function ReportesPage() {
             </button>
           </div>
 
-          <div className="report-section">
-            <h3>Reporte de Proyectos por Municipio</h3>
-            <p>Lista todos los proyectos agrupados por municipio, con un conteo de proyectos y su estado general.</p>
-            <button className="generate-button disabled" disabled>
-              Generar Reporte por Municipio (Próximamente)
-            </button>
-          </div>
-
-          <div className="report-section">
-            <h3>Reporte de Personas Involucradas</h3>
-            <p>Un listado de todas las personas registradas en los proyectos, con sus roles y contactos.</p>
-            <button className="generate-button disabled" disabled>
-              Generar Reporte de Personas (Próximamente)
-            </button>
-          </div>
-          {/* --- FIN FUTUROS TIPOS DE REPORTES --- */}
 
         </div>
       );
