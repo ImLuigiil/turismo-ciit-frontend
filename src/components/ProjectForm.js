@@ -785,6 +785,14 @@ function ProjectForm() {
 
                         {error && <p className="error-message">{error}</p>}
 
+                        <div className="justification-warning">
+                          <p>
+                          <span role="img" aria-label="advertencia">⚠️</span>
+                          Después de confirmar el avance, no se podrá retroceder a una fase anterior.
+                          </p>
+                          </div>
+
+
                         <div className="modal-buttons">
                             <button onClick={handleConcludePhaseSubmit} className="submit-button" disabled={loading}>
                                 {loading ? 'Enviando...' : 'Confirmar Avance de Fase'}
