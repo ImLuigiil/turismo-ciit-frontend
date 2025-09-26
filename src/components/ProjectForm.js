@@ -51,10 +51,10 @@ function ProjectForm() {
     const navigate = useNavigate();
     const { showNotification } = useNotification();
 
-    // Estado para guardar los datos originales del proyecto
+
     const [originalProjectData, setOriginalProjectData] = useState(null);
 
-    // Estado para rastrear si se han hecho cambios en el formulario
+
     const [isFormDirty, setIsFormDirty] = useState(false);
 
     const capitulos = Array.from({ length: 3 }, (_, i) => i + 1);
@@ -76,7 +76,6 @@ function ProjectForm() {
         }
     };
 
-    // Función para comparar los datos actuales con los originales, memorizada con useCallback
     const checkFormDirty = useCallback(() => {
         if (!originalProjectData) return false;
 
@@ -193,7 +192,6 @@ function ProjectForm() {
 
                     setPersonasDirectorio(personasData);
 
-                    // Guardar los datos originales para la comparación
                     setOriginalProjectData({
                         ...project,
                         personasDirectorio: personasData,
@@ -210,7 +208,7 @@ function ProjectForm() {
             };
             fetchProjectData();
         } else {
-            // Para el modo de "agregar", el formulario siempre está "sucio"
+
             setIsFormDirty(true);
         }
     }, [isEditing, idProyectoUrl, setOriginalFaseActual]);

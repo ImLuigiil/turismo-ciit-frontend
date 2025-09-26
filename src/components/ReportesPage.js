@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useNotification } from '../contexts/NotificationContext'; // Para notificaciones
+import { useNotification } from '../contexts/NotificationContext';
 
-import './ReportesPage.css'; // Crearemos este CSS
+import './ReportesPage.css';
 
 function ReportesPage() {
   const [proyectos, setProyectos] = useState([]);
@@ -44,15 +44,7 @@ function ReportesPage() {
     fetchProyectos();
   }, [navigate, showNotification]);
 
-  // --- FUNCIONES DE CÁLCULO DE AVANCE Y COLOR ELIMINADAS (No utilizadas en este componente) ---
-  // Las funciones getPhaseTargetPercentage, calculateTimeBasedProgress, calcularAvance, y getProgressColor
-  // no son necesarias en ReportesPage.js porque la lógica de avance y color de la barra
-  // se utiliza para la visualización en ProyectosTurismoComunitarioPage.js y ProjectDetailPage.js,
-  // y para la generación de reportes PDF en el backend.
-  // --- FIN ELIMINACIÓN ---
 
-
-  // Función para generar un reporte PDF de un proyecto específico
   const handleGenerateProjectReport = async (projectId, projectName) => {
     try {
       const token = sessionStorage.getItem('access_token');
@@ -68,18 +60,18 @@ function ReportesPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: 'blob', // Importante: indica a Axios que espere un blob (archivo binario)
+        responseType: 'blob',
       });
 
-      // Crear un objeto URL para el blob y descargar el archivo
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `reporte_proyecto_${projectName.replace(/\s/g, '_')}.pdf`); // Nombre del archivo
+      link.setAttribute('download', `reporte_proyecto_${projectName.replace(/\s/g, '_')}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url); // Libera el objeto URL
+      window.URL.revokeObjectURL(url);
 
       showNotification(`Reporte PDF para "${projectName}" generado y descargado con éxito!`, 'success');
 
@@ -107,7 +99,7 @@ function ReportesPage() {
     }
   };
 
-  // --- NUEVA FUNCIÓN: Generar Reporte General de Proyectos ---
+
   const handleGenerateGeneralReport = async () => {
     try {
       const token = sessionStorage.getItem('access_token');
@@ -119,12 +111,12 @@ function ReportesPage() {
 
       showNotification('Generando reporte general de proyectos...', 'info', 5000);
 
-      // Endpoint para generar el reporte general (lo crearemos en el backend)
+
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/proyectos/report/general`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: 'blob', // Esperar un archivo binario
+        responseType: 'blob',
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -161,7 +153,6 @@ function ReportesPage() {
       }
     }
   };
-  // --- FIN NUEVA FUNCIÓN ---
 
 
       if (loading) {
@@ -198,14 +189,13 @@ function ReportesPage() {
             )}
           </div>
 
-          {/* --- FUTUROS TIPOS DE REPORTES (SEGÚN CRITERIO) --- */}
           <div className="report-section">
             <h3>Reporte de Avance General de Proyectos</h3>
             <p>Un resumen del estado actual de todos los proyectos, incluyendo su fase, porcentaje de avance y estado (en tiempo, atrasado).</p>
             <button 
               onClick={handleGenerateGeneralReport} 
               className="generate-button"
-              disabled={proyectos.length === 0} // Deshabilitar si no hay proyectos
+              disabled={proyectos.length === 0}
             >
               Generar Reporte General
             </button>

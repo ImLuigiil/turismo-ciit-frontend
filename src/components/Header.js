@@ -52,9 +52,7 @@
                 <li className="nav-item"><Link to="/diplomados">Diplomado</Link></li>
                 <li className="nav-item"><Link to="/cursos">Cursos</Link></li>
                 <li className="nav-item"><Link to="/fotos">Fotos</Link></li>
-                {/* --- CÓDIGO AÑADIDO: Nueva pestaña de Reportes --- */}
                 <li className="nav-item"><Link to="/reportes">Reportes</Link></li>
-                {/* --- FIN CÓDIGO AÑADIDO --- */}
                 <li className="nav-item"><Link to="/proyectos-residencia">Proyectos Residencias CIIT</Link></li>
               </ul>
             </div>

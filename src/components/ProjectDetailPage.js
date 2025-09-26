@@ -7,10 +7,6 @@ import { useNotification } from '../contexts/NotificationContext';
 import './ProjectDetailPage.css';
 
 
-// ===================================================================================
-// INICIO: LÓGICA DE PROGRESO ACTUALIZADA
-// Estas funciones ahora coinciden con las de la página principal de proyectos.
-// ===================================================================================
 
 const getPhaseSchedule = (fechaInicio, fechaFinAprox) => {
   if (!fechaInicio || !fechaFinAprox) {
@@ -106,10 +102,6 @@ const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
   }
   return '#28a745';
 };
-
-// ===================================================================================
-// FIN: LÓGICA DE PROGRESO ACTUALIZADA
-// ===================================================================================
 
 
 function ProjectDetailPage() {

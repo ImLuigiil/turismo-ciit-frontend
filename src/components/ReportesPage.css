@@ -61,7 +61,7 @@
 
     .project-report-item span {
       font-weight: bold;
-      flex-grow: 1; /* Permite que el nombre del proyecto ocupe el espacio */
+      flex-grow: 1; 
       text-align: left;
       margin-right: 15px;
     }
@@ -75,7 +75,7 @@
       cursor: pointer;
       font-size: 0.95em;
       transition: background-color 0.3s ease;
-      flex-shrink: 0; /* Evita que el botón se encoja */
+      flex-shrink: 0;
     }
 
     .generate-button:hover:not(:disabled) {
