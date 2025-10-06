@@ -38,6 +38,8 @@ function ProjectForm() {
     const [nombreCambiosCount, setNombreCambiosCount] = useState(0);
     const MAX_NAME_CHANGES = 3;
 
+    const MAX_PERSONAS_INVOLUCRADAS = 15; 
+
     const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
 
     const [newImageFiles, setNewImageFiles] = useState([]);
@@ -215,6 +217,10 @@ function ProjectForm() {
 
 
     const handleAddPersona = () => {
+    if (personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS) {
+      showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
+      return;
+    }
         setPersonasDirectorio([...personasDirectorio, { apellidoPaterno: '', apellidoMaterno: '', nombre: '', rolEnProyecto: '', contacto: '' }]);
     };
 
@@ -696,7 +702,8 @@ function ProjectForm() {
                                 </button>
                             </div>
                         ))}
-                        <button type="button" onClick={handleAddPersona} className="add-persona-button">
+                        <button type="button" onClick={handleAddPersona} className="add-persona-button"
+                        disabled={personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS}>
                             + Agregar Persona
                         </button>
                     </div>
