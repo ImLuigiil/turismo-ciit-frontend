@@ -93,7 +93,6 @@ function ProjectForm() {
         const MIN_DURATION_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000; // Aprox. 4 meses (120 días)
         const MAX_DURATION_IN_MS = 12 * 30 * 24 * 60 * 60 * 1000; // Aprox. 12 meses (365 días)
         
-        const durationInDays = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
         if (timeDifference < MIN_DURATION_IN_MS) {
             return { 
