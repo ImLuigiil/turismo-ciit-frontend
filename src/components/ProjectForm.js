@@ -643,14 +643,11 @@ function ProjectForm() {
         Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
     </p>
 
-    {/* --- INICIO CÓDIGO MODIFICADO --- */}
-    {/* Contenedor para las imágenes ya subidas (Solo en edición) */}
     {isEditing && existingImages.length > 0 && (
         <div className="existing-images-list">
             <h4 className="existing-images-title">Evidencias Subidas (Haga clic para ver):</h4>
             {existingImages.map((image, index) => (
                 <div key={image.idProyectoImagen} className="existing-image-item">
-                    {/* ENLACE DE TEXTO */}
                     <span 
                         className="image-url-link"
                         onClick={() => window.open(image.fullUrl, '_blank')}
@@ -659,7 +656,6 @@ function ProjectForm() {
                         Imagen #{index + 1}: {image.url.split('/').pop()}
                     </span>
                     
-                    {/* BOTÓN ELIMINAR AL LADO DEL LINK */}
                     <button 
                         type="button" 
                         onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
@@ -671,9 +667,7 @@ function ProjectForm() {
             ))}
         </div>
     )}
-    {/* --- FIN CÓDIGO MODIFICADO para imágenes existentes --- */}
 
-    {/* Contenedor para las previsualizaciones de nuevas imágenes (se mantiene) */}
     <div className="image-previews-container">
         {newImagePreviews.map((previewUrl, index) => (
             <div key={`new-${index}`} className="image-preview-item">
@@ -690,6 +684,16 @@ function ProjectForm() {
 
                     <div className="personas-directorio-section">
                         <h3>Personas Involucradas en el Proyecto</h3>
+
+                            <div className="persona-input-header">
+        <label>Apellido Paterno</label>
+        <label>Apellido Materno (Op.)</label>
+        <label>Nombre(s)</label>
+        <label>Rol</label>
+        <label>Contacto</label>
+        <div className="remove-placeholder"></div> {/* Espacio para el botón X */}
+    </div>
+    
                         {personasDirectorio.map((persona, index) => (
                             <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
                                 <input
@@ -734,7 +738,7 @@ function ProjectForm() {
                             + Agregar Persona
                         </button>
                     </div>
-
+                    
                     <div className="form-group">
                         <label htmlFor="fechaInicio">Fecha de Inicio:</label>
                         <input
