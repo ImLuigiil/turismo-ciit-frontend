@@ -652,16 +652,16 @@ function ProjectForm() {
             title="Haga clic para abrir la imagen en una nueva pestaña"
         >
             Imagen #{index + 1}: {image.url.split('/').pop()}
-        </span>
-        
-        {/* ELEMENTO 2: BOTÓN ELIMINAR */}
-        <button 
+            <button 
             type="button" 
             onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
             className="remove-image-button"
         >
-            Eliminar
+            X
         </button>
+        </span>
+        
+        {/* ELEMENTO 2: BOTÓN ELIMINAR */}
     </div>
 ))}
                             {newImagePreviews.map((previewUrl, index) => (
