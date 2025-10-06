@@ -176,6 +176,7 @@ textarea {
     gap: 10px;
     margin-bottom: 10px;
     align-items: center;
+    padding: 0 12px; /* Añade un padding lateral para que no toque los bordes */
 }
 
 .persona-input-group input {
@@ -193,6 +194,9 @@ textarea {
     cursor: pointer;
     font-weight: bold;
     flex-shrink: 0;
+    /* --- CLAVE PARA ALINEACIÓN --- */
+    min-width: 40px; /* Tamaño fijo para que el texto 'X' no lo colapse */
+    height: 34px; /* Altura fija para que coincida con la altura de la caja del input */
 }
 
 .add-persona-button {
@@ -427,18 +431,19 @@ textarea {
 }
 
 .persona-header-labels {
-    /* El persona-input-group ya tiene display: flex y gap: 10px */
-    padding-left: 0; /* Aseguramos que no tenga padding extra */
+    /* Sobrescribe el margen inferior para acercarlo a la primera fila de inputs */
     margin-bottom: 5px;
-    border-bottom: 1px solid #ddd;
     padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+    
+    /* Asegura que las etiquetas también crezcan uniformemente */
+    font-size: 0.85em; 
 }
 
 .persona-header-labels label {
-    flex-grow: 1;
+    flex-grow: 1; 
     text-align: left;
     margin-bottom: 0;
-    font-size: 0.85em; /* Ligeramente más pequeño para el encabezado */
     font-weight: 700;
     color: #444;
 }
@@ -459,4 +464,11 @@ textarea {
     gap: 10px;
     margin-bottom: 10px;
     align-items: center;
+}
+
+.remove-placeholder {
+    background: transparent !important;
+    border: none !important;
+    cursor: default !important;
+    padding: 8px 12px;
 }

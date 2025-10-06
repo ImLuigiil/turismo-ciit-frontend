@@ -691,7 +691,7 @@ function ProjectForm() {
         <label>Nombre(s)</label>
         <label>Rol</label>
         <label>Contacto</label>
-        <div className="remove-placeholder"></div> {/* Espacio para el botón X */}
+        <div className="remove-placeholder remove-persona-button"></div> 
     </div>
                         {personasDirectorio.map((persona, index) => (
                             <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
