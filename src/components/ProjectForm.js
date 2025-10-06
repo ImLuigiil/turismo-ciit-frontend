@@ -79,7 +79,9 @@ function ProjectForm() {
     };
 
     const validateDateDifference = (start, end) => {
-        if (!start || !end) return true; // Si falta una fecha, se considera válido (la validación de 'required' se maneja aparte)
+        if (!start || !end) {
+            return { isValid: true, message: '' };
+        }
         
         const startDate = new Date(start);
         const endDate = new Date(end);
@@ -87,11 +89,27 @@ function ProjectForm() {
         // La diferencia de tiempo se calcula en milisegundos
         const timeDifference = endDate.getTime() - startDate.getTime();
         
-        // Define una semana en milisegundos (7 días * 24 horas * 60 minutos * 60 segundos * 1000 ms)
-        const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
+        // Define la duración mínima y máxima en milisegundos (usando días como aproximación)
+        const MIN_DURATION_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000; // Aprox. 4 meses (120 días)
+        const MAX_DURATION_IN_MS = 12 * 30 * 24 * 60 * 60 * 1000; // Aprox. 12 meses (365 días)
         
-        // Si la diferencia es menor a 7 días, retorna false (inválido)
-        return timeDifference >= ONE_WEEK_IN_MS;
+        const durationInDays = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+        if (timeDifference < MIN_DURATION_IN_MS) {
+            return { 
+                isValid: false, 
+                message: `La duración del proyecto debe ser de al menos 4 meses (aprox. ${Math.ceil(MIN_DURATION_IN_MS / (1000 * 60 * 60 * 24))} días).` 
+            };
+        }
+        
+        if (timeDifference > MAX_DURATION_IN_MS) {
+            return { 
+                isValid: false, 
+                message: `La duración del proyecto no debe exceder los 12 meses (aprox. ${Math.ceil(MAX_DURATION_IN_MS / (1000 * 60 * 60 * 24))} días).` 
+            };
+        }
+
+        return { isValid: true, message: '' };
     };
 
     const checkFormDirty = useCallback(() => {
@@ -290,9 +308,11 @@ function ProjectForm() {
         setError(null);
         setLoading(true);
 
-        if (!validateDateDifference(fechaInicio, fechaFinAprox)) {
-        setError('La Fecha Final Aproximada debe ser al menos una semana después de la Fecha de Inicio.');
-        showNotification('Error de Fecha: La duración mínima del proyecto debe ser de 7 días.', 'error');
+        const dateValidation = validateDateDifference(fechaInicio, fechaFinAprox);
+    
+    if (!dateValidation.isValid) {
+        setError(dateValidation.message);
+        showNotification(`Error de Fecha: ${dateValidation.message}`, 'error');
         setLoading(false);
         return; 
     }
