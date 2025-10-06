@@ -643,10 +643,24 @@ function ProjectForm() {
                             Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
                         </p>
                         <div className="image-previews-container">
-                            {existingImages.map(img => (
-                                <div key={img.idProyectoImagen} className="image-preview-item">
-                                    <img src={`${process.env.REACT_APP_API_URL}${img.fullUrl}`} alt="Existente" className="image-preview" />
-                                    <button type="button" onClick={() => handleRemoveExistingImage(img.idProyectoImagen)} className="remove-image-button">X</button>
+                            {existingImages.map((image, index) => (
+                                <div key={image.idProyectoImagen} className="existing-image-item">
+                                <span 
+                                className="image-url-link"
+                                // Al hacer clic, abre la URL completa en una nueva pestaña
+                                onClick={() => window.open(image.fullUrl, '_blank')}
+                                title="Haga clic para abrir la imagen en una nueva pestaña"
+                                >
+                                {/* Muestra un nombre de archivo limpio para evitar URLs largas */}
+                                Imagen #{index + 1}: {image.url.split('/').pop()}
+                                </span>
+                                <button 
+                                 type="button" 
+                                 onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
+                                 className="remove-image-button"
+                                    >
+                                 Eliminar
+                                </button>
                                 </div>
                             ))}
                             {newImagePreviews.map((previewUrl, index) => (
@@ -702,7 +716,7 @@ function ProjectForm() {
                                 </button>
                             </div>
                         ))}
-                        <button type="button" onClick={handleAddPersona} className="add-persona-button"
+                        <button type="button" onClick={handleAddPersona} className={`add-persona-button ${personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS ? 'disabled-limit' : ''}`}
                         disabled={personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS}>
                             + Agregar Persona
                         </button>
