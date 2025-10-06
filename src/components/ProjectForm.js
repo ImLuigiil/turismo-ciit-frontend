@@ -644,25 +644,26 @@ function ProjectForm() {
                         </p>
                         <div className="image-previews-container">
                             {existingImages.map((image, index) => (
-                                <div key={image.idProyectoImagen} className="existing-image-item">
-                                <span 
-                                className="image-url-link"
-                                // Al hacer clic, abre la URL completa en una nueva pestaña
-                                onClick={() => window.open(image.fullUrl, '_blank')}
-                                title="Haga clic para abrir la imagen en una nueva pestaña"
-                                >
-                                {/* Muestra un nombre de archivo limpio para evitar URLs largas */}
-                                Imagen #{index + 1}: {image.url.split('/').pop()}
-                                </span>
-                                <button 
-                                 type="button" 
-                                 onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
-                                 className="remove-image-button"
-                                    >
-                                 Eliminar
-                                </button>
-                                </div>
-                            ))}
+    <div key={image.idProyectoImagen} className="existing-image-item">
+        {/* ELEMENTO 1: ENLACE */}
+        <span 
+            className="image-url-link"
+            onClick={() => window.open(image.fullUrl, '_blank')}
+            title="Haga clic para abrir la imagen en una nueva pestaña"
+        >
+            Imagen #{index + 1}: {image.url.split('/').pop()}
+        </span>
+        
+        {/* ELEMENTO 2: BOTÓN ELIMINAR */}
+        <button 
+            type="button" 
+            onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
+            className="remove-image-button"
+        >
+            Eliminar
+        </button>
+    </div>
+))}
                             {newImagePreviews.map((previewUrl, index) => (
                                 <div key={`new-${index}`} className="image-preview-item">
                                     <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />

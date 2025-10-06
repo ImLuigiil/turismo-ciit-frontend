@@ -663,27 +663,51 @@ textarea {
 }
 
 .existing-image-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Alinea texto y botón */
-    margin-bottom: 5px;
-    padding: 5px;
+    /* --- CAMBIO CLAVE --- */
+    display: flex; /* Habilita Flexbox */
+    align-items: center; 
+    justify-content: space-between; /* Empuja los elementos a los extremos */
+    /* -------------------- */
+    
+    margin-bottom: 8px;
+    padding: 8px 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
+    background-color: #f9f9f9;
 }
 
 .image-url-link {
     cursor: pointer; 
-    color: #007bff; /* Color azul para indicar enlace */
+    color: #007bff; 
     text-decoration: underline; 
-    padding-right: 15px; 
+    
+    /* Permite que el enlace ocupe espacio sin empujar el botón */
+    flex-grow: 1; 
+    margin-right: 15px; /* Espacio entre el link y el botón */
+    
     max-width: 70%; 
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis; /* Puntos suspensivos */
-    font-size: 0.9em;
+    text-overflow: ellipsis; 
+    font-size: 0.95em;
 }
 
 .image-url-link:hover {
     color: #0056b3; 
+}
+
+/* Estilo del botón de eliminar */
+.remove-image-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.8em;
+    flex-shrink: 0; /* Evita que el botón se reduzca si el link es muy largo */
+}
+
+.remove-image-button:hover {
+    background-color: #c82333;
 }
