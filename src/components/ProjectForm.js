@@ -685,7 +685,7 @@ function ProjectForm() {
                     <div className="personas-directorio-section">
                         <h3>Personas Involucradas en el Proyecto</h3>
 
-                            <div className="persona-input-header">
+        <div className="persona-input-group persona-header-labels">
         <label>Apellido Paterno</label>
         <label>Apellido Materno (Op.)</label>
         <label>Nombre(s)</label>
@@ -693,7 +693,6 @@ function ProjectForm() {
         <label>Contacto</label>
         <div className="remove-placeholder"></div> {/* Espacio para el botón X */}
     </div>
-    
                         {personasDirectorio.map((persona, index) => (
                             <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
                                 <input

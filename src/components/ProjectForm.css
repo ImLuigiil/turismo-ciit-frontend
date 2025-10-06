@@ -425,3 +425,38 @@ textarea {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.persona-header-labels {
+    /* El persona-input-group ya tiene display: flex y gap: 10px */
+    padding-left: 0; /* Aseguramos que no tenga padding extra */
+    margin-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.persona-header-labels label {
+    flex-grow: 1;
+    text-align: left;
+    margin-bottom: 0;
+    font-size: 0.85em; /* Ligeramente más pequeño para el encabezado */
+    font-weight: 700;
+    color: #444;
+}
+
+.persona-header-labels .remove-placeholder {
+    /* Debe coincidir con el tamaño del botón de eliminar */
+    width: 40px; 
+    flex-shrink: 0;
+    /* Ajuste para el padding interno del botón */
+    padding: 8px 12px; 
+}
+/* --- FIN CÓDIGO AÑADIDO --- */
+
+
+/* Asegúrate de que .persona-input-group tiene el estilo base: */
+.persona-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
