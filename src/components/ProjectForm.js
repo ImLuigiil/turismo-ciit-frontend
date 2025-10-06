@@ -631,48 +631,62 @@ function ProjectForm() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="projectImages">Imágenes del Proyecto:</label>
-                        <input
-                            type="file"
-                            id="projectImages"
-                            accept="image/*"
-                            multiple
-                            onChange={handleNewImageChange}
-                        />
-                        <p className="image-specs-text">
-                            Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
-                        </p>
-                        <div className="image-previews-container">
-                            {existingImages.map((image, index) => (
-    <div key={image.idProyectoImagen} className="existing-image-item">
-        {/* ELEMENTO 1: ENLACE */}
-        <span 
-            className="image-url-link"
-            onClick={() => window.open(image.fullUrl, '_blank')}
-            title="Haga clic para abrir la imagen en una nueva pestaña"
-        >
-            Imagen #{index + 1}: {image.url.split('/').pop()} 
-        <button 
-            type="button" 
-            onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
-            className="remove-image-button"
-        >
-            X
-        </button>
-        </span>
+    <label htmlFor="projectImages">Imágenes del Proyecto:</label>
+    <input
+        type="file"
+        id="projectImages"
+        accept="image/*"
+        multiple
+        onChange={handleNewImageChange}
+    />
+    <p className="image-specs-text">
+        Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
+    </p>
+
+    {/* --- INICIO CÓDIGO MODIFICADO --- */}
+    {/* Contenedor para las imágenes ya subidas (Solo en edición) */}
+    {isEditing && existingImages.length > 0 && (
+        <div className="existing-images-list">
+            <h4 className="existing-images-title">Evidencias Subidas (Haga clic para ver):</h4>
+            {existingImages.map((image, index) => (
+                <div key={image.idProyectoImagen} className="existing-image-item">
+                    {/* ENLACE DE TEXTO */}
+                    <span 
+                        className="image-url-link"
+                        onClick={() => window.open(image.fullUrl, '_blank')}
+                        title="Haga clic para abrir la imagen en una nueva pestaña"
+                    >
+                        Imagen #{index + 1}: {image.url.split('/').pop()}
+                    </span>
+                    
+                    {/* BOTÓN ELIMINAR AL LADO DEL LINK */}
+                    <button 
+                        type="button" 
+                        onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
+                        className="remove-image-button"
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            ))}
+        </div>
+    )}
+    {/* --- FIN CÓDIGO MODIFICADO para imágenes existentes --- */}
+
+    {/* Contenedor para las previsualizaciones de nuevas imágenes (se mantiene) */}
+    <div className="image-previews-container">
+        {newImagePreviews.map((previewUrl, index) => (
+            <div key={`new-${index}`} className="image-preview-item">
+                <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
+                <button type="button" onClick={() => handleRemoveNewImage(index)} className="remove-image-button">X</button>
+            </div>
+        ))}
     </div>
-))}
-                            {newImagePreviews.map((previewUrl, index) => (
-                                <div key={`new-${index}`} className="image-preview-item">
-                                    <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
-                                    <button type="button" onClick={() => handleRemoveNewImage(index)} className="remove-image-button">X</button>
-                                </div>
-                            ))}
-                        </div>
-                        {(existingImages.length === 0 && newImageFiles.length === 0) && (
-                            <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
-                        )}
-                    </div>
+    
+    {(existingImages.length === 0 && newImageFiles.length === 0) && (
+        <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
+    )}
+</div>
 
                     <div className="personas-directorio-section">
                         <h3>Personas Involucradas en el Proyecto</h3>
