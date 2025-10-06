@@ -78,6 +78,22 @@ function ProjectForm() {
         }
     };
 
+    const validateDateDifference = (start, end) => {
+        if (!start || !end) return true; // Si falta una fecha, se considera válido (la validación de 'required' se maneja aparte)
+        
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        
+        // La diferencia de tiempo se calcula en milisegundos
+        const timeDifference = endDate.getTime() - startDate.getTime();
+        
+        // Define una semana en milisegundos (7 días * 24 horas * 60 minutos * 60 segundos * 1000 ms)
+        const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
+        
+        // Si la diferencia es menor a 7 días, retorna false (inválido)
+        return timeDifference >= ONE_WEEK_IN_MS;
+    };
+
     const checkFormDirty = useCallback(() => {
         if (!originalProjectData) return false;
 
@@ -273,6 +289,13 @@ function ProjectForm() {
     const handleFormSubmit = async () => {
         setError(null);
         setLoading(true);
+
+        if (!validateDateDifference(fechaInicio, fechaFinAprox)) {
+        setError('La Fecha Final Aproximada debe ser al menos una semana después de la Fecha de Inicio.');
+        showNotification('Error de Fecha: La duración mínima del proyecto debe ser de 7 días.', 'error');
+        setLoading(false);
+        return; 
+    }
 
         const token = sessionStorage.getItem('access_token');
         if (!token) {
