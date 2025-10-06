@@ -645,3 +645,19 @@ textarea {
     text-align: left;
     font-weight: bold;
 }
+
+.add-persona-button.disabled-limit {
+    background-color: #cccccc; 
+    color: #666666; 
+    cursor: not-allowed; 
+    box-shadow: none; 
+    opacity: 0.7; 
+}
+
+.add-persona-button:disabled {
+    background-color: #cccccc !important; 
+    color: #666666 !important;
+    cursor: not-allowed;
+    box-shadow: none !important;
+    opacity: 0.7;
+}
