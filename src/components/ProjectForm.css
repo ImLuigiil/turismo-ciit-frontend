@@ -662,41 +662,49 @@ textarea {
     opacity: 0.7;
 }
 
-.existing-image-item {
-    /* --- CAMBIO CLAVE --- */
-    display: flex; /* Habilita Flexbox */
-    align-items: center; 
-    justify-content: space-between; /* Empuja los elementos a los extremos */
-    /* -------------------- */
-    
-    margin-bottom: 8px;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: #f9f9f9;
+.existing-images-list {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f7f7f7;
 }
 
+.existing-images-title {
+    font-size: 1em;
+    font-weight: bold;
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+/* --- ESTILO CLAVE MODIFICADO --- */
+.existing-image-item {
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; /* Mantiene los elementos separados */
+    margin-bottom: 5px;
+    padding: 8px;
+    border-bottom: 1px dashed #ddd; /* Separador ligero entre ítems */
+}
+
+/* Estilo para el enlace de la URL */
 .image-url-link {
     cursor: pointer; 
     color: #007bff; 
     text-decoration: underline; 
     
-    /* Permite que el enlace ocupe espacio sin empujar el botón */
-    flex-grow: 1; 
-    margin-right: 15px; /* Espacio entre el link y el botón */
+    flex-grow: 1; /* Permite que el link ocupe el espacio necesario */
+    margin-right: 15px; 
     
-    max-width: 70%; 
+    /* Asegura que el texto largo se maneje bien sin romper el layout */
+    max-width: calc(100% - 120px); 
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis; 
     font-size: 0.95em;
 }
 
-.image-url-link:hover {
-    color: #0056b3; 
-}
-
-/* Estilo del botón de eliminar */
+/* Estilo para el botón de eliminar */
 .remove-image-button {
     background-color: #dc3545;
     color: white;
@@ -705,7 +713,7 @@ textarea {
     cursor: pointer;
     border-radius: 4px;
     font-size: 0.8em;
-    flex-shrink: 0; /* Evita que el botón se reduzca si el link es muy largo */
+    flex-shrink: 0; 
 }
 
 .remove-image-button:hover {
