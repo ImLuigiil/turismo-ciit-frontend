@@ -254,7 +254,16 @@
 }
 
 .conclude-button {
-    animation: flash-red-yellow 1.5s infinite;
-    font-weight: bold;
-    border: 2px solid white;
+  background-color: #1B396A;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  align-self: flex-end; 
+  margin-top: auto; 
+  animation: flash-red-yellow 1.5s infinite;
+  font-weight: bold;
+  border: 2px solid white;
 }
