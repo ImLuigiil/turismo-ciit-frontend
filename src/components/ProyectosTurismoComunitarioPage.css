@@ -21,22 +21,21 @@
 }
 
 .proyectos-grid {
-    display: grid;
-    /* Fija 3 columnas uniformes para un layout consistente */
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  justify-content: center; 
 }
 
 .proyecto-card {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease-in-out;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
 }
 
 .proyecto-card:hover {
@@ -44,23 +43,24 @@
 }
 
 .proyecto-card-title {
-    color: #333;
-    font-size: 1.5em;
-    margin-top: 0;
-    margin-bottom: 10px;
+  color: #333;
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
 .proyecto-card-description {
-    color: #666;
-    font-size: 0.95em;
-    line-height: 1.5;
-    flex-grow: 1;
-    margin-bottom: 15px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+  color: #666;
+  font-size: 0.95em;
+  line-height: 1.5;
+  flex-grow: 1;
+  margin-bottom: 15px;
+
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  display: -webkit-box;
+  -webkit-line-clamp: 3; 
+  -webkit-box-orient: vertical;
 }
 
 .proyecto-card-community {
@@ -70,35 +70,35 @@
 }
 
 .proyecto-card-progress {
-    width: 100%;
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    height: 25px;
-    display: flex;
-    align-items: center;
-    position: relative;
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .progress-bar {
-    height: 100%;
-    border-radius: 5px;
-    text-align: right;
-    transition: width 0.5s ease-in-out;
-    position: absolute;
-    left: 0;
-    top: 0;
+  height: 100%;
+  border-radius: 5px;
+  text-align: right;
+  transition: width 0.5s ease-in-out;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .progress-text {
-    position: relative;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    color: #333;
-    font-size: 0.9em;
-    z-index: 1;
+  position: relative;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  color: #333; 
+  font-size: 0.9em;
+  z-index: 1;
 }
 
 .progress-bar[style*="width: 50%"] + .progress-text,
@@ -108,44 +108,68 @@
 }
 
 .proyecto-card-button {
-    background-color: #1B396A;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-    align-self: flex-end;
-    margin-top: auto;
+  background-color: #1B396A;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  align-self: flex-end; 
+  margin-top: auto; 
 }
 
 .proyecto-card-button:hover {
-    background-color: #2a5796;
+  background-color: #2a5796;
 }
 
 .no-proyectos {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: #777;
-    font-size: 1.1em;
-    padding: 20px;
+  grid-column: 1 / -1; 
+  text-align: center;
+  color: #777;
+  font-size: 1.1em;
+  padding: 20px;
 }
 
 .add-new-project-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.3s ease;
-    display: block;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 25px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease;
+  margin-bottom: 25px;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.admin-actions {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.admin-edit-button {
+  background-color: #2196F3;
+}
+
+.admin-edit-button:hover {
+  background-color: #0b7dda;
+}
+
+.admin-delete-button {
+  background-color: #f44336;
+}
+
+.admin-delete-button:hover {
+  background-color: #da190b;
 }
 
 .add-new-project-button:hover {
@@ -197,6 +221,7 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
+
 
 .color-guide-item p {
     margin: 0;
