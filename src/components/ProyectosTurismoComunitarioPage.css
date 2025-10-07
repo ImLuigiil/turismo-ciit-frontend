@@ -239,3 +239,81 @@
 .grey-status .color-box {
     border: 1px solid #999;
 }
+
+@keyframes flash-red-yellow {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.action-button.conclude-button {
+    background-color: #004d40;
+    color: white;
+    order: 0; /* Asegura que aparezca a la izquierda */
+}
+
+.action-button.conclude-button:hover:not(:disabled) {
+    background-color: #00362c;
+}
+
+/* Clase para el botón cuando el proyecto está atrasado */
+.action-button.conclude-button.urgent-action {
+    background-color: #dc3545; /* Inicia en rojo/amarillo (el color es dinámico) */
+    animation: flash-red-yellow 1.5s infinite; /* Aplica el parpadeo */
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+/* Estilos de la Modal (copiados de ProjectForm.css para consistencia) */
+.justification-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.justification-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.justification-modal-content h3 {
+    color: #004d40;
+    margin-top: 0;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.justification-warning {
+    background-color: #fff3cd; /* Amarillo claro */
+    color: #856404;            /* Texto amarillo oscuro */
+    border: 1px solid #ffeeba; /* Borde amarillo más oscuro */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* Ajuste general del contenedor de acciones para el nuevo botón */
+.card-actions {
+    display: flex;
+    justify-content: space-between; /* Distribuye los botones */
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.card-actions .action-button {
+    flex: 1; /* Permite que los botones ocupen el mismo ancho */
+}
