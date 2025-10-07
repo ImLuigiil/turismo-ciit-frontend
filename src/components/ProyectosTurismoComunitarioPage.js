@@ -439,7 +439,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         </button>
                                         
                                         <button
-                                            className="action-button edit-button"
+                                            className="action-button view-button"
                                             onClick={() => handleEditarProyecto(proyecto.idProyecto)}
                                         >
                                             Editar
