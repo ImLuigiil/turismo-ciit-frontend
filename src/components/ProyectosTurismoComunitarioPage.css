@@ -1,23 +1,20 @@
+
 /* src/components/ProyectosTurismoComunitarioPage.css */
 
-/* --------------------------------------------------- */
-/* ESTILOS DE LA PÁGINA PRINCIPAL */
-/* --------------------------------------------------- */
-
 .proyectos-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 20px auto;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .proyectos-container h2 {
-    text-align: center;
-    color: #1B396A;
-    margin-bottom: 30px;
-    font-size: 2.2em;
+  text-align: center;
+  color: #1B396A;
+  margin-bottom: 30px;
+  font-size: 2.2em;
 }
 
 .proyectos-grid {
@@ -39,7 +36,7 @@
 }
 
 .proyecto-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 .proyecto-card-title {
@@ -63,7 +60,7 @@
   -webkit-box-orient: vertical;
 }
 
-.proyecto-card-community {
+.proyecto-card-community { 
     font-size: 0.9em;
     color: #555;
     margin-bottom: 10px;
@@ -83,6 +80,7 @@
 
 .progress-bar {
   height: 100%;
+  /*background-color: #4CAF50;*/
   border-radius: 5px;
   text-align: right;
   transition: width 0.5s ease-in-out;
@@ -148,12 +146,28 @@
   margin-right: auto;
 }
 
+.add-new-project-button:hover {
+  background-color: #45a049;
+}
+
 .admin-actions {
   display: flex;
   justify-content: space-around;
   gap: 10px;
   margin-top: 15px;
   width: 100%;
+}
+
+.admin-edit-button,
+.admin-delete-button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+  color: white;
 }
 
 .admin-edit-button {
@@ -170,10 +184,6 @@
 
 .admin-delete-button:hover {
   background-color: #da190b;
-}
-
-.add-new-project-button:hover {
-    background-color: #45a049;
 }
 
 .proyecto-card-image-container {
@@ -222,141 +232,11 @@
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
-
 .color-guide-item p {
     margin: 0;
 }
 
+/* Estilo para el estado gris */
 .grey-status .color-box {
     border: 1px solid #999;
-}
-
-/* src/components/ProyectosTurismoComunitarioPage.css */
-
-/* --------------------------------------------------- */
-/* ESTILOS PARA BOTONES DE ACCIÓN (ADMIN) */
-/* --------------------------------------------------- */
-.card-actions {
-    display: flex;
-    /* Permite que los botones se acomoden en filas de 2 */
-    flex-wrap: wrap; 
-    justify-content: space-between;
-    margin-top: 15px;
-    gap: 8px;
-}
-
-/* Estilo base para todos los botones de acción */
-.action-button {
-    flex: 1 1 calc(50% - 4px); /* Permite que 2 botones quepan en una fila con un gap de 8px */
-    padding: 10px 8px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 600;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    color: white;
-    text-decoration: none;
-}
-
-/* Colores de los botones de acción */
-.action-button.conclude-button {
-    background-color: #004d40;
-    order: 1; 
-}
-.action-button.edit-button {
-    background-color: #2196F3;
-    order: 2;
-}
-.action-button.view-button {
-    background-color: #1B396A;
-    order: 3;
-}
-.action-button.admin-delete-button {
-    background-color: #f44336;
-    order: 4;
-}
-
-.action-button:hover:not(:disabled) {
-    background-color: #00362c;
-}
-.action-button.edit-button:hover:not(:disabled) {
-    background-color: #0b7dda;
-}
-.action-button.view-button:hover:not(:disabled) {
-    background-color: #2a5796;
-}
-.action-button.admin-delete-button:hover:not(:disabled) {
-    background-color: #da190b;
-}
-
-.action-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* Animación de parpadeo para estados de urgencia */
-@keyframes flash-red-yellow {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-.action-button.conclude-button.urgent-action {
-    background-color: #dc3545;
-    animation: flash-red-yellow 1.5s infinite;
-    font-weight: bold;
-    border: 2px solid white;
-}
-
-/* --------------------------------------------------- */
-/* ESTILOS DE LA MODAL DE JUSTIFICACIÓN */
-/* --------------------------------------------------- */
-.justification-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.justification-modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 500px;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.justification-modal-content h3 {
-    color: #004d40;
-    margin-top: 0;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-}
-
-.justification-warning {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 15px;
-    font-size: 0.9em;
-    text-align: center;
-}
-
-.modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
 }
