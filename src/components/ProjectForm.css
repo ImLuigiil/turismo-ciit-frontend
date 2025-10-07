@@ -16,7 +16,7 @@
 }
 
 h2 {
-    color: #004d40;
+    color: #0000FF;
     margin-bottom: 25px;
     font-size: 1.8em;
     text-align: center;
@@ -69,7 +69,7 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: #004d40;
+    border-color: #0000FF;
     box-shadow: 0 0 0 3px rgba(0, 77, 64, 0.2);
     outline: none;
 }
@@ -101,7 +101,7 @@ textarea {
 }
 
 .submit-button {
-    background-color: #004d40;
+    background-color: #0000FF;
     color: white;
 }
 
@@ -165,8 +165,8 @@ textarea {
 /* --------------------------------------------------- */
 .personas-directorio-section h3 {
     font-size: 1.3em;
-    color: #004d40;
-    border-bottom: 2px solid #004d40;
+    color: #0000FF;
+    border-bottom: 2px solid #0000FF;
     padding-bottom: 5px;
     margin-bottom: 15px;
 }
@@ -367,7 +367,7 @@ textarea {
 }
 
 .justification-modal-content h3 {
-    color: #004d40;
+    color: #0000FF;
     margin-top: 0;
     border-bottom: 2px solid #eee;
     padding-bottom: 10px;
@@ -401,7 +401,7 @@ textarea {
 /* BOTÓN CONCLUIR FASE */
 /* --------------------------------------------------- */
 .concluir-fase-button {
-    background-color: #004d40;
+    background-color: #0000FF;
     color: white;
     border: none;
     padding: 10px 20px;
