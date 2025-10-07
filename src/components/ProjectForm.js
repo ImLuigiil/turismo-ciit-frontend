@@ -6,6 +6,17 @@ import { useNotification } from '../contexts/NotificationContext';
 
 import './ProjectForm.css';
 
+const calculateTargetDate = (baseDate, months) => {
+    if (!baseDate) return '';
+    
+    // Usar 'T00:00:00' evita problemas de zona horaria que pueden mover la fecha un día.
+    const d = new Date(baseDate + 'T00:00:00'); 
+    d.setMonth(d.getMonth() + months);
+
+    // Formatear como YYYY-MM-DD
+    return d.toISOString().split('T')[0];
+};
+
 function ProjectForm() {
     const { idProyectoUrl } = useParams();
     const isEditing = !!idProyectoUrl;
@@ -24,6 +35,9 @@ function ProjectForm() {
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFinAprox, setFechaFinAprox] = useState('');
     const [faseActual, setFaseActual] = useState('1');
+
+    const [minDateFinAprox, setMinDateFinAprox] = useState('');
+    const [maxDateFinAprox, setMaxDateFinAprox] = useState('');
 
     const [originalFaseActual, setOriginalFaseActual] = useState('');
     const [showJustificationModal, setShowJustificationModal] = useState(false);
@@ -247,6 +261,39 @@ function ProjectForm() {
             setIsFormDirty(true);
         }
     }, [isEditing, idProyectoUrl, setOriginalFaseActual]);
+
+    useEffect(() => {
+        const calculateAndSetLimits = () => {
+            if (!fechaInicio) {
+                setMinDateFinAprox('');
+                setMaxDateFinAprox('');
+                return;
+            }
+            
+            // Requisitos: Mínimo 4 meses (120 días) y Máximo 12 meses (365 días)
+            const minDate = calculateTargetDate(fechaInicio, 4);
+            const maxDate = calculateTargetDate(fechaInicio, 12);
+            
+            setMinDateFinAprox(minDate);
+            setMaxDateFinAprox(maxDate);
+
+            // --- VALIDACIÓN DE COHERENCIA EN TIEMPO REAL ---
+            if (fechaFinAprox) {
+                const currentEnd = new Date(fechaFinAprox).getTime();
+                const minTime = new Date(minDate).getTime();
+                const maxTime = new Date(maxDate).getTime();
+
+                // Si la fecha final actual es menor que el nuevo mínimo o mayor que el nuevo máximo, la borramos.
+                if (currentEnd < minTime || currentEnd > maxTime) {
+                    setFechaFinAprox(''); 
+                    showNotification('La fecha final fue restablecida, ya que ya no cumple con el nuevo rango de duración (4 a 12 meses desde el inicio).', 'warning');
+                }
+            }
+            // --- FIN VALIDACIÓN COHERENCIA ---
+        };
+
+        calculateAndSetLimits();
+    }, [fechaInicio, fechaFinAprox, showNotification]);
 
 
     const handleAddPersona = () => {
@@ -791,14 +838,18 @@ function ProjectForm() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="fechaFinAprox">Fecha Final (Aprox.):</label>
-                        <input
-                            type="date"
-                            id="fechaFinAprox"
-                            value={fechaFinAprox}
-                            onChange={(e) => setFechaFinAprox(e.target.value)}
-                        />
-                    </div>
+                            <label htmlFor="fechaFinAprox">Fecha Final (Aprox.):</label>
+                            <input
+                                type="date"
+                                id="fechaFinAprox"
+                                value={fechaFinAprox}
+                                onChange={(e) => setFechaFinAprox(e.target.value)}
+                                // --- CÓDIGO MODIFICADO: Aplicación de límites ---
+                                min={minDateFinAprox}
+                                max={maxDateFinAprox}
+                                // --- FIN CÓDIGO MODIFICADO ---
+                            />
+                        </div>
                     {isEditing && (
                         <div className="form-group">
                             <label>Fase Actual: {faseActual}</label>
