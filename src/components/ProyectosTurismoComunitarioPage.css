@@ -265,4 +265,5 @@
   align-self: flex-end; 
   margin-top: auto; 
   animation: flash-red-yellow 1.5s infinite;
+  column-gap: 10px;
 }
