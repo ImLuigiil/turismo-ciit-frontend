@@ -17,10 +17,9 @@
 }
 
 .proyectos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-  justify-content: center; 
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    justify-content: center; 
 }
 
 .proyecto-card {
@@ -309,9 +308,13 @@
 /* Ajuste general del contenedor de acciones para el nuevo botón */
 .card-actions {
     display: flex;
-    justify-content: space-between; /* Distribuye los botones */
+    justify-content: space-between;
+    /* --- CÓDIGO CLAVE MODIFICADO --- */
+    /* Permite que los botones se envuelvan a la siguiente línea si la tarjeta es pequeña */
+    flex-wrap: wrap; 
+    gap: 8px; /* Espacio entre los botones */
     margin-top: 15px;
-    gap: 10px;
+    /* --- FIN CÓDIGO CLAVE MODIFICADO --- */
 }
 
 .card-actions .action-button {
@@ -363,28 +366,4 @@
     animation: flash-red-yellow 1.5s infinite;
     font-weight: bold;
     border: 2px solid white;
-}
-
-.proyectos-grid {
-    /* --- CÓDIGO CLAVE MODIFICADO --- */
-    /* Fuerza 3 columnas de tamaño uniforme, pero permite que sea adaptable */
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    /* En pantallas grandes (>= 992px), puedes forzar 3 columnas exactas si lo deseas: */
-    /* @media (min-width: 992px) {
-        grid-template-columns: repeat(3, 1fr);
-    } */
-    /* --- FIN CÓDIGO CLAVE MODIFICADO --- */
-    gap: 25px;
-    justify-content: center; 
-}
-
-.card-actions {
-    display: flex;
-    justify-content: space-between;
-    /* --- CÓDIGO CLAVE MODIFICADO --- */
-    /* Permite que los botones se envuelvan a la siguiente línea si la tarjeta es pequeña */
-    flex-wrap: wrap; 
-    gap: 8px; /* Espacio entre los botones */
-    margin-top: 15px;
-    /* --- FIN CÓDIGO CLAVE MODIFICADO --- */
 }
