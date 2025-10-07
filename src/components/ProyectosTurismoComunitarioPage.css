@@ -1,100 +1,104 @@
 /* src/components/ProyectosTurismoComunitarioPage.css */
 
+/* --------------------------------------------------- */
+/* ESTILOS DE LA PÁGINA PRINCIPAL */
+/* --------------------------------------------------- */
+
 .proyectos-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 20px auto;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .proyectos-container h2 {
-  text-align: center;
-  color: #1B396A;
-  margin-bottom: 30px;
-  font-size: 2.2em;
+    text-align: center;
+    color: #1B396A;
+    margin-bottom: 30px;
+    font-size: 2.2em;
 }
 
 .proyectos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    display: grid;
+    /* Fija 3 columnas uniformes para un layout consistente */
+    grid-template-columns: repeat(3, 1fr);
     gap: 25px;
-    justify-content: center; 
+    justify-content: center;
 }
 
 .proyecto-card {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease-in-out;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
 }
 
 .proyecto-card:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
 }
 
 .proyecto-card-title {
-  color: #333;
-  font-size: 1.5em;
-  margin-top: 0;
-  margin-bottom: 10px;
+    color: #333;
+    font-size: 1.5em;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 .proyecto-card-description {
-  color: #666;
-  font-size: 0.95em;
-  line-height: 1.5;
-  flex-grow: 1;
-  margin-bottom: 15px;
-
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  display: -webkit-box;
-  -webkit-line-clamp: 3; 
-  -webkit-box-orient: vertical;
+    color: #666;
+    font-size: 0.95em;
+    line-height: 1.5;
+    flex-grow: 1;
+    margin-bottom: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
-.proyecto-card-community { 
+.proyecto-card-community {
     font-size: 0.9em;
     color: #555;
     margin-bottom: 10px;
 }
 
 .proyecto-card-progress {
-  width: 100%;
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  position: relative;
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    position: relative;
 }
 
 .progress-bar {
-  height: 100%;
-  /*background-color: #4CAF50;*/
-  border-radius: 5px;
-  text-align: right;
-  transition: width 0.5s ease-in-out;
-  position: absolute;
-  left: 0;
-  top: 0;
+    height: 100%;
+    border-radius: 5px;
+    text-align: right;
+    transition: width 0.5s ease-in-out;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .progress-text {
-  position: relative;
-  width: 100%;
-  text-align: center;
-  font-weight: bold;
-  color: #333; 
-  font-size: 0.9em;
-  z-index: 1;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9em;
+    z-index: 1;
 }
 
 .progress-bar[style*="width: 50%"] + .progress-text,
@@ -104,84 +108,48 @@
 }
 
 .proyecto-card-button {
-  background-color: #1B396A;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s ease;
-  align-self: flex-end; 
-  margin-top: auto; 
+    background-color: #1B396A;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    align-self: flex-end;
+    margin-top: auto;
 }
 
 .proyecto-card-button:hover {
-  background-color: #2a5796;
+    background-color: #2a5796;
 }
 
 .no-proyectos {
-  grid-column: 1 / -1; 
-  text-align: center;
-  color: #777;
-  font-size: 1.1em;
-  padding: 20px;
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #777;
+    font-size: 1.1em;
+    padding: 20px;
 }
 
 .add-new-project-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.1em;
-  transition: background-color 0.3s ease;
-  margin-bottom: 25px;
-  display: block;
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 25px;
 }
 
 .add-new-project-button:hover {
-  background-color: #45a049;
-}
-
-.admin-actions {
-  display: flex;
-  justify-content: space-around;
-  gap: 10px;
-  margin-top: 15px;
-  width: 100%;
-}
-
-.admin-edit-button,
-.admin-delete-button {
-  flex: 1;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s ease;
-  color: white;
-}
-
-.admin-edit-button {
-  background-color: #2196F3;
-}
-
-.admin-edit-button:hover {
-  background-color: #0b7dda;
-}
-
-.admin-delete-button {
-  background-color: #f44336;
-}
-
-.admin-delete-button:hover {
-  background-color: #da190b;
+    background-color: #45a049;
 }
 
 .proyecto-card-image-container {
@@ -234,36 +202,92 @@
     margin: 0;
 }
 
-/* Estilo para el estado gris */
 .grey-status .color-box {
     border: 1px solid #999;
 }
 
+/* src/components/ProyectosTurismoComunitarioPage.css */
+
+/* --------------------------------------------------- */
+/* ESTILOS PARA BOTONES DE ACCIÓN (ADMIN) */
+/* --------------------------------------------------- */
+.card-actions {
+    display: flex;
+    /* Permite que los botones se acomoden en filas de 2 */
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    margin-top: 15px;
+    gap: 8px;
+}
+
+/* Estilo base para todos los botones de acción */
+.action-button {
+    flex: 1 1 calc(50% - 4px); /* Permite que 2 botones quepan en una fila con un gap de 8px */
+    padding: 10px 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    color: white;
+    text-decoration: none;
+}
+
+/* Colores de los botones de acción */
+.action-button.conclude-button {
+    background-color: #004d40;
+    order: 1; 
+}
+.action-button.edit-button {
+    background-color: #2196F3;
+    order: 2;
+}
+.action-button.view-button {
+    background-color: #1B396A;
+    order: 3;
+}
+.action-button.admin-delete-button {
+    background-color: #f44336;
+    order: 4;
+}
+
+.action-button:hover:not(:disabled) {
+    background-color: #00362c;
+}
+.action-button.edit-button:hover:not(:disabled) {
+    background-color: #0b7dda;
+}
+.action-button.view-button:hover:not(:disabled) {
+    background-color: #2a5796;
+}
+.action-button.admin-delete-button:hover:not(:disabled) {
+    background-color: #da190b;
+}
+
+.action-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Animación de parpadeo para estados de urgencia */
 @keyframes flash-red-yellow {
     0% { opacity: 1; }
     50% { opacity: 0.5; }
     100% { opacity: 1; }
 }
 
-.action-button.conclude-button {
-    background-color: #004d40;
-    color: white;
-    order: 0; /* Asegura que aparezca a la izquierda */
-}
-
-.action-button.conclude-button:hover:not(:disabled) {
-    background-color: #00362c;
-}
-
-/* Clase para el botón cuando el proyecto está atrasado */
 .action-button.conclude-button.urgent-action {
-    background-color: #dc3545; /* Inicia en rojo/amarillo (el color es dinámico) */
-    animation: flash-red-yellow 1.5s infinite; /* Aplica el parpadeo */
+    background-color: #dc3545;
+    animation: flash-red-yellow 1.5s infinite;
     font-weight: bold;
     border: 2px solid white;
 }
 
-/* Estilos de la Modal (copiados de ProjectForm.css para consistencia) */
+/* --------------------------------------------------- */
+/* ESTILOS DE LA MODAL DE JUSTIFICACIÓN */
+/* --------------------------------------------------- */
 .justification-modal-overlay {
     position: fixed;
     top: 0;
@@ -295,9 +319,9 @@
 }
 
 .justification-warning {
-    background-color: #fff3cd; /* Amarillo claro */
-    color: #856404;            /* Texto amarillo oscuro */
-    border: 1px solid #ffeeba; /* Borde amarillo más oscuro */
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
     padding: 10px;
     border-radius: 5px;
     margin-top: 15px;
@@ -305,65 +329,9 @@
     text-align: center;
 }
 
-/* Ajuste general del contenedor de acciones para el nuevo botón */
-.card-actions {
+.modal-buttons {
     display: flex;
-    justify-content: space-between;
-    /* --- CÓDIGO CLAVE MODIFICADO --- */
-    /* Permite que los botones se envuelvan a la siguiente línea si la tarjeta es pequeña */
-    flex-wrap: wrap; 
-    gap: 8px; /* Espacio entre los botones */
-    margin-top: 15px;
-    /* --- FIN CÓDIGO CLAVE MODIFICADO --- */
-}
-
-.card-actions .action-button {
-    flex: 1; /* Permite que los botones ocupen el mismo ancho */
-}
-
-.action-button {
-    /* Estilo base uniforme */
-    flex: 1 1 48%; /* Permite que cada botón ocupe casi la mitad de la tarjeta (para que quepan 2 por fila) */
-    padding: 10px 8px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 600;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    color: white; /* Asegura texto blanco */
-    text-decoration: none; /* Si se usa Link */
-}
-
-.action-button.conclude-button {
-    background-color: #004d40; /* Verde oscuro (Base) */
-    order: 1; 
-}
-.action-button.edit-button {
-    background-color: #2196F3; /* Azul para Editar */
-    order: 2;
-}
-.action-button.view-button {
-    background-color: #1B396A; /* Azul marino/Ver Más */
-    order: 3;
-}
-.action-button.admin-delete-button {
-    background-color: #f44336; /* Rojo para Eliminar */
-    order: 4;
-}
-
-/* Estilo para el botón principal "Ver Más" del visitante (abajo de la tarjeta) */
-.proyecto-card-button {
-    /* Mantenemos el estilo del botón grande de 'Ver Más' fuera del contenedor de acciones */
-    background-color: #1B396A;
-    /* ... (resto del estilo original) ... */
-    margin-top: 15px; /* Separación del bloque de acciones si no es admin */
-}
-
-/* Animación de urgencia (se mantiene) */
-.action-button.conclude-button.urgent-action {
-    animation: flash-red-yellow 1.5s infinite;
-    font-weight: bold;
-    border: 2px solid white;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
