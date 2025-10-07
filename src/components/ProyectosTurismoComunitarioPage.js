@@ -425,8 +425,8 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                 </div>
                                 
                                 
-                                <div className="proyectos-vermas"> 
-                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button> </div> 
+                                
+                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
 
                                 {isAdmin && (
                                     <div className="card-actions">

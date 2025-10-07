@@ -104,14 +104,7 @@
     color: white;
 }
 
-.proyectos-vermas{
-  display: grid;
-  grid-template-columns: repeat(3, 30px);
-  grid-template-rows: repeat(3, 30px);
-  height: 150px;
-  justify-content: center;
-  align-content: center;
-}
+
 .proyecto-card-button {
   background-color: #1B396A;
   color: white;
