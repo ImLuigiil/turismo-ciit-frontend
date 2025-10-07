@@ -248,6 +248,25 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     <div className="proyectos-container">
       <h2>Proyectos Red de Turismo Comunitario</h2>
 
+      <div className="color-guide-container">
+        <div className="color-guide-item">
+            <span className="color-box" style={{ backgroundColor: '#28a745' }}></span>
+            <p>En Tiempo (Avance según lo esperado)</p>
+        </div>
+        <div className="color-guide-item">
+            <span className="color-box" style={{ backgroundColor: '#ffc107' }}></span>
+            <p>Atraso Leve (1 a 4 días de retraso)</p>
+        </div>
+        <div className="color-guide-item">
+            <span className="color-box" style={{ backgroundColor: '#dc3545' }}></span>
+            <p>Muy Atrasado o Vencido (5 o más días de retraso)</p>
+        </div>
+        <div className="color-guide-item grey-status">
+            <span className="color-box" style={{ backgroundColor: '#6c757d' }}></span>
+            <p>Sin Fechas (Falta Fecha de Inicio/Fin)</p>
+        </div>
+    </div>
+    
       {isAdmin && (
         <button className="add-new-project-button" onClick={handleAgregarNuevo}>
           Agregar Nuevo Proyecto
