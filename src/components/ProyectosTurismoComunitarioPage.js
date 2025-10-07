@@ -436,7 +436,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
                                 {isAdmin && (
                                     <div className="card-actions">
-                                        {/* Botón Concluir Fase (Parpadea si es urgente) */}
+                                        {/* Botón Concluir Fase */}
                                         <button 
                                             className={`action-button conclude-button ${actionClass}`} 
                                             onClick={() => handleOpenConcludePhaseModal(proyecto)}
@@ -460,8 +460,9 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                             Ver Más
                                         </button>
                                         
+                                        {/* Botón Eliminar (Mantendremos admin-delete-button para un color distinto) */}
                                         <button
-                                            className="admin-delete-button"
+                                            className="action-button admin-delete-button"
                                             onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
                                             title="Eliminar proyecto"
                                         >
