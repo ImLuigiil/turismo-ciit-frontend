@@ -58,6 +58,13 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
+  const [showConcludePhaseModal, setShowConcludePhaseModal] = useState(false);
+    const [selectedProject, setSelectedProject] = useState(null); 
+    const [concludeJustificationText, setConcludeJustificationText] = useState('');
+    const [concludeDocumentFile, setConcludeDocumentFile] = useState(null);
+    const [modalError, setModalError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
   const fetchProyectos = async () => {
     setLoading(true);
     setError(null);
@@ -236,6 +243,101 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     }
   };
 
+      const handleOpenConcludePhaseModal = (proyecto) => {
+        if (proyecto.faseActual >= 7) {
+            showNotification('El proyecto ya ha alcanzado la fase final (7).', 'info');
+            return;
+        }
+        setSelectedProject(proyecto);
+        setConcludeJustificationText('');
+        setConcludeDocumentFile(null);
+        setModalError(null);
+        setShowConcludePhaseModal(true);
+    };
+
+    const handleConcludeDocumentChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            setConcludeDocumentFile(file);
+            setModalError(null);
+        } else {
+            setConcludeDocumentFile(null);
+            setModalError('Solo se permiten archivos PDF como documento de justificación.');
+        }
+    };
+
+    const handleConcludePhaseCancel = () => {
+        setShowConcludePhaseModal(false);
+        setSelectedProject(null);
+        setModalError(null);
+    };
+
+    const handleConcludePhaseSubmit = async () => {
+        if (!selectedProject) return;
+
+        if (!concludeJustificationText.trim()) {
+            setModalError('La justificación es obligatoria para avanzar de fase.');
+            return;
+        }
+        if (!concludeDocumentFile) {
+            setModalError('Se requiere un documento PDF que avale el cambio de fase.');
+            return;
+        }
+
+        setIsSubmitting(true);
+        setModalError(null);
+
+        const token = sessionStorage.getItem('access_token');
+        if (!token) {
+            setModalError('No autorizado. Por favor, inicia sesión.');
+            setIsSubmitting(false);
+            navigate('/login');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('justificacion', concludeJustificationText);
+        formData.append('documento', concludeDocumentFile);
+
+        try {
+            const API_URL = `${process.env.REACT_APP_API_URL}/proyectos/${selectedProject.idProyecto}/concluir-fase`;
+            const response = await axios.patch(API_URL, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Actualizar la lista de proyectos en el frontend (sin recargar todo)
+            setProyectos(prevProyectos => prevProyectos.map(p => 
+                p.idProyecto === selectedProject.idProyecto 
+                    ? { 
+                        ...p, 
+                        faseActual: response.data.faseActual, 
+                        justificacionFase: response.data.justificacionFase 
+                    } 
+                    : p
+            ));
+            
+            showNotification(`Fase del proyecto "${selectedProject.nombre}" avanzada a Fase ${response.data.faseActual}!`, 'success');
+
+            handleConcludePhaseCancel(); // Cierra la modal
+            
+        } catch (err) {
+            setIsSubmitting(false);
+            let errorMessage = 'Error al avanzar de fase. Intenta de nuevo.';
+            if (err.response && err.response.data && err.response.data.message) {
+                errorMessage = Array.isArray(err.response.data.message) 
+                    ? err.response.data.message.join(', ')
+                    : err.response.data.message;
+            }
+            setModalError(errorMessage);
+            console.error('Error al avanzar de fase:', err.response || err);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
   if (loading) {
     return <div className="proyectos-loading">Cargando proyectos de turismo comunitario...</div>;
   }
@@ -269,75 +371,152 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
         </button>
       )}
 
-      <div className="proyectos-grid">
-        {proyectos.length > 0 ? (
-          proyectos.map(proyecto => (
-            <div key={proyecto.idProyecto} className="proyecto-card">
-              {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
-                <div className="proyecto-card-image-container">
-                  <img
-                    src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
-                    alt={`Imagen de ${proyecto.nombre}`}
-                    className="proyecto-card-image"
-                  />
-                </div>
-              ) : (
-                <div className="proyecto-card-image-container">
-                  <img
-                    src="https://placehold.co/300x180/e0e0e0/777?text=Sin+Imagen"
-                    alt="Sin imagen"
-                    className="proyecto-card-image"
-                  />
-                </div>
-              )}
-              <h3 className="proyecto-card-title">{proyecto.nombre}</h3>
-              <p className="proyecto-card-description">
-                {truncateDescription(proyecto.descripcion, 100)}
-              </p>
-              {proyecto.comunidad && (
-                <p className="proyecto-card-community">Comunidad: {proyecto.comunidad.nombre}</p>
-              )}
-              <div className="proyecto-card-progress">
-                <div
-                  className="progress-bar-container"
-                >
-                  <div
-                    className="progress-bar"
-                    style={{ 
-                      width: `${calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%`,
-                      backgroundColor: getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)
-                    }}
-                  ></div>
-                </div>
-                <span className="progress-text">
-                  Avance: {calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual)}%
-                  {proyecto.faseActual && ` (Fase ${proyecto.faseActual})`}
-                </span>
-              </div>
-              <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
+       <div className="proyectos-grid">
+                {proyectos.length > 0 ? (
+                    proyectos.map(proyecto => {
+                        const avance = calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
+                        const color = getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
+                        
+                        // Lógica para la clase de parpadeo (urgent-action)
+                        const actionClass = (color === '#ffc107' || color === '#dc3545') && proyecto.faseActual < 7 ? 'urgent-action' : '';
 
-              {isAdmin && (
-                <div className="admin-actions">
-                  <button
-                    className="admin-edit-button"
-                    onClick={() => handleEditarProyecto(proyecto.idProyecto)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="admin-delete-button"
-                    onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              )}
+                        return (
+                            <div key={proyecto.idProyecto} className="proyecto-card">
+                                {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
+                                    <div className="proyecto-card-image-container">
+                                        <img
+                                            src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
+                                            alt={`Imagen de ${proyecto.nombre}`}
+                                            className="proyecto-card-image"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="proyecto-card-image-container">
+                                        <img
+                                            src="https://placehold.co/300x180/e0e0e0/777?text=Sin+Imagen"
+                                            alt="Sin imagen"
+                                            className="proyecto-card-image"
+                                        />
+                                    </div>
+                                )}
+                                <h3 className="proyecto-card-title">{proyecto.nombre}</h3>
+                                <p className="proyecto-card-description">
+                                    {truncateDescription(proyecto.descripcion, 100)}
+                                </p>
+                                {proyecto.comunidad && (
+                                    <p className="proyecto-card-community">Comunidad: {proyecto.comunidad.nombre}</p>
+                                )}
+                                <div className="proyecto-card-progress">
+                                    <div
+                                        className="progress-bar-container"
+                                    >
+                                        <div
+                                            className="progress-bar"
+                                            style={{ 
+                                                width: `${avance}%`,
+                                                backgroundColor: color
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <span className="progress-text">
+                                        Avance: {avance}%
+                                        {proyecto.faseActual && ` (Fase ${proyecto.faseActual})`}
+                                    </span>
+                                </div>
+                                
+                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
+
+                                {isAdmin && (
+                                    <div className="card-actions">
+                                        {/* Botón Concluir Fase */}
+                                        <button 
+                                            className={`action-button conclude-button ${actionClass}`} 
+                                            onClick={() => handleOpenConcludePhaseModal(proyecto)}
+                                            disabled={proyecto.faseActual >= 7 || isSubmitting}
+                                            title={proyecto.faseActual >= 7 ? "Proyecto completado" : "Avanzar a la siguiente fase"}
+                                        >
+                                            {proyecto.faseActual < 7 ? 'Concluir Fase' : 'Finalizado'}
+                                        </button>
+                                        
+                                        <button
+                                            className="action-button edit-button"
+                                            onClick={() => handleEditarProyecto(proyecto.idProyecto)}
+                                        >
+                                            Editar
+                                        </button>
+                                        
+                                        <button 
+                                            className="action-button view-button" 
+                                            onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}
+                                        >
+                                            Ver Más
+                                        </button>
+                                        
+                                        {/* Botón Eliminar (Mantendremos admin-delete-button para un color distinto) */}
+                                        <button
+                                            className="action-button admin-delete-button"
+                                            onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
+                                            title="Eliminar proyecto"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p className="no-proyectos">No hay proyectos de turismo comunitario registrados.</p>
+                )}
             </div>
-          ))
-        ) : (
-          <p className="no-proyectos">No hay proyectos de turismo comunitario registrados.</p>
-        )}
-      </div>
+             {showConcludePhaseModal && selectedProject && (
+                <div className="justification-modal-overlay">
+                    <div className="justification-modal-content">
+                        <h3>Concluir Fase {selectedProject.faseActual} a Fase {selectedProject.faseActual + 1}</h3>
+                        <p>Proyecto: **{selectedProject.nombre}**</p>
+                        <p>Para avanzar, explique los motivos y suba el documento de respaldo (PDF).</p>
+
+                        <div className="form-group">
+                            <label htmlFor="concludeJustification">Justificación (Obligatoria):</label>
+                            <textarea
+                                id="concludeJustification"
+                                value={concludeJustificationText}
+                                onChange={(e) => setConcludeJustificationText(e.target.value)}
+                                placeholder="Escriba aquí la justificación..."
+                                rows="4"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
+                            <input
+                                type="file"
+                                id="concludeDocument"
+                                accept=".pdf"
+                                onChange={handleConcludeDocumentChange}
+                                required
+                            />
+                            {concludeDocumentFile && <p className="selected-file-name">Archivo seleccionado: {concludeDocumentFile.name}</p>}
+                        </div>
+                        
+                        {modalError && <p className="error-message">{modalError}</p>}
+
+                        <div className="justification-warning">
+                            <p>⚠️ Una vez confirmado el avance, **no se podrá retroceder** a una fase anterior.</p>
+                        </div>
+
+                        <div className="modal-buttons">
+                            <button onClick={handleConcludePhaseSubmit} className="submit-button" disabled={isSubmitting}>
+                                {isSubmitting ? 'Enviando...' : 'Confirmar Avance'}
+                            </button>
+                            <button onClick={handleConcludePhaseCancel} className="cancel-button" disabled={isSubmitting}>
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
     </div>
   );
 }
