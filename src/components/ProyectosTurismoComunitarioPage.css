@@ -104,6 +104,9 @@
     color: white;
 }
 
+.proyectos-vermas{
+      align-content: center;
+}
 .proyecto-card-button {
   background-color: #1B396A;
   color: white;
@@ -115,7 +118,6 @@
   transition: background-color 0.3s ease;
   align-self: flex-end; 
   margin-top: auto; 
-  align-content: center;
 }
 
 .proyecto-editar-button {

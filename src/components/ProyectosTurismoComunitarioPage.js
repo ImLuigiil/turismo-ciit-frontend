@@ -425,8 +425,8 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                 </div>
                                 
                                 
-                                        
-                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
+                                <div className="proyectos-vermas"> 
+                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button> </div> 
 
                                 {isAdmin && (
                                     <div className="card-actions">
@@ -439,7 +439,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         >
                                             {proyecto.faseActual < 7 ? 'Concluir Fase' : 'Finalizado'}
                                         </button>
-                                        
+
                                         <button
                                             className="action-button proyecto-editar-button"
                                             onClick={() => handleEditarProyecto(proyecto.idProyecto)}
