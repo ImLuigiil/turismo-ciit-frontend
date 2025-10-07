@@ -118,7 +118,7 @@
 }
 
 .proyecto-editar-button {
-  background-color: #00ffff;
+  background-color: #008080;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -251,4 +251,10 @@
 /* Estilo para el estado gris */
 .grey-status .color-box {
     border: 1px solid #999;
+}
+
+.conclude-button {
+    animation: flash-red-yellow 1.5s infinite;
+    font-weight: bold;
+    border: 2px solid white;
 }
