@@ -424,7 +424,14 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                     </span>
                                 </div>
                                 
-                                <button 
+                                
+                                        
+                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
+
+                                {isAdmin && (
+                                    <div className="card-actions">
+                                        {/* Botón Concluir Fase */}
+                                        <button 
                                             className={`action-button conclude-button ${actionClass}`} 
                                             onClick={() => handleOpenConcludePhaseModal(proyecto)}
                                             disabled={proyecto.faseActual >= 7 || isSubmitting}
@@ -432,12 +439,6 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         >
                                             {proyecto.faseActual < 7 ? 'Concluir Fase' : 'Finalizado'}
                                         </button>
-                                        
-                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
-
-                                {isAdmin && (
-                                    <div className="card-actions">
-                                        {/* Botón Concluir Fase */}
                                         
                                         <button
                                             className="action-button proyecto-editar-button"
