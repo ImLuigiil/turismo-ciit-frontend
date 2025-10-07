@@ -115,6 +115,7 @@
   transition: background-color 0.3s ease;
   align-self: flex-end; 
   margin-top: auto; 
+  align-content: center;
 }
 
 .proyecto-editar-button {
