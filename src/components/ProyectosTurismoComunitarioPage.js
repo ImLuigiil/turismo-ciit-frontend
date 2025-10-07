@@ -424,42 +424,43 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                     </span>
                                 </div>
                                 
-                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
+                                <div className="card-actions">
+                  <button className="action-button proyecto-ver-mas-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
 
-                                {isAdmin && (
-                                    <div className="card-actions">
-                                        {/* Botón Concluir Fase */}
-                                        <button 
-                                            className={`action-button conclude-button ${actionClass}`} 
-                                            onClick={() => handleOpenConcludePhaseModal(proyecto)}
-                                            disabled={proyecto.faseActual >= 7 || isSubmitting}
-                                            title={proyecto.faseActual >= 7 ? "Proyecto completado" : "Avanzar a la siguiente fase"}
-                                        >
-                                            {proyecto.faseActual < 7 ? 'Concluir Fase' : 'Finalizado'}
-                                        </button>
-                                        
-                                        <button
-                                            className="action-button proyecto-editar-button"
-                                            onClick={() => handleEditarProyecto(proyecto.idProyecto)}
-                                        >
-                                            Editar
-                                        </button>
-                                        
-                                        {/* Botón Eliminar (Mantendremos admin-delete-button para un color distinto) */}
-                                        <button
-                                            className="action-button admin-delete-button"
-                                            onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
-                                            title="Eliminar proyecto"
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })
-                ) : (
-                    <p className="no-proyectos">No hay proyectos de turismo comunitario registrados.</p>
+                  {isAdmin && (
+                    <>
+                      <button 
+                        className={`action-button conclude-button ${actionClass}`} 
+                        onClick={() => handleOpenConcludePhaseModal(proyecto)}
+                        disabled={proyecto.faseActual >= 7 || isSubmitting}
+                        title={proyecto.faseActual >= 7 ? "Proyecto completado" : "Avanzar a la siguiente fase"}
+                      >
+                        {proyecto.faseActual < 7 ? 'Concluir Fase' : 'Finalizado'}
+                      </button>
+                      
+                      <button
+                        className="action-button proyecto-editar-button"
+                        onClick={() => handleEditarProyecto(proyecto.idProyecto)}
+                      >
+                        Editar
+                      </button>
+                      
+                      <button
+                        className="action-button admin-delete-button"
+                        onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
+                        title="Eliminar proyecto"
+                      >
+                        Eliminar
+                      </button>
+                    </>
+                  )}
+                </div>
+
+              </div>
+            );
+          })
+        ) : (
+          <p className="no-proyectos">No hay proyectos de turismo comunitario registrados.</p>
                 )}
             </div>
              {showConcludePhaseModal && selectedProject && (

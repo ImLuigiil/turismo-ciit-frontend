@@ -120,14 +120,10 @@
 .proyecto-editar-button {
   background-color: #008080;
   color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s ease;
-  align-self: flex-end; 
-  margin-top: auto; 
+}
+
+.proyecto-editar-button:hover {
+  background-color: #006666;
 }
 
 .proyecto-card-button:hover {
@@ -256,13 +252,34 @@
 .conclude-button {
   background-color: #00913f;
   color: white;
-  border: none;
+}
+
+.conclude-button:hover {
+  background-color: #007534;
+}
+
+
+
+.card-actions {
+    display: flex;
+    justify-content: space-between; /* Distribuye los elementos uniformemente */
+    align-items: center; /* Alinea verticalmente los botones */
+    gap: 10px; /* Espacio entre los botones */
+    margin-top: auto; /* Empuja el contenedor de acciones hacia la parte inferior */
+    padding-top: 15px; /* Espacio superior */
+}
+
+.action-button {
+  flex-grow: 1; /* Permite que los botones crezcan para llenar el espacio */
   padding: 10px 15px;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s ease;
-  align-self: flex-end; 
-  margin-top: auto; 
-  animation: flash-red-yellow 1.5s infinite;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  text-align: center;
+  min-width: 0; /* Permite que se encojan si es necesario */
 }
+
+
+
