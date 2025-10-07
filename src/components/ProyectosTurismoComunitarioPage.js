@@ -439,17 +439,10 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         </button>
                                         
                                         <button
-                                            className="action-button proyecto-card-button"
+                                            className="action-button proyecto-editar-button"
                                             onClick={() => handleEditarProyecto(proyecto.idProyecto)}
                                         >
                                             Editar
-                                        </button>
-                                        
-                                        <button 
-                                            className="action-button proyecto-card-button" 
-                                            onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}
-                                        >
-                                            Ver Más
                                         </button>
                                         
                                         {/* Botón Eliminar (Mantendremos admin-delete-button para un color distinto) */}
