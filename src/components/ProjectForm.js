@@ -350,15 +350,16 @@ function ProjectForm() {
         const persona = personasDirectorio[index];
         const personaNombre = persona.nombre || `Persona #${index + 1}`;
         
-        showNotification(`¿Estás seguro de que quieres eliminar a ${personaNombre}?`, 'confirm', 
-            () => {
-                const newPersonas = personasDirectorio.filter((_, i) => i !== index);
-                setPersonasDirectorio(newPersonas);
-                setIsFormDirty(true);
-                showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
-            }
-        );
+        // **ADVERTENCIA: Uso temporal de window.confirm() para desarrollo.**
+        // En producción, esto debe ser una modal/notificación personalizada.
+        if (window.confirm(`¿Estás seguro de que quieres eliminar a ${personaNombre}? Esta acción no se puede deshacer.`)) {
+            const newPersonas = personasDirectorio.filter((_, i) => i !== index);
+            setPersonasDirectorio(newPersonas);
+            setIsFormDirty(true);
+            showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
+        }
     };
+    // 
 
     const handleAcceptPersona = (index) => {
         const persona = personasDirectorio[index];
