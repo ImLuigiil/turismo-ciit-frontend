@@ -472,3 +472,49 @@ textarea {
     cursor: default !important;
     padding: 8px 12px;
 }
+
+.accept-persona-button {
+    background-color: #28a745; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0;
+    min-width: 90px; /* Asegura un tamaño consistente */
+    height: 34px;
+    margin-right: 5px; /* Espacio antes del botón X */
+    transition: background-color 0.2s;
+}
+
+.edit-persona-button {
+    background-color: #ffc107; /* Amarillo */
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0;
+    min-width: 90px; 
+    height: 34px;
+    margin-right: 5px; /* Espacio antes del botón X */
+    transition: background-color 0.2s;
+}
+
+.accept-persona-button:hover {
+    background-color: #1e7e34;
+}
+
+.edit-persona-button:hover {
+    background-color: #e0a800;
+}
+
+
+/* Asegurar alineación: Ajustamos el tamaño del placeholder en el header */
+.persona-header-labels .remove-placeholder {
+    /* El espacio del placeholder ahora debe cubrir ACEPTAR + X */
+    min-width: 140px; /* Ancho estimado de ACEPTAR + X + margen */
+    padding: 8px 12px; 
+}

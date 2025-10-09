@@ -324,7 +324,9 @@ function ProjectForm() {
                 apellidoMaterno: '', 
                 nombre: '', 
                 rolEnProyecto: '', // Dejamos vacío para que el usuario seleccione
-                contacto: '' 
+                contacto: '',
+
+                isEditingLocal: true,
             }
             
         ]);
@@ -336,12 +338,32 @@ function ProjectForm() {
     const handlePersonaChange = (index, field, value) => {
         const newPersonas = [...personasDirectorio];
         newPersonas[index][field] = value;
+
+        if (field !== 'idPersonaProyecto' && newPersonas[index].isEditingLocal === false) {
+            newPersonas[index].isEditingLocal = true;
+        }
+
         setPersonasDirectorio(newPersonas);
     };
 
     const handleRemovePersona = (index) => {
         const newPersonas = personasDirectorio.filter((_, i) => i !== index);
         setPersonasDirectorio(newPersonas);
+    };
+
+    const handleAcceptPersona = (index) => {
+        const persona = personasDirectorio[index];
+        
+        if (!persona.apellidoPaterno.trim() || !persona.nombre.trim() || !persona.rolEnProyecto.trim()) {
+            showNotification('Error: Los campos Apellido Paterno, Nombre(s) y Rol son obligatorios para confirmar la persona.', 'error');
+            return;
+        }
+
+        const newPersonas = [...personasDirectorio];
+        newPersonas[index].isEditingLocal = false; // Se marca como confirmada
+        setPersonasDirectorio(newPersonas);
+        setIsFormDirty(true);
+        showNotification('Persona involucrada confirmada con éxito.', 'success');
     };
 
     const handleSearchChange = (e) => {
@@ -853,6 +875,31 @@ function ProjectForm() {
                                     value={persona.contacto}
                                     onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
                                 />
+                                {persona.isEditingLocal ? (
+                                    <button 
+                                        type="button" 
+                                        onClick={() => handleAcceptPersona(index)} 
+                                        className="accept-persona-button"
+                                        title="Aceptar y guardar cambios de esta persona"
+                                    >
+                                    ✓ 
+                                </button>
+                                 ) : (
+                                    // Botón de Edición (para volver a abrir los campos)
+                                <button 
+                                type="button" 
+                                onClick={() => {
+                                const newPersonas = [...personasDirectorio];
+                                    newPersonas[index].isEditingLocal = true;
+                                    setPersonasDirectorio(newPersonas);
+                                    setIsFormDirty(true);
+                                }} 
+                                    className="edit-persona-button"
+                                    title="Editar datos de esta persona"
+                                >
+                                ✍
+                                </button>
+                                    )}
                                 <button type="button" onClick={() => handleRemovePersona(index)} className="remove-persona-button">
                                     X
                                 </button>
