@@ -54,6 +54,24 @@ function ProjectForm() {
 
     const MAX_PERSONAS_INVOLUCRADAS = 15; 
 
+    const generateCollaboratorRoles = (currentPersonas) => {
+        // Contar cuántos colaboradores ya existen
+        const collaboratorCount = currentPersonas.filter(p => 
+            p.rolEnProyecto && p.rolEnProyecto.startsWith('Colaborador')
+        ).length;
+
+        const roles = [{ label: 'Líder', value: 'Líder' }];
+        
+        // Genera los siguientes roles de Colaborador hasta el límite máximo
+        for (let i = 1; i <= MAX_PERSONAS_INVOLUCRADAS; i++) {
+            roles.push({ label: `Colaborador ${i}`, value: `Colaborador ${i}` });
+        }
+        return roles;
+    };
+
+    const collaboratorRoles = generateCollaboratorRoles(personasDirectorio);
+
+
     const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
 
     const [newImageFiles, setNewImageFiles] = useState([]);
@@ -301,7 +319,21 @@ function ProjectForm() {
       showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
       return;
     }
-        setPersonasDirectorio([...personasDirectorio, { apellidoPaterno: '', apellidoMaterno: '', nombre: '', rolEnProyecto: '', contacto: '' }]);
+
+        setPersonasDirectorio([
+            ...personasDirectorio,
+            { 
+                apellidoPaterno: '', 
+                apellidoMaterno: '', 
+                nombre: '', 
+                rolEnProyecto: '', // Dejamos vacío para que el usuario seleccione
+                contacto: '' 
+            }
+            
+        ]);
+
+        setIsFormDirty(true);
+
     };
 
     const handlePersonaChange = (index, field, value) => {
@@ -790,12 +822,34 @@ function ProjectForm() {
                                     onChange={(e) => handlePersonaChange(index, 'nombre', e.target.value)}
                                     required
                                 />
-                                <input
-                                    type="text"
-                                    placeholder="Rol (ej. Líder)"
+                                <select
                                     value={persona.rolEnProyecto}
                                     onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
-                                />
+                                    required // Hacemos que la selección sea obligatoria
+                                    // Usamos la misma clase que el input para mantener la estética
+                                    className="select-rol"
+                                >
+                                {/* Opción por defecto (deshabilitada si ya hay un valor) */}
+                                <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
+    
+                                {/* Mapear las opciones de roles, asegurando que 'Colaborador X' se use una vez */}
+                                    {collaboratorRoles.map((role) => {
+                                // Deshabilitamos los roles de Colaborador ya seleccionados por OTRAS personas
+                                const isRoleUsed = personasDirectorio.some(
+                                    (p, i) => i !== index && p.rolEnProyecto === role.value && role.value.startsWith('Colaborador')
+                                    );
+
+                                 return (
+                                    <option 
+                                        key={role.value} 
+                                        value={role.value}
+                                        disabled={isRoleUsed}
+                                    >
+                                {role.label}
+                                    </option>
+                                    );
+                                    })}
+                                </select>
                                 <input
                                     type="text"
                                     placeholder="Contacto (ej. email)"
