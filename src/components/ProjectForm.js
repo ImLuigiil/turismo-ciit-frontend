@@ -347,8 +347,17 @@ function ProjectForm() {
     };
 
     const handleRemovePersona = (index) => {
-        const newPersonas = personasDirectorio.filter((_, i) => i !== index);
-        setPersonasDirectorio(newPersonas);
+        const persona = personasDirectorio[index];
+        const personaNombre = persona.nombre || `Persona #${index + 1}`;
+        
+        showNotification(`¿Estás seguro de que quieres eliminar a ${personaNombre}?`, 'confirm', 
+            () => {
+                const newPersonas = personasDirectorio.filter((_, i) => i !== index);
+                setPersonasDirectorio(newPersonas);
+                setIsFormDirty(true);
+                showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
+            }
+        );
     };
 
     const handleAcceptPersona = (index) => {
@@ -892,7 +901,6 @@ function ProjectForm() {
                                     ✓ 
                                 </button>
                                  ) : (
-                                    // Botón de Edición (para volver a abrir los campos)
                                 <button 
                                 type="button" 
                                 onClick={() => {
@@ -907,9 +915,13 @@ function ProjectForm() {
                                 ✍
                                 </button>
                                     )}
-                                <button type="button" onClick={() => handleRemovePersona(index)} className="remove-persona-button">
-                                    X
-                                </button>
+                                <button 
+                type="button" 
+                onClick={() => handleRemovePersona(index)} 
+                className="remove-persona-button"
+            >
+                X
+            </button>
                             </div>
                         ))}
                         <button type="button" onClick={handleAddPersona} className={`add-persona-button ${personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS ? 'disabled-limit' : ''}`}
