@@ -623,20 +623,6 @@ function ProjectForm() {
             <div className="project-form-container">
                 <h2>{isEditing ? `Editar Proyecto: ${nombre}` : 'Agregar Nuevo Proyecto de Turismo Comunitario'}</h2>
                 <form onSubmit={handleSubmit} className="project-form">
-                    {isEditing && (
-                        <div className="form-group">
-                            <label htmlFor="idProyecto">ID del Proyecto:</label>
-                            <input
-                                type="number"
-                                id="idProyecto"
-                                value={idProyecto}
-                                onChange={(e) => setIdProyecto(e.target.value)}
-                                required
-                                disabled={true}
-                            />
-                        </div>
-                    )}
-
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre del Proyecto:</label>
                         <input
