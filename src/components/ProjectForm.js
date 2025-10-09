@@ -56,9 +56,6 @@ function ProjectForm() {
 
     const generateCollaboratorRoles = (currentPersonas) => {
         // Contar cuántos colaboradores ya existen
-        const collaboratorCount = currentPersonas.filter(p => 
-            p.rolEnProyecto && p.rolEnProyecto.startsWith('Colaborador')
-        ).length;
 
         const roles = [{ label: 'Líder', value: 'Líder' }];
         
