@@ -827,12 +827,15 @@ function ProjectForm() {
                                     value={persona.apellidoPaterno}
                                     onChange={(e) => handlePersonaChange(index, 'apellidoPaterno', e.target.value)}
                                     required
+                                    disabled={!persona.isEditingLocal}
                                 />
                                 <input
                                     type="text"
                                     placeholder="Apellido Materno (Opcional)"
                                     value={persona.apellidoMaterno}
                                     onChange={(e) => handlePersonaChange(index, 'apellidoMaterno', e.target.value)}
+
+                                    disabled={!persona.isEditingLocal}
                                 />
                                 <input
                                     type="text"
@@ -840,6 +843,8 @@ function ProjectForm() {
                                     value={persona.nombre}
                                     onChange={(e) => handlePersonaChange(index, 'nombre', e.target.value)}
                                     required
+
+                                    disabled={!persona.isEditingLocal}
                                 />
                                 <select
                                     value={persona.rolEnProyecto}
@@ -847,6 +852,7 @@ function ProjectForm() {
                                     required // Hacemos que la selección sea obligatoria
                                     // Usamos la misma clase que el input para mantener la estética
                                     className="select-rol"
+                                    disabled={!persona.isEditingLocal}
                                 >
                                 {/* Opción por defecto (deshabilitada si ya hay un valor) */}
                                 <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
@@ -874,6 +880,7 @@ function ProjectForm() {
                                     placeholder="Contacto (ej. email)"
                                     value={persona.contacto}
                                     onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
+                                    disabled={!persona.isEditingLocal}
                                 />
                                 {persona.isEditingLocal ? (
                                     <button 
