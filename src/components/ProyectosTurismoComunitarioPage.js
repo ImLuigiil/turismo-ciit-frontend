@@ -214,33 +214,34 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     console.log(`Redirigir a página para editar el proyecto con ID: ${proyectoId}`);
   };
 
-  const handleEliminarProyecto = async (proyectoId) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar el proyecto con ID: ${proyectoId}?`)) {
-      try {
-        const token = sessionStorage.getItem('access_token');
-        if (!token) {
-          alert('No estás autenticado. Por favor, inicia sesión.');
-          navigate('/login');
-          return;
-        }
+const handleEliminarProyecto = async (proyectoId) => {
+        // ... (Tu código de confirmación con window.confirm) ...
+        
+        try {
+            // ... (código de token) ...
+            
+            await axios.delete(`${process.env.REACT_APP_API_URL}/proyectos/${proyectoId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
-        await axios.delete(`${process.env.REACT_APP_API_URL}/proyectos/${proyectoId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+            showNotification(`Proyecto con ID ${proyectoId} eliminado con éxito.`, 'success');
+            fetchProyectos();
+        } catch (err) {
+            console.error(`Error al eliminar el proyecto con ID ${proyectoId}:`, err);
+            let errorMessage = 'Ocurrió un error al intentar eliminar el proyecto.';
+            
+            // --- CÓDIGO MODIFICADO: Captura el error específico de validación del backend ---
+            if (err.response && err.response.status === 400 && err.response.data.message) {
+                errorMessage = err.response.data.message;
+            } else if (err.response && err.response.data && err.response.data.message) {
+                 errorMessage = Array.isArray(err.response.data.message) 
+                    ? err.response.data.message.join(', ')
+                    : err.response.data.message;
+            }
+            // --- FIN CÓDIGO MODIFICADO ---
 
-        alert(`Proyecto con ID ${proyectoId} eliminado con éxito.`);
-        fetchProyectos();
-      } catch (err) {
-        console.error(`Error al eliminar el proyecto con ID ${proyectoId}:`, err);
-        if (err.response && err.response.status === 401) {
-          alert('No autorizado. Tu sesión ha expirado o no tienes permisos.');
-        } else if (err.response && err.response.data && err.response.data.message) {
-          alert(`Error al eliminar: ${err.response.data.message}`);
-        } else {
-          alert('Ocurrió un error al intentar eliminar el proyecto.');
+            showNotification(`Error al eliminar: ${errorMessage}`, 'error');
         }
-      }
-    }
   };
 
       const handleOpenConcludePhaseModal = (proyecto) => {
@@ -451,7 +452,10 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         <button
                                             className="action-button admin-delete-button"
                                             onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
-                                            title="Eliminar proyecto"
+                                            title={proyecto.faseActual > 1 ? "No se puede eliminar: ya inició la Fase 2" : "Eliminar proyecto"}
+                                            // --- CÓDIGO CLAVE MODIFICADO ---
+                                            disabled={proyecto.faseActual > 1}
+                                            // --- FIN CÓDIGO CLAVE MODIFICADO ---
                                         >
                                             Eliminar
                                         </button>
