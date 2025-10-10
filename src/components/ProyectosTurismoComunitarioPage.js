@@ -215,6 +215,14 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
   };
 
     const handleEliminarProyecto = async (proyectoId) => {
+        // --- CÓDIGO AÑADIDO: Obtención del proyecto para la notificación ---
+        const proyectoToDelete = proyectos.find(p => p.idProyecto === proyectoId);
+        if (proyectoToDelete && proyectoToDelete.faseActual > 1) {
+            showNotification(`No puedes eliminar el proyecto "${proyectoToDelete.nombre}". Solo los proyectos en Fase 1 pueden ser borrados.`, 'error');
+            return;
+        }
+        // --- FIN CÓDIGO AÑADIDO ---
+        
         // **ADVERTENCIA: Uso temporal de window.confirm() para desarrollo.**
         if (!window.confirm(`¿Estás seguro de que quieres eliminar el proyecto con ID: ${proyectoId}?`)) {
             return;
