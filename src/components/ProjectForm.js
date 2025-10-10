@@ -364,10 +364,26 @@ function ProjectForm() {
     const handleAcceptPersona = (index) => {
         const persona = personasDirectorio[index];
         
+        // 1. Validación de campos obligatorios
         if (!persona.apellidoPaterno.trim() || !persona.nombre.trim() || !persona.rolEnProyecto.trim()) {
             showNotification('Error: Los campos Apellido Paterno, Nombre(s) y Rol son obligatorios para confirmar la persona.', 'error');
             return;
         }
+
+        // 2. Validación: Solo puede haber un Líder (Verifica si hay otro Líder ya ACEPTADO)
+        if (persona.rolEnProyecto === 'Líder') {
+            const isLeaderAlreadyAssigned = personasDirectorio.some(
+                // Busca en todas las filas excepto la actual (i !== index) y que ya estén confirmadas (isEditingLocal === false)
+                (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
+            );
+            
+            if (isLeaderAlreadyAssigned) {
+                showNotification('Error de Rol: Solo puede haber un Líder asignado por proyecto. Por favor, selecciona otro rol.', 'error');
+                return;
+            }
+        }
+        // --- FIN Validación de un solo Líder ---
+
 
         const newPersonas = [...personasDirectorio];
         newPersonas[index].isEditingLocal = false; // Se marca como confirmada
@@ -829,102 +845,111 @@ function ProjectForm() {
         <label>Contacto</label>
         <div className="remove-placeholder remove-persona-button"></div> 
     </div>
-                        {personasDirectorio.map((persona, index) => (
-                            <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
-                                <input
-                                    type="text"
-                                    placeholder="Apellido Paterno"
-                                    value={persona.apellidoPaterno}
-                                    onChange={(e) => handlePersonaChange(index, 'apellidoPaterno', e.target.value)}
-                                    required
-                                    disabled={!persona.isEditingLocal}
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Apellido Materno (Opcional)"
-                                    value={persona.apellidoMaterno}
-                                    onChange={(e) => handlePersonaChange(index, 'apellidoMaterno', e.target.value)}
+                        {personasDirectorio.map((persona, index) => {
+                            // --- CÓDIGO CORREGIDO: Definición de isLeaderUsed dentro del map ---
+                            const isLeaderUsed = personasDirectorio.some(
+                                // Busca un Líder en OTRAS filas (i !== index) que ya esté CONFIRMADO (isEditingLocal === false)
+                                (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
+                            );
+                            // --- FIN CÓDIGO CORREGIDO ---
 
-                                    disabled={!persona.isEditingLocal}
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Nombre(s)"
-                                    value={persona.nombre}
-                                    onChange={(e) => handlePersonaChange(index, 'nombre', e.target.value)}
-                                    required
-
-                                    disabled={!persona.isEditingLocal}
-                                />
-                                <select
-                                    value={persona.rolEnProyecto}
-                                    onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
-                                    required // Hacemos que la selección sea obligatoria
-                                    // Usamos la misma clase que el input para mantener la estética
-                                    className="select-rol"
-                                    disabled={!persona.isEditingLocal}
-                                >
-                                {/* Opción por defecto (deshabilitada si ya hay un valor) */}
-                                <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
-    
-                                {/* Mapear las opciones de roles, asegurando que 'Colaborador X' se use una vez */}
-                                    {collaboratorRoles.map((role) => {
-                                // Deshabilitamos los roles de Colaborador ya seleccionados por OTRAS personas
-                                const isRoleUsed = personasDirectorio.some(
-                                    (p, i) => i !== index && p.rolEnProyecto === role.value && role.value.startsWith('Colaborador')
-                                    );
-
-                                 return (
-                                    <option 
-                                        key={role.value} 
-                                        value={role.value}
-                                        disabled={isRoleUsed}
+                            return (
+                                <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
+                                    <input
+                                        type="text"
+                                        placeholder="Apellido Paterno"
+                                        value={persona.apellidoPaterno}
+                                        onChange={(e) => handlePersonaChange(index, 'apellidoPaterno', e.target.value)}
+                                        required
+                                        disabled={!persona.isEditingLocal}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Apellido Materno (Opcional)"
+                                        value={persona.apellidoMaterno}
+                                        onChange={(e) => handlePersonaChange(index, 'apellidoMaterno', e.target.value)}
+                                        disabled={!persona.isEditingLocal}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Nombre(s)"
+                                        value={persona.nombre}
+                                        onChange={(e) => handlePersonaChange(index, 'nombre', e.target.value)}
+                                        required
+                                        disabled={!persona.isEditingLocal}
+                                    />
+                                    
+                                    {/* SELECT ROL */}
+                                    <select
+                                        value={persona.rolEnProyecto}
+                                        onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
+                                        required
+                                        className="select-rol"
+                                        disabled={!persona.isEditingLocal}
                                     >
-                                {role.label}
-                                    </option>
-                                    );
-                                    })}
-                                </select>
-                                <input
-                                    type="text"
-                                    placeholder="Contacto (ej. email)"
-                                    value={persona.contacto}
-                                    onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
-                                    disabled={!persona.isEditingLocal}
-                                />
-                                {persona.isEditingLocal ? (
-                                    <button 
-                                        type="button" 
-                                        onClick={() => handleAcceptPersona(index)} 
-                                        className="accept-persona-button"
-                                        title="Aceptar y guardar cambios de esta persona"
-                                    >
-                                    ✓ 
-                                </button>
-                                 ) : (
-                                <button 
-                                type="button" 
-                                onClick={() => {
-                                const newPersonas = [...personasDirectorio];
-                                    newPersonas[index].isEditingLocal = true;
-                                    setPersonasDirectorio(newPersonas);
-                                    setIsFormDirty(true);
-                                }} 
-                                    className="edit-persona-button"
-                                    title="Editar datos de esta persona"
-                                >
-                                ✍
-                                </button>
+                                        <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
+                                        {collaboratorRoles.map((role) => {
+                                            // Validación 1: El Líder solo está disponible si no ha sido usado y aceptado
+                                            const isLeaderDisabled = role.value === 'Líder' && isLeaderUsed && persona.rolEnProyecto !== 'Líder';
+
+                                            // Validación 2: Los Colaboradores (Colaborador 1, 2, 3...) solo se pueden usar una vez.
+                                            const isCollaboratorUsed = role.value.startsWith('Colaborador') && 
+                                                personasDirectorio.some(
+                                                    (p, i) => i !== index && p.rolEnProyecto === role.value && p.isEditingLocal === false
+                                                );
+
+                                            return (
+                                                <option 
+                                                    key={role.value} 
+                                                    value={role.value}
+                                                    disabled={isLeaderDisabled || (isCollaboratorUsed && persona.rolEnProyecto !== role.value)}
+                                                >
+                                                    {role.label}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    
+                                    <input
+                                        type="text"
+                                        placeholder="Contacto (ej. email)"
+                                        value={persona.contacto}
+                                        onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
+                                        disabled={!persona.isEditingLocal}
+                                    />
+                                    
+                                    {/* Botón ACEPTAR/EDITAR Condicional */}
+                                    {persona.isEditingLocal ? (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => handleAcceptPersona(index)} 
+                                            className="accept-persona-button"
+                                            title="Confirmar y bloquear edición de esta persona"
+                                        >
+                                            ✓ Aceptar
+                                        </button>
+                                    ) : (
+                                         <button 
+                                            type="button" 
+                                            onClick={() => {
+                                                const newPersonas = [...personasDirectorio];
+                                                newPersonas[index].isEditingLocal = true; 
+                                                setPersonasDirectorio(newPersonas);
+                                                setIsFormDirty(true);
+                                            }} 
+                                            className="edit-persona-button"
+                                            title="Editar datos de esta persona"
+                                        >
+                                            ✍
+                                        </button>
                                     )}
-                                <button 
-                type="button" 
-                onClick={() => handleRemovePersona(index)} 
-                className="remove-persona-button"
-            >
-                X
-            </button>
-                            </div>
-                        ))}
+                                    
+                                    <button type="button" onClick={() => handleRemovePersona(index)} className="remove-persona-button">
+                                        X
+                                    </button>
+                                </div>
+                            );
+                        })}
                         <button type="button" onClick={handleAddPersona} className={`add-persona-button ${personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS ? 'disabled-limit' : ''}`}
                         disabled={personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS}>
                             + Agregar Persona
