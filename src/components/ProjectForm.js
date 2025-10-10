@@ -848,9 +848,14 @@ function ProjectForm() {
                         {personasDirectorio.map((persona, index) => {
                             // --- CÓDIGO CORREGIDO: Definición de isLeaderUsed dentro del map ---
                             const isLeaderUsed = personasDirectorio.some(
-                                // Busca un Líder en OTRAS filas (i !== index) que ya esté CONFIRMADO (isEditingLocal === false)
-                                (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
-                            );
+        (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
+    );
+
+    // Crea un Set de todos los roles de Colaborador confirmados en otras filas
+    const usedCollaboratorRoles = new Set(personasDirectorio
+        .filter((p, i) => i !== index && p.rolEnProyecto.startsWith('Colaborador') && p.isEditingLocal === false)
+        .map(p => p.rolEnProyecto)
+    );
                             // --- FIN CÓDIGO CORREGIDO ---
 
                             return (
@@ -880,35 +885,42 @@ function ProjectForm() {
                                     />
                                     
                                     {/* SELECT ROL */}
-                                    <select
-                                        value={persona.rolEnProyecto}
-                                        onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
-                                        required
-                                        className="select-rol"
-                                        disabled={!persona.isEditingLocal}
-                                    >
-                                        <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
-                                        {collaboratorRoles.map((role) => {
-                                            // Validación 1: El Líder solo está disponible si no ha sido usado y aceptado
-                                            const isLeaderDisabled = role.value === 'Líder' && isLeaderUsed && persona.rolEnProyecto !== 'Líder';
+                                     <select
+                value={persona.rolEnProyecto}
+                onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
+                required
+                className="select-rol"
+                disabled={!persona.isEditingLocal}
+            >
+                <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
+                
+                {/* ----------------------------------------------------- */}
+                {/* --- LÓGICA DE FILTRADO (El rol ya no aparece si está usado) --- */}
+                {collaboratorRoles
+                    .filter(role => {
+                        // 1. Si es Líder: Solo aparece si la fila actual es la que lo tiene (o si no hay ninguno usado)
+                        if (role.value === 'Líder') {
+                            return persona.rolEnProyecto === 'Líder' || !isLeaderUsed;
+                        }
 
-                                            // Validación 2: Los Colaboradores (Colaborador 1, 2, 3...) solo se pueden usar una vez.
-                                            const isCollaboratorUsed = role.value.startsWith('Colaborador') && 
-                                                personasDirectorio.some(
-                                                    (p, i) => i !== index && p.rolEnProyecto === role.value && p.isEditingLocal === false
-                                                );
+                        // 2. Si es Colaborador: Solo aparece si no ha sido usado O si la fila actual lo tiene
+                        if (role.value.startsWith('Colaborador')) {
+                            return persona.rolEnProyecto === role.value || !usedCollaboratorRoles.has(role.value);
+                        }
 
-                                            return (
-                                                <option 
-                                                    key={role.value} 
-                                                    value={role.value}
-                                                    disabled={isLeaderDisabled || (isCollaboratorUsed && persona.rolEnProyecto !== role.value)}
-                                                >
-                                                    {role.label}
-                                                </option>
-                                            );
-                                        })}
-                                    </select>
+                        return true; // Cualquier otro rol pasa el filtro
+                    })
+                    .map((role) => (
+                        <option 
+                            key={role.value} 
+                            value={role.value}
+                        >
+                            {role.label}
+                        </option>
+                    ))}
+                {/* --- FIN LÓGICA DE FILTRADO --- */}
+                {/* ----------------------------------------------------- */}
+            </select>
                                     
                                     <input
                                         type="text"
