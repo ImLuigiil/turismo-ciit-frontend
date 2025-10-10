@@ -214,12 +214,22 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     console.log(`Redirigir a página para editar el proyecto con ID: ${proyectoId}`);
   };
 
-const handleEliminarProyecto = async (proyectoId) => {
-        // ... (Tu código de confirmación con window.confirm) ...
-        
+    const handleEliminarProyecto = async (proyectoId) => {
+        // **ADVERTENCIA: Uso temporal de window.confirm() para desarrollo.**
+        if (!window.confirm(`¿Estás seguro de que quieres eliminar el proyecto con ID: ${proyectoId}?`)) {
+            return;
+        }
+
         try {
-            // ... (código de token) ...
-            
+            // --- CÓDIGO CLAVE AÑADIDO/MODIFICADO: Obtención del token ---
+            const token = sessionStorage.getItem('access_token');
+            if (!token) {
+                showNotification('No estás autenticado. Por favor, inicia sesión.', 'error');
+                navigate('/login');
+                return;
+            }
+            // --- FIN CÓDIGO CLAVE AÑADIDO/MODIFICADO ---
+
             await axios.delete(`${process.env.REACT_APP_API_URL}/proyectos/${proyectoId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -230,7 +240,7 @@ const handleEliminarProyecto = async (proyectoId) => {
             console.error(`Error al eliminar el proyecto con ID ${proyectoId}:`, err);
             let errorMessage = 'Ocurrió un error al intentar eliminar el proyecto.';
             
-            // --- CÓDIGO MODIFICADO: Captura el error específico de validación del backend ---
+            // Captura el error específico de validación del backend (Fase > 1)
             if (err.response && err.response.status === 400 && err.response.data.message) {
                 errorMessage = err.response.data.message;
             } else if (err.response && err.response.data && err.response.data.message) {
@@ -238,11 +248,10 @@ const handleEliminarProyecto = async (proyectoId) => {
                     ? err.response.data.message.join(', ')
                     : err.response.data.message;
             }
-            // --- FIN CÓDIGO MODIFICADO ---
 
             showNotification(`Error al eliminar: ${errorMessage}`, 'error');
         }
-  };
+    };
 
       const handleOpenConcludePhaseModal = (proyecto) => {
         if (proyecto.faseActual >= 7) {
