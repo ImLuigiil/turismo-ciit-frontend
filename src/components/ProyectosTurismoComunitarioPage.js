@@ -459,7 +459,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         </button>
 
                                         <button
-                                            className="action-button edit-button"
+                                            className="action-button admin-edit-button"
                                             onClick={() => handleEditarProyecto(proyecto.idProyecto)}
                                             // --- CÓDIGO CLAVE AÑADIDO ---
                                             disabled={proyecto.faseActual >= 7}
