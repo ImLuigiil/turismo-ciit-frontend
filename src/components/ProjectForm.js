@@ -713,12 +713,11 @@ function ProjectForm() {
         disabled={isEditing && (nombreCambiosCount >= MAX_NAME_CHANGES || parseInt(faseActual) > 1)}
         // --- FIN CÓDIGO CLAVE MODIFICADO ---
     />
-    {isEditing && (
-        <p className="name-changes-info">
-            Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
-            {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
-        </p>
-    )}
+    {isEditing && parseInt(faseActual) <= 1 && (
+                            <p className="name-changes-info">
+                                Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
+                            </p>
+                        )}
 </div>
 
                     <div className="form-group">
