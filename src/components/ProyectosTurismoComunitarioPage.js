@@ -459,8 +459,11 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         </button>
 
                                         <button
-                                            className="action-button proyecto-editar-button"
+                                            className="action-button edit-button"
                                             onClick={() => handleEditarProyecto(proyecto.idProyecto)}
+                                            // --- CÓDIGO CLAVE AÑADIDO ---
+                                            disabled={proyecto.faseActual >= 7}
+                                            // --- FIN CÓDIGO CLAVE AÑADIDO ---
                                         >
                                             Editar
                                         </button>
@@ -469,10 +472,10 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                         <button
                                             className="action-button admin-delete-button"
                                             onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
-                                            title={proyecto.faseActual > 1 ? "No se puede eliminar: ya inició la Fase 2" : "Eliminar proyecto"}
+                                            title={proyecto.faseActual > 1 ? "No se puede eliminar: ya inició la Fase 2" : (proyecto.faseActual === 7 ? "Proyecto finalizado" : "Eliminar proyecto")}
                                             // --- CÓDIGO CLAVE MODIFICADO ---
-                                            disabled={proyecto.faseActual > 1}
-                                            // --- FIN CÓDIGO CLAVE MODIFICADO ---
+                                            disabled={proyecto.faseActual > 1 || proyecto.faseActual >= 7}
+                                            
                                         >
                                             Eliminar
                                         </button>
