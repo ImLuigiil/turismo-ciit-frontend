@@ -701,22 +701,25 @@ function ProjectForm() {
                 <h2>{isEditing ? `Editar Proyecto: ${nombre}` : 'Agregar Nuevo Proyecto de Turismo Comunitario'}</h2>
                 <form onSubmit={handleSubmit} className="project-form">
                     <div className="form-group">
-                        <label htmlFor="nombre">Nombre del Proyecto:</label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            required
-                            disabled={isNameFieldDisabled}
-                        />
-                        {isEditing && (
-                            <p className="name-changes-info">
-                                Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
-                                {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
-                            </p>
-                        )}
-                    </div>
+    <label htmlFor="nombre">Nombre del Proyecto:</label>
+    <input
+        type="text"
+        id="nombre"
+        value={nombre}
+        onChange={(e) => setNombre(e.target.value)}
+        required
+        // --- CÓDIGO CLAVE MODIFICADO ---
+        // Deshabilita si es modo edición Y la fase actual es mayor a 1
+        disabled={isEditing && (nombreCambiosCount >= MAX_NAME_CHANGES || parseInt(faseActual) > 1)}
+        // --- FIN CÓDIGO CLAVE MODIFICADO ---
+    />
+    {isEditing && (
+        <p className="name-changes-info">
+            Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
+            {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
+        </p>
+    )}
+</div>
 
                     <div className="form-group">
                         <label htmlFor="descripcion">Descripción:</label>
