@@ -462,7 +462,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                             className="action-button admin-edit-button"
                                             onClick={() => handleEditarProyecto(proyecto.idProyecto)}
                                             // --- CÓDIGO CLAVE AÑADIDO ---
-                                            title={proyecto.faseActual > 1 ? "" : (proyecto.faseActual === 7 ? "No se puede editar un Proyecto finalizado" : "No se puede editar un Proyecto finalizado")}
+                                            title={proyecto.faseActual > 1 ? "No se puede editar un proyecto finalizado" : (proyecto.faseActual === 7 ? "Editar Proyecto" : "Editar proyecto")}
                                             disabled={proyecto.faseActual >= 7}
                                             // --- FIN CÓDIGO CLAVE AÑADIDO ---
                                         >
