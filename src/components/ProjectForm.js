@@ -230,9 +230,9 @@ function ProjectForm() {
 
                     // --- CÓDIGO AÑADIDO: Carga del Historial desde la respuesta principal del proyecto ---
                     if (project.historialFases) {
-                        // Asegurar que el historial esté ordenado por fase
+                        // Asegurar que el historial esté ordenado por fase para la visualización
                         const sortedHistorial = project.historialFases.sort((a, b) => a.faseNumero - b.faseNumero);
-                        setHistorialFases(sortedHistorial); // <--- Usa el estado restaurado
+                        setHistorialFases(sortedHistorial); 
                     } else {
                          setHistorialFases([]);
                     }
@@ -1025,19 +1025,17 @@ function ProjectForm() {
                         <div className="justification-history-section">
                             <h4>Historial y Documentos de Justificación:</h4>
                             <ul className="justification-list">
-                                {historialFases.map((historial) => ( // <-- Usa la variable de estado
+                                {historialFases.map((historial) => (
                                     <li key={historial.idHistorialFase} className="justification-item">
                                         <span className="fase-label">Fase {historial.faseNumero} Concluida:</span>
                                         <a 
-                                            // --- CÓDIGO CLAVE MODIFICADO: Uso de la URL base ---
+                                            // Conexión directa al archivo en el servidor NestJS
                                             href={`${process.env.REACT_APP_API_URL}${historial.documentoUrl}`} 
-                                            // --- FIN CÓDIGO CLAVE MODIFICADO ---
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="justification-link"
                                             title={`Justificación: ${historial.justificacion}`}
                                         >
-                                            {/* Muestra un nombre de archivo limpio en lugar de la URL completa */}
                                             Documento (Fase {historial.faseNumero})
                                         </a>
                                     </li>
