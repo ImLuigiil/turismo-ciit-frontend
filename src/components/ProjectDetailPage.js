@@ -327,22 +327,24 @@ function ProjectDetailPage() {
 
           {project.historialFases && (
                 <button 
-                    className="print-documents-button" 
+                    className="generate-justificacion-button" 
+                    // --- CÓDIGO MODIFICADO: Llama a la función que abre la modal ---
                     onClick={handleOpenJustificationsModal}
-                    // DESHABILITADO: Solo si no hay ningún documento subido en Fases 1-6.
-                    disabled={!project.historialFases.some(h => h.faseNumero >= 1 && h.faseNumero <= 6 && h.documentoUrl)}
+                    // --- FIN CÓDIGO MODIFICADO ---
+                    disabled={project.historialFases.length === 0}
                 >
                     Descargar Justificaciones (Fase 1-6)
                 </button>
+
+                
             )}
-            
-            {/* --- CÓDIGO CLAVE MODIFICADO: Botón Descargar Proyecto Final (Fase 7) --- */}
-            {project.historialFases && (
+
+          {project.historialFases && (
                 <button 
                     className="download-final-document-button" 
                     onClick={() => handleDownloadFinalDocument(project.historialFases)}
-                    // HABILITADO: SÍ, el proyecto está en Fase 7 Y SÍ, el documento está subido.
-                    disabled={!project.historialFases.some(h => h.faseNumero === 7 && h.documentoUrl) || project.faseActual < 7}
+                    // Este botón solo es relevante si el proyecto está en Fase 7 (o ya pasó por ella)
+                    disabled={!project.historialFases.some(h => h.faseNumero === 7 && h.documentoUrl)}
                 >
                     Descargar Proyecto Final
                 </button>
