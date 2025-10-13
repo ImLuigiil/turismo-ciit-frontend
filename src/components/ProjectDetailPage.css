@@ -211,6 +211,22 @@
   background-color: #0056b3;
 }
 
+.generate-justificacion-button {
+  background-color: #007bff; 
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  width: 100%; 
+  margin-top: 20px; 
+}
+
+.generate-justificacion-button:hover {
+  background-color: #0056b3;
+}
 
 
 @media (max-width: 768px) {
