@@ -338,18 +338,6 @@ function ProjectDetailPage() {
 
                 
             )}
-
-          {project.historialFases && (
-                <button 
-                    className="download-final-document-button" 
-                    onClick={() => handleDownloadFinalDocument(project.historialFases)}
-                    // Este botón solo es relevante si el proyecto está en Fase 7 (o ya pasó por ella)
-                    disabled={!project.historialFases.some(h => h.faseNumero === 7 && h.documentoUrl)}
-                >
-                    Descargar Proyecto Final
-                </button>
-            )}
-
         </div>
 
         <div className="project-main-info">
