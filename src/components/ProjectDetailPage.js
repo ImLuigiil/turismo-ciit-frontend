@@ -309,7 +309,7 @@ function ProjectDetailPage() {
 
           {project.historialFases && (
                 <button 
-                    className="print-documents-button" 
+                    className="generate-justificacion-button" 
                     // --- CÓDIGO MODIFICADO: Llama a la función que abre la modal ---
                     onClick={handleOpenJustificationsModal}
                     // --- FIN CÓDIGO MODIFICADO ---
