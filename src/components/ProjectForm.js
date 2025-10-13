@@ -1,3 +1,4 @@
+// src/components/ProjectForm.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,8 +8,12 @@ import './ProjectForm.css';
 
 const calculateTargetDate = (baseDate, months) => {
     if (!baseDate) return '';
-    const d = new Date(baseDate + 'T00:00:00');
+    
+    // Usar 'T00:00:00' evita problemas de zona horaria que pueden mover la fecha un día.
+    const d = new Date(baseDate + 'T00:00:00'); 
     d.setMonth(d.getMonth() + months);
+
+    // Formatear como YYYY-MM-DD
     return d.toISOString().split('T')[0];
 };
 
@@ -47,7 +52,24 @@ function ProjectForm() {
     const [nombreCambiosCount, setNombreCambiosCount] = useState(0);
     const MAX_NAME_CHANGES = 3;
 
-    const MAX_PERSONAS_INVOLUCRADAS = 15;
+    const MAX_PERSONAS_INVOLUCRADAS = 15; 
+
+    
+
+    const generateCollaboratorRoles = (currentPersonas) => {
+        // Contar cuántos colaboradores ya existen
+
+        const roles = [{ label: 'Líder', value: 'Líder' }];
+        
+        // Genera los siguientes roles de Colaborador hasta el límite máximo
+        for (let i = 1; i <= MAX_PERSONAS_INVOLUCRADAS; i++) {
+            roles.push({ label: `Colaborador ${i}`, value: `Colaborador ${i}` });
+        }
+        return roles;
+    };
+
+    const collaboratorRoles = generateCollaboratorRoles(personasDirectorio);
+
 
     const [poblacionBeneficiada, setPoblacionBeneficiada] = useState('');
 
@@ -56,9 +78,7 @@ function ProjectForm() {
     const [existingImages, setExistingImages] = useState([]);
     const [imagesToDeleteIds, setImagesToDeleteIds] = useState([]);
 
-    // --- CÓDIGO CLAVE AÑADIDO: Estado para el Historial de Fases ---
     const [historialFases, setHistorialFases] = useState([]);
-    // --- FIN CÓDIGO CLAVE AÑADIDO ---
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -66,7 +86,10 @@ function ProjectForm() {
     const navigate = useNavigate();
     const { showNotification } = useNotification();
 
+
     const [originalProjectData, setOriginalProjectData] = useState(null);
+
+
     const [isFormDirty, setIsFormDirty] = useState(false);
 
     const capitulos = Array.from({ length: 3 }, (_, i) => i + 1);
@@ -86,37 +109,44 @@ function ProjectForm() {
         } else if (!/^\d*$/.test(rawValue)) {
             setError('Solo se permiten dígitos numéricos.');
         }
-        setIsFormDirty(true);
     };
 
     const validateDateDifference = (start, end) => {
         if (!start || !end) {
             return { isValid: true, message: '' };
         }
+        
         const startDate = new Date(start);
         const endDate = new Date(end);
+        
+        // La diferencia de tiempo se calcula en milisegundos
         const timeDifference = endDate.getTime() - startDate.getTime();
-        const MIN_DURATION_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000;
-        const MAX_DURATION_IN_MS = 12 * 30 * 24 * 60 * 60 * 1000;
-        const minDays = Math.ceil(MIN_DURATION_IN_MS / (1000 * 60 * 60 * 24));
-        const maxDays = Math.ceil(MAX_DURATION_IN_MS / (1000 * 60 * 60 * 24));
+        
+        // Define la duración mínima y máxima en milisegundos (usando días como aproximación)
+        const MIN_DURATION_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000; // Aprox. 4 meses (120 días)
+        const MAX_DURATION_IN_MS = 12 * 30 * 24 * 60 * 60 * 1000; // Aprox. 12 meses (365 días)
+        
+
         if (timeDifference < MIN_DURATION_IN_MS) {
-            return {
-                isValid: false,
-                message: `La duración del proyecto debe ser de al menos 4 meses (aprox. ${minDays} días).`
+            return { 
+                isValid: false, 
+                message: `La duración del proyecto debe ser de al menos 4 meses (aprox. ${Math.ceil(MIN_DURATION_IN_MS / (1000 * 60 * 60 * 24))} días).` 
             };
         }
+        
         if (timeDifference > MAX_DURATION_IN_MS) {
-            return {
-                isValid: false,
-                message: `La duración del proyecto no debe exceder los 12 meses (aprox. ${maxDays} días).`
+            return { 
+                isValid: false, 
+                message: `La duración del proyecto no debe exceder los 12 meses (aprox. ${Math.ceil(MAX_DURATION_IN_MS / (1000 * 60 * 60 * 24))} días).` 
             };
         }
+
         return { isValid: true, message: '' };
     };
 
     const checkFormDirty = useCallback(() => {
         if (!originalProjectData) return false;
+
         const isDifferent =
             nombre !== originalProjectData.nombre ||
             descripcion !== originalProjectData.descripcion ||
@@ -128,6 +158,7 @@ function ProjectForm() {
             newImageFiles.length > 0 ||
             imagesToDeleteIds.length > 0 ||
             JSON.stringify(personasDirectorio) !== JSON.stringify(originalProjectData.personasDirectorio);
+
         setIsFormDirty(isDifferent);
     }, [
         nombre,
@@ -143,6 +174,7 @@ function ProjectForm() {
         originalProjectData
     ]);
 
+    // Llama a checkFormDirty cada vez que los datos del formulario cambian
     useEffect(() => {
         if (isEditing) {
             checkFormDirty();
@@ -195,21 +227,21 @@ function ProjectForm() {
                     const API_URL_BASE = `${process.env.REACT_APP_API_URL}/proyectos`;
                     const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
                     const project = response.data;
-                    
-                    // --- CÓDIGO CLAVE AÑADIDO: Carga del Historial de Fases ---
+
+                    // --- CÓDIGO AÑADIDO: Carga del Historial desde la respuesta principal del proyecto ---
+                    console.log('[DEBUG] Datos del proyecto recibidos:', project);
+                    console.log('[DEBUG] Historial de Fases recibido:', project.historialFases);
+                    // --- FIN CÓDIGO AÑADIDO ---
+
                     if (project.historialFases) {
                         const sortedHistorial = project.historialFases.sort((a, b) => a.faseNumero - b.faseNumero);
                         setHistorialFases(sortedHistorial);
                     } else {
                         setHistorialFases([]);
                     }
-                    // --- FIN CÓDIGO CLAVE AÑADIDO ---
 
                     const personasResponse = await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${idProyectoUrl}`);
-                    const personasData = personasResponse.data.map(p => ({
-                        ...p,
-                        isEditingLocal: false,
-                    }));
+                    const personasData = personasResponse.data;
 
                     setIdProyecto(project.idProyecto);
                     setNombre(project.nombre);
@@ -261,7 +293,6 @@ function ProjectForm() {
         }
     }, [isEditing, idProyectoUrl, setOriginalFaseActual]);
 
-    // --- LÓGICA DE LÍMITES DE FECHA ---
     useEffect(() => {
         const calculateAndSetLimits = () => {
             if (!fechaInicio) {
@@ -270,66 +301,60 @@ function ProjectForm() {
                 return;
             }
             
+            // Requisitos: Mínimo 4 meses (120 días) y Máximo 12 meses (365 días)
             const minDate = calculateTargetDate(fechaInicio, 4);
             const maxDate = calculateTargetDate(fechaInicio, 12);
             
             setMinDateFinAprox(minDate);
             setMaxDateFinAprox(maxDate);
 
+            // --- VALIDACIÓN DE COHERENCIA EN TIEMPO REAL ---
             if (fechaFinAprox) {
                 const currentEnd = new Date(fechaFinAprox).getTime();
                 const minTime = new Date(minDate).getTime();
                 const maxTime = new Date(maxDate).getTime();
 
+                // Si la fecha final actual es menor que el nuevo mínimo o mayor que el nuevo máximo, la borramos.
                 if (currentEnd < minTime || currentEnd > maxTime) {
                     setFechaFinAprox(''); 
                     showNotification('La fecha final fue restablecida, ya que ya no cumple con el nuevo rango de duración (4 a 12 meses desde el inicio).', 'warning');
                 }
             }
+            // --- FIN VALIDACIÓN COHERENCIA ---
         };
 
         calculateAndSetLimits();
     }, [fechaInicio, fechaFinAprox, showNotification]);
-    // --- FIN LÓGICA DE LÍMITES DE FECHA ---
-
-    // --- CÓDIGO MODIFICADO/AÑADIDO: Lógica de Roles y Colaboradores ---
-    const generateCollaboratorRoles = () => {
-        const roles = [{ label: 'Líder', value: 'Líder' }];
-        
-        for (let i = 1; i <= MAX_PERSONAS_INVOLUCRADAS; i++) {
-            roles.push({ label: `Colaborador ${i}`, value: `Colaborador ${i}` });
-        }
-        return roles;
-    };
-
-    const collaboratorRoles = generateCollaboratorRoles();
-    // --- FIN CÓDIGO MODIFICADO/AÑADIDO ---
 
 
     const handleAddPersona = () => {
-        if (personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS) {
-            showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
-            return;
-        }
-        
+    if (personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS) {
+      showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
+      return;
+    }
+
         setPersonasDirectorio([
             ...personasDirectorio,
             { 
                 apellidoPaterno: '', 
                 apellidoMaterno: '', 
                 nombre: '', 
-                rolEnProyecto: '', 
+                rolEnProyecto: '', // Dejamos vacío para que el usuario seleccione
                 contacto: '',
+
                 isEditingLocal: true,
             }
+            
         ]);
+
         setIsFormDirty(true);
+
     };
 
     const handlePersonaChange = (index, field, value) => {
         const newPersonas = [...personasDirectorio];
         newPersonas[index][field] = value;
-        
+
         if (field !== 'idPersonaProyecto' && newPersonas[index].isEditingLocal === false) {
             newPersonas[index].isEditingLocal = true;
         }
@@ -341,6 +366,8 @@ function ProjectForm() {
         const persona = personasDirectorio[index];
         const personaNombre = persona.nombre || `Persona #${index + 1}`;
         
+        // **ADVERTENCIA: Uso temporal de window.confirm() para desarrollo.**
+        // En producción, esto debe ser una modal/notificación personalizada.
         if (window.confirm(`¿Estás seguro de que quieres eliminar a ${personaNombre}? Esta acción no se puede deshacer.`)) {
             const newPersonas = personasDirectorio.filter((_, i) => i !== index);
             setPersonasDirectorio(newPersonas);
@@ -348,17 +375,21 @@ function ProjectForm() {
             showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
         }
     };
+    // 
 
     const handleAcceptPersona = (index) => {
         const persona = personasDirectorio[index];
         
+        // 1. Validación de campos obligatorios
         if (!persona.apellidoPaterno.trim() || !persona.nombre.trim() || !persona.rolEnProyecto.trim()) {
             showNotification('Error: Los campos Apellido Paterno, Nombre(s) y Rol son obligatorios para confirmar la persona.', 'error');
             return;
         }
 
+        // 2. Validación: Solo puede haber un Líder (Verifica si hay otro Líder ya ACEPTADO)
         if (persona.rolEnProyecto === 'Líder') {
             const isLeaderAlreadyAssigned = personasDirectorio.some(
+                // Busca en todas las filas excepto la actual (i !== index) y que ya estén confirmadas (isEditingLocal === false)
                 (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
             );
             
@@ -367,9 +398,11 @@ function ProjectForm() {
                 return;
             }
         }
+        // --- FIN Validación de un solo Líder ---
+
 
         const newPersonas = [...personasDirectorio];
-        newPersonas[index].isEditingLocal = false;
+        newPersonas[index].isEditingLocal = false; // Se marca como confirmada
         setPersonasDirectorio(newPersonas);
         setIsFormDirty(true);
         showNotification('Persona involucrada confirmada con éxito.', 'success');
@@ -379,14 +412,12 @@ function ProjectForm() {
         setSearchTerm(e.target.value);
         setSelectedCommunityId('');
         setShowDropdown(true);
-        setIsFormDirty(true);
     };
 
     const handleCommunitySelect = (comunidad) => {
         setSearchTerm(comunidad.nombre);
         setSelectedCommunityId(comunidad.idComunidad);
         setShowDropdown(false);
-        setIsFormDirty(true);
     };
 
     const handleNewImageChange = (e) => {
@@ -396,7 +427,6 @@ function ProjectForm() {
         setNewImageFiles(prevFiles => [...prevFiles, ...files]);
         setNewImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
         setError(null);
-        setIsFormDirty(true);
     };
 
     const handleRemoveNewImage = (indexToRemove) => {
@@ -405,13 +435,11 @@ function ProjectForm() {
             URL.revokeObjectURL(prevPreviews[indexToRemove]);
             return prevPreviews.filter((_, index) => index !== indexToRemove);
         });
-        setIsFormDirty(true);
     };
 
     const handleRemoveExistingImage = (imageIdToRemove) => {
         setImagesToDeleteIds(prevIds => [...prevIds, imageIdToRemove]);
         setExistingImages(prevImages => prevImages.filter(img => img.idProyectoImagen !== imageIdToRemove));
-        setIsFormDirty(true);
     };
 
 
@@ -420,20 +448,13 @@ function ProjectForm() {
         setLoading(true);
 
         const dateValidation = validateDateDifference(fechaInicio, fechaFinAprox);
-        if (!dateValidation.isValid) {
-            setError(dateValidation.message);
-            showNotification(`Error de Fecha: ${dateValidation.message}`, 'error');
-            setLoading(false);
-            return;
-        }
-
-        const unconfirmedPerson = personasDirectorio.find(p => p.isEditingLocal);
-        if (unconfirmedPerson) {
-            setError('Por favor, confirma o borra todas las personas involucradas haciendo clic en "✓ Aceptar" antes de actualizar el proyecto.');
-            showNotification('Faltan personas por confirmar. Haz clic en "✓ Aceptar" en cada fila.', 'error');
-            setLoading(false);
-            return;
-        }
+    
+    if (!dateValidation.isValid) {
+        setError(dateValidation.message);
+        showNotification(`Error de Fecha: ${dateValidation.message}`, 'error');
+        setLoading(false);
+        return; 
+    }
 
         const token = sessionStorage.getItem('access_token');
         if (!token) {
@@ -460,7 +481,7 @@ function ProjectForm() {
             formData.append('justificacionFase', justificationText);
         }
 
-        newImageFiles.forEach((file) => {
+        newImageFiles.forEach((file, index) => {
             formData.append(`images`, file);
         });
 
@@ -488,10 +509,9 @@ function ProjectForm() {
         try {
             const API_URL_BASE = `${process.env.REACT_APP_API_URL}/proyectos`;
             let currentProjectId = Number(idProyecto);
-            let response;
 
             if (isEditing) {
-                response = await axios.put(`${API_URL_BASE}/${idProyectoUrl}`, formData, {
+                await axios.put(`${API_URL_BASE}/${idProyectoUrl}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`,
@@ -499,7 +519,7 @@ function ProjectForm() {
                 });
                 showNotification(`Proyecto "${nombre}" actualizado con éxito!`, 'success');
             } else {
-                response = await axios.post(API_URL_BASE, formData, {
+                const response = await axios.post(API_URL_BASE, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`,
@@ -510,6 +530,7 @@ function ProjectForm() {
                     name: nombre,
                     id: currentProjectId
                 }));
+                console.log('Notificación de nuevo proyecto guardada en localStorage:', { name: nombre, id: currentProjectId });
                 showNotification(`Se ha subido un nuevo proyecto "${nombre}"`, 'success');
             }
 
@@ -531,29 +552,29 @@ function ProjectForm() {
                 if (!persona.apellidoPaterno && !persona.apellidoMaterno && !persona.nombre) {
                     continue;
                 }
-                const personaData = {
-                    apellidoPaterno: persona.apellidoPaterno,
-                    apellidoMaterno: persona.apellidoMaterno || null,
-                    nombre: persona.nombre,
-                    rolEnProyecto: persona.rolEnProyecto || null,
-                    contacto: persona.contacto || null,
-                    proyectoIdProyecto: currentProjectId
-                };
+
                 if (persona.idPersonaProyecto && personasIdsInDb.includes(persona.idPersonaProyecto)) {
-                    await axios.put(`${process.env.REACT_APP_API_URL}/personas-proyecto/${persona.idPersonaProyecto}`,
-                        personaData,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    );
+                    await axios.put(`${process.env.REACT_APP_API_URL}/personas-proyecto/${persona.idPersonaProyecto}`, {
+                        apellidoPaterno: persona.apellidoPaterno,
+                        apellidoMaterno: persona.apellidoMaterno || null,
+                        nombre: persona.nombre,
+                        rolEnProyecto: persona.rolEnProyecto || null,
+                        contacto: persona.contacto || null,
+                        proyectoIdProyecto: currentProjectId
+                    }, { headers: { Authorization: `Bearer ${token}` } });
                 } else {
-                    await axios.post(`${process.env.REACT_APP_API_URL}/personas-proyecto`,
-                        personaData,
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    );
+                    await axios.post(`${process.env.REACT_APP_API_URL}/personas-proyecto`, {
+                        apellidoPaterno: persona.apellidoPaterno,
+                        apellidoMaterno: persona.apellidoMaterno || null,
+                        nombre: persona.nombre,
+                        rolEnProyecto: persona.rolEnProyecto || null,
+                        contacto: persona.contacto || null,
+                        proyectoIdProyecto: currentProjectId
+                    }, { headers: { Authorization: `Bearer ${token}` } });
                 }
             }
 
             setLoading(false);
-            setIsFormDirty(false);
             navigate('/proyectos-turismo');
         } catch (err) {
             setLoading(false);
@@ -572,11 +593,13 @@ function ProjectForm() {
 
     const handleJustificationModalOpen = async (e) => {
         e.preventDefault();
+
         if (parseInt(faseActual) >= 7) {
             showNotification('El proyecto ya ha alcanzado la fase final (7).', 'info');
             return;
         }
         if (!isEditing) return;
+
         setConcludeJustificationText('');
         setConcludeDocumentFile(null);
         setError(null);
@@ -603,8 +626,10 @@ function ProjectForm() {
             setError('Se requiere un documento PDF que avale el cambio de fase.');
             return;
         }
+
         setLoading(true);
         setError(null);
+
         const token = sessionStorage.getItem('access_token');
         if (!token) {
             setError('No autorizado. Por favor, inicia sesión.');
@@ -612,9 +637,11 @@ function ProjectForm() {
             navigate('/login');
             return;
         }
+
         const formData = new FormData();
         formData.append('justificacion', concludeJustificationText);
         formData.append('documento', concludeDocumentFile);
+
         try {
             const API_URL = `${process.env.REACT_APP_API_URL}/proyectos/${idProyectoUrl}/concluir-fase`;
             const response = await axios.patch(API_URL, formData, {
@@ -623,11 +650,15 @@ function ProjectForm() {
                     Authorization: `Bearer ${token}`,
                 },
             });
+
             setFaseActual(String(response.data.faseActual));
             setOriginalFaseActual(String(response.data.faseActual));
             showNotification(`Fase del proyecto "${nombre}" avanzada a Fase ${response.data.faseActual}!`, 'success');
+
             setShowConcludePhaseModal(false);
             setLoading(false);
+
+
         } catch (err) {
             setLoading(false);
             if (err.response && err.response.data && err.response.data.message) {
@@ -666,13 +697,10 @@ function ProjectForm() {
         setError(null);
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (isEditing && String(faseActual) !== String(originalFaseActual)) {
-            setShowJustificationModal(true);
-        } else {
-            handleFormSubmit();
-        }
+        handleFormSubmit();
     };
 
     if (formLoading) {
@@ -680,6 +708,7 @@ function ProjectForm() {
     }
 
     const isNameFieldDisabled = isEditing && nombreCambiosCount >= MAX_NAME_CHANGES;
+
     const isConcludePhaseButtonDisabled = parseInt(faseActual) >= 7;
 
     return (
@@ -687,36 +716,27 @@ function ProjectForm() {
             <div className="project-form-container">
                 <h2>{isEditing ? `Editar Proyecto: ${nombre}` : 'Agregar Nuevo Proyecto de Turismo Comunitario'}</h2>
                 <form onSubmit={handleSubmit} className="project-form">
-                    {isEditing && (
-                        <div className="form-group">
-                            <label htmlFor="idProyecto">ID del Proyecto:</label>
-                            <input
-                                type="number"
-                                id="idProyecto"
-                                value={idProyecto}
-                                onChange={(e) => setIdProyecto(e.target.value)}
-                                required
-                                disabled={true}
-                            />
-                        </div>
-                    )}
                     <div className="form-group">
-                        <label htmlFor="nombre">Nombre del Proyecto:</label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            required
-                            disabled={isNameFieldDisabled}
-                        />
-                        {isEditing && (
-                            <p className="name-changes-info">
-                                Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
-                                {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
-                            </p>
-                        )}
-                    </div>
+    <label htmlFor="nombre">Nombre del Proyecto:</label>
+    <input
+        type="text"
+        id="nombre"
+        value={nombre}
+        onChange={(e) => setNombre(e.target.value)}
+        required
+        // --- CÓDIGO CLAVE MODIFICADO ---
+        // Deshabilita si es modo edición Y la fase actual es mayor a 1
+        disabled={isEditing && (nombreCambiosCount >= MAX_NAME_CHANGES || parseInt(faseActual) > 1)}
+        // --- FIN CÓDIGO CLAVE MODIFICADO ---
+    />
+    {isEditing && parseInt(faseActual) <= 1 && (
+        <p className="name-changes-info">
+            Cambios de nombre de proyecto restantes: {MAX_NAME_CHANGES - nombreCambiosCount}
+            {isNameFieldDisabled && <span className="name-changes-limit-reached"> (Límite alcanzado)</span>}
+        </p>
+    )}
+</div>
+
                     <div className="form-group">
                         <label htmlFor="descripcion">Descripción:</label>
                         <textarea
@@ -725,8 +745,9 @@ function ProjectForm() {
                             onChange={(e) => setDescripcion(e.target.value)}
                         ></textarea>
                     </div>
+
                     <div className="form-group" ref={dropdownRef}>
-                        <label htmlFor="comunidadSearch">Comunidad:</label>
+                        <label htmlFor="comunidadSearch">Municipio:</label>
                         <input
                             type="text"
                             id="comunidadSearch"
@@ -752,6 +773,7 @@ function ProjectForm() {
                             <p className="no-results-message">No se encontraron municipios.</p>
                         )}
                     </div>
+
                     <div className="double-form-group">
                         <div className="form-group">
                             <label htmlFor="poblacionBeneficiada">Población Beneficiada:</label>
@@ -778,73 +800,83 @@ function ProjectForm() {
                             </select>
                         </div>
                     </div>
+
                     <div className="form-group">
-                        <label htmlFor="projectImages">Imágenes del Proyecto:</label>
-                        <input
-                            type="file"
-                            id="projectImages"
-                            accept="image/*"
-                            multiple
-                            onChange={handleNewImageChange}
-                        />
-                        <p className="image-specs-text">
-                            Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
-                        </p>
-                        {isEditing && existingImages.length > 0 && (
-                            <div className="existing-images-list">
-                                <h4 className="existing-images-title">Evidencias Subidas (Haga clic para ver):</h4>
-                                <div className="existing-images-list-items">
-                                    {existingImages.map((img, index) => (
-                                        <div key={img.idProyectoImagen} className="existing-image-item">
-                                            <span 
-                                                className="image-url-link"
-                                                onClick={() => window.open(img.fullUrl, '_blank')}
-                                                title="Haga clic para abrir la imagen en una nueva pestaña"
-                                            >
-                                                Imagen #{index + 1}: {img.url.split('/').pop()}
-                                            </span>
-                                            <button 
-                                                type="button" 
-                                                onClick={() => handleRemoveExistingImage(img.idProyectoImagen)}
-                                                className="remove-image-button"
-                                            >
-                                                Eliminar
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                        <div className="image-previews-container">
-                            {newImagePreviews.map((previewUrl, index) => (
-                                <div key={`new-${index}`} className="image-preview-item">
-                                    <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
-                                    <button type="button" onClick={() => handleRemoveNewImage(index)} className="remove-image-button">X</button>
-                                </div>
-                            ))}
-                        </div>
-                        {(existingImages.length === 0 && newImageFiles.length === 0) && (
-                            <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
-                        )}
-                    </div>
+    <label htmlFor="projectImages">Imágenes del Proyecto:</label>
+    <input
+        type="file"
+        id="projectImages"
+        accept="image/*"
+        multiple
+        onChange={handleNewImageChange}
+    />
+    <p className="image-specs-text">
+        Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
+    </p>
+
+    {isEditing && existingImages.length > 0 && (
+        <div className="existing-images-list">
+            <h4 className="existing-images-title">Evidencias Subidas (Haga clic para ver):</h4>
+            {existingImages.map((image, index) => (
+                <div key={image.idProyectoImagen} className="existing-image-item">
+                    <span 
+                        className="image-url-link"
+                        onClick={() => window.open(image.fullUrl, '_blank')}
+                        title="Haga clic para abrir la imagen en una nueva pestaña"
+                    >
+                        Imagen #{index + 1}: {image.url.split('/').pop()}
+                    </span>
+                    
+                    <button 
+                        type="button" 
+                        onClick={() => handleRemoveExistingImage(image.idProyectoImagen)}
+                        className="remove-image-button"
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            ))}
+        </div>
+    )}
+
+    <div className="image-previews-container">
+        {newImagePreviews.map((previewUrl, index) => (
+            <div key={`new-${index}`} className="image-preview-item">
+                <img src={previewUrl} alt={`Nueva ${index}`} className="image-preview" />
+                <button type="button" onClick={() => handleRemoveNewImage(index)} className="remove-image-button">X</button>
+            </div>
+        ))}
+    </div>
+    
+    {(existingImages.length === 0 && newImageFiles.length === 0) && (
+        <p className="no-images-message">No hay imágenes seleccionadas o existentes.</p>
+    )}
+</div>
+
                     <div className="personas-directorio-section">
                         <h3>Personas Involucradas en el Proyecto</h3>
-                        <div className="persona-input-header">
-                            <label>Apellido Paterno</label>
-                            <label>Apellido Materno (Op.)</label>
-                            <label>Nombre(s)</label>
-                            <label>Rol</label>
-                            <label>Contacto</label>
-                            <div className="remove-placeholder"></div>
-                        </div>
+
+        <div className="persona-input-group persona-header-labels">
+        <label>Apellido Paterno</label>
+        <label>Apellido Materno (Op.)</label>
+        <label>Nombre(s)</label>
+        <label>Rol</label>
+        <label>Contacto</label>
+        <div className="remove-placeholder remove-persona-button"></div> 
+    </div>
                         {personasDirectorio.map((persona, index) => {
+                            // --- CÓDIGO CORREGIDO: Definición de isLeaderUsed dentro del map ---
                             const isLeaderUsed = personasDirectorio.some(
-                                (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
-                            );
-                            const usedCollaboratorRoles = new Set(personasDirectorio
-                                .filter((p, i) => i !== index && p.rolEnProyecto.startsWith('Colaborador') && p.isEditingLocal === false)
-                                .map(p => p.rolEnProyecto)
-                            );
+        (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
+    );
+
+    // Crea un Set de todos los roles de Colaborador confirmados en otras filas
+    const usedCollaboratorRoles = new Set(personasDirectorio
+        .filter((p, i) => i !== index && p.rolEnProyecto.startsWith('Colaborador') && p.isEditingLocal === false)
+        .map(p => p.rolEnProyecto)
+    );
+                            // --- FIN CÓDIGO CORREGIDO ---
+
                             return (
                                 <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
                                     <input
@@ -870,32 +902,45 @@ function ProjectForm() {
                                         required
                                         disabled={!persona.isEditingLocal}
                                     />
-                                    <select
-                                        value={persona.rolEnProyecto}
-                                        onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
-                                        required
-                                        className="select-rol"
-                                        disabled={!persona.isEditingLocal}
-                                    >
-                                        <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
-                                        {collaboratorRoles.filter(role => {
-                                            if (role.value === 'Líder') {
-                                                return persona.rolEnProyecto === 'Líder' || !isLeaderUsed;
-                                            }
-                                            if (role.value.startsWith('Colaborador')) {
-                                                return persona.rolEnProyecto === role.value || !usedCollaboratorRoles.has(role.value);
-                                            }
-                                            return true;
-                                        }).map((role) => (
-                                            <option 
-                                                key={role.value} 
-                                                value={role.value}
-                                                disabled={false}
-                                            >
-                                                {role.label}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    
+                                    {/* SELECT ROL */}
+                                     <select
+                value={persona.rolEnProyecto}
+                onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
+                required
+                className="select-rol"
+                disabled={!persona.isEditingLocal}
+            >
+                <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
+                
+                {/* ----------------------------------------------------- */}
+                {/* --- LÓGICA DE FILTRADO (El rol ya no aparece si está usado) --- */}
+                {collaboratorRoles
+                    .filter(role => {
+                        // 1. Si es Líder: Solo aparece si la fila actual es la que lo tiene (o si no hay ninguno usado)
+                        if (role.value === 'Líder') {
+                            return persona.rolEnProyecto === 'Líder' || !isLeaderUsed;
+                        }
+
+                        // 2. Si es Colaborador: Solo aparece si no ha sido usado O si la fila actual lo tiene
+                        if (role.value.startsWith('Colaborador')) {
+                            return persona.rolEnProyecto === role.value || !usedCollaboratorRoles.has(role.value);
+                        }
+
+                        return true; // Cualquier otro rol pasa el filtro
+                    })
+                    .map((role) => (
+                        <option 
+                            key={role.value} 
+                            value={role.value}
+                        >
+                            {role.label}
+                        </option>
+                    ))}
+                {/* --- FIN LÓGICA DE FILTRADO --- */}
+                {/* ----------------------------------------------------- */}
+            </select>
+                                    
                                     <input
                                         type="text"
                                         placeholder="Contacto (ej. email)"
@@ -903,6 +948,8 @@ function ProjectForm() {
                                         onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
                                         disabled={!persona.isEditingLocal}
                                     />
+                                    
+                                    {/* Botón ACEPTAR/EDITAR Condicional */}
                                     {persona.isEditingLocal ? (
                                         <button 
                                             type="button" 
@@ -927,6 +974,7 @@ function ProjectForm() {
                                             ✍
                                         </button>
                                     )}
+                                    
                                     <button type="button" onClick={() => handleRemovePersona(index)} className="remove-persona-button">
                                         X
                                     </button>
@@ -938,6 +986,7 @@ function ProjectForm() {
                             + Agregar Persona
                         </button>
                     </div>
+                    
                     <div className="form-group">
                         <label htmlFor="fechaInicio">Fecha de Inicio:</label>
                         <input
@@ -947,17 +996,20 @@ function ProjectForm() {
                             onChange={(e) => setFechaInicio(e.target.value)}
                         />
                     </div>
+
                     <div className="form-group">
-                        <label htmlFor="fechaFinAprox">Fecha Final (Aprox.):</label>
-                        <input
-                            type="date"
-                            id="fechaFinAprox"
-                            value={fechaFinAprox}
-                            onChange={(e) => setFechaFinAprox(e.target.value)}
-                            min={minDateFinAprox}
-                            max={maxDateFinAprox}
-                        />
-                    </div>
+                            <label htmlFor="fechaFinAprox">Fecha Final (Aprox.):</label>
+                            <input
+                                type="date"
+                                id="fechaFinAprox"
+                                value={fechaFinAprox}
+                                onChange={(e) => setFechaFinAprox(e.target.value)}
+                                // --- CÓDIGO MODIFICADO: Aplicación de límites ---
+                                min={minDateFinAprox}
+                                max={maxDateFinAprox}
+                                // --- FIN CÓDIGO MODIFICADO ---
+                            />
+                        </div>
                     {isEditing && (
                         <div className="form-group">
                             <label>Fase Actual: {faseActual}</label>
@@ -975,17 +1027,21 @@ function ProjectForm() {
                     {isEditing && historialFases.length > 0 && (
                         <div className="justification-history-section">
                             <h4>Historial y Documentos de Justificación:</h4>
+                             {console.log('[DEBUG] Renderizando historial de fases:', historialFases)}
                             <ul className="justification-list">
-                                {historialFases.map((historial) => (
-                                    <li key={historial.idHistorial} className="justification-item">
+                                {historialFases.map((historial) => ( // <-- Usa la variable de estado
+                                    <li key={historial.idHistorialFase} className="justification-item">
                                         <span className="fase-label">Fase {historial.faseNumero} Concluida:</span>
                                         <a 
+                                            // --- CÓDIGO CLAVE MODIFICADO: Uso de la URL base ---
                                             href={`${process.env.REACT_APP_API_URL}${historial.documentoUrl}`} 
+                                            // --- FIN CÓDIGO CLAVE MODIFICADO ---
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="justification-link"
                                             title={`Justificación: ${historial.justificacion}`}
                                         >
+                                            {/* Muestra un nombre de archivo limpio en lugar de la URL completa */}
                                             Documento (Fase {historial.faseNumero})
                                         </a>
                                     </li>
@@ -994,10 +1050,8 @@ function ProjectForm() {
                         </div>
                     )}
 
-
-
-                    
                     {error && <p className="error-message">{error}</p>}
+
                     <div className="form-buttons">
                         <button
                             type="submit"
@@ -1012,11 +1066,13 @@ function ProjectForm() {
                     </div>
                 </form>
             </div>
+
             {showConcludePhaseModal && (
                 <div className="justification-modal-overlay">
                     <div className="justification-modal-content">
                         <h3>Concluir Fase {faseActual} a Fase {parseInt(faseActual) + 1}</h3>
                         <p>Por favor, explica por qué estás concluyendo esta fase y sube un documento de respaldo (PDF).</p>
+
                         <div className="form-group">
                             <label htmlFor="concludeJustification">Justificación:</label>
                             <textarea
@@ -1028,6 +1084,7 @@ function ProjectForm() {
                                 required
                             ></textarea>
                         </div>
+
                         <div className="form-group">
                             <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
                             <input
@@ -1039,13 +1096,17 @@ function ProjectForm() {
                             />
                             {concludeDocumentFile && <p className="selected-file-name">Archivo seleccionado: {concludeDocumentFile.name}</p>}
                         </div>
+
                         {error && <p className="error-message">{error}</p>}
+
                         <div className="justification-warning">
-                            <p>
-                            <span role="img" aria-label="advertencia">⚠️</span>
-                            Después de confirmar el avance, no se podrá retroceder a una fase anterior.
-                            </p>
-                        </div>
+                          <p>
+                          <span role="img" aria-label="advertencia">⚠️</span>
+                          Después de confirmar el avance, no se podrá retroceder a una fase anterior.
+                          </p>
+                          </div>
+
+
                         <div className="modal-buttons">
                             <button onClick={handleConcludePhaseSubmit} className="submit-button" disabled={loading}>
                                 {loading ? 'Enviando...' : 'Confirmar Avance de Fase'}
@@ -1057,6 +1118,7 @@ function ProjectForm() {
                     </div>
                 </div>
             )}
+
             {showJustificationModal && (
                 <div className="justification-modal-overlay">
                     <div className="justification-modal-content">
@@ -1083,4 +1145,5 @@ function ProjectForm() {
         </div>
     );
 }
+
 export default ProjectForm;
