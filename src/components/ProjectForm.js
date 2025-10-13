@@ -54,6 +54,7 @@ function ProjectForm() {
 
     const MAX_PERSONAS_INVOLUCRADAS = 15; 
 
+    
 
     const generateCollaboratorRoles = (currentPersonas) => {
         // Contar cuántos colaboradores ya existen
@@ -76,8 +77,6 @@ function ProjectForm() {
     const [newImagePreviews, setNewImagePreviews] = useState([]);
     const [existingImages, setExistingImages] = useState([]);
     const [imagesToDeleteIds, setImagesToDeleteIds] = useState([]);
-
-    const [historialFases, setHistorialFases] = useState([]);
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -226,10 +225,6 @@ function ProjectForm() {
                     const API_URL_BASE = `${process.env.REACT_APP_API_URL}/proyectos`;
                     const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
                     const project = response.data;
-
-                    const historialResponse = await axios.get(`${process.env.REACT_APP_API_URL}/historial-fase/by-project/${idProyectoUrl}`);
-                    const historialData = historialResponse.data.sort((a, b) => a.faseNumero - b.faseNumero); // Ordenar por fase
-                    setHistorialFases(historialData);
 
                     const personasResponse = await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${idProyectoUrl}`);
                     const personasData = personasResponse.data;
@@ -1004,7 +999,6 @@ function ProjectForm() {
                     {isEditing && (
                         <div className="form-group">
                             <label>Fase Actual: {faseActual}</label>
-
                             <button
                                 type="button"
                                 onClick={handleJustificationModalOpen}
@@ -1013,29 +1007,6 @@ function ProjectForm() {
                             >
                                 {parseInt(faseActual) < 7 ? 'Concluir Fase' : 'Proyecto Finalizado'}
                             </button>
-                        </div>
-                    )}
-                    
-                    {isEditing && historialFases.length > 0 && (
-                        <div className="justification-history-section">
-                            <h4>Historial y Documentos de Justificación:</h4>
-                            <ul className="justification-list">
-                                {historialFases.map((historial) => (
-                                    <li key={historial.idHistorialFase} className="justification-item">
-                                        <span className="fase-label">Fase {historial.faseNumero} Concluida:</span>
-                                        <a 
-                                            href={`${process.env.REACT_APP_API_URL}${historial.documentoUrl}`} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="justification-link"
-                                            title={`Justificación: ${historial.justificacion}`}
-                                        >
-                                            {/* Muestra un nombre de archivo limpio en lugar de la URL completa */}
-                                            Documento (Fase {historial.faseNumero})
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
                         </div>
                     )}
 
