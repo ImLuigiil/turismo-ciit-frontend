@@ -528,12 +528,12 @@ textarea {
     margin-bottom: 20px;
 }
 
-.justification-history-section h3 {
+.justification-history-section h4 {
     font-size: 1.1rem;
     font-weight: 600;
     color: #4a5568;
     margin-bottom: 10px;
-    border-bottom: 2px solid #3182ce;
+    border-bottom: 1px solid #ddd;
     padding-bottom: 5px;
 }
 
@@ -548,29 +548,27 @@ textarea {
     align-items: center;
     margin-bottom: 8px;
     padding: 5px 0;
-    border-bottom: 1px dotted #cbd5e0;
-}
-
-.justification-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
 }
 
 .fase-label {
     font-weight: 700;
-    color: #2d3748;
-    min-width: 80px;
+    color: #004d40; /* Color de tu marca */
+    min-width: 130px;
     margin-right: 15px;
 }
 
 .justification-link {
-    color: #3182ce; /* Azul primario */
+    color: #2196F3; /* Azul primario */
     text-decoration: none;
-    font-style: italic;
+    font-weight: 500;
     transition: color 0.2s;
+    /* Para que el título de la justificación se vea al pasar el mouse */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .justification-link:hover {
-    color: #2b6cb0;
+    color: #0b7dda;
     text-decoration: underline;
 }

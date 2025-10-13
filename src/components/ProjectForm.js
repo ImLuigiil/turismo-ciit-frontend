@@ -82,6 +82,8 @@ function ProjectForm() {
     const [existingImages, setExistingImages] = useState([]);
     const [imagesToDeleteIds, setImagesToDeleteIds] = useState([]);
 
+    const [historialFases, setHistorialFases] = useState([]);
+
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [formLoading, setFormLoading] = useState(false);
@@ -229,6 +231,10 @@ function ProjectForm() {
                     const API_URL_BASE = `${process.env.REACT_APP_API_URL}/proyectos`;
                     const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
                     const project = response.data;
+
+                    const historialResponse = await axios.get(`${process.env.REACT_APP_API_URL}/historial-fase/by-project/${idProyectoUrl}`);
+                    const historialData = historialResponse.data.sort((a, b) => a.faseNumero - b.faseNumero); // Ordenar por fase
+                    setHistorialFases(historialData);
 
                     const personasResponse = await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${idProyectoUrl}`);
                     const personasData = personasResponse.data;
@@ -1014,34 +1020,29 @@ function ProjectForm() {
                             </button>
                         </div>
                     )}
-                    {isEditing && justificacionesHistorial.length > 0 && (
-        <div className="justification-history-section">
-            <h3>Documentos de Justificación (Fases Pasadas):</h3>
-            <ul className="justification-list">
-                {/* Filtra solo las justificaciones de fases pasadas, no la fase actual */}
-                {justificacionesHistorial
-                    .filter(j => j.fase < parseInt(faseActual))
-                    .map((justificacion) => (
-                        <li key={justificacion.fase} className="justification-item">
-                            <span className="fase-label">Fase {justificacion.fase}:</span>
-                            <a 
-                                href={justificacion.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="justification-link"
-                                title={`Ver documento de la Fase ${justificacion.fase}`}
-                            >
-                                {justificacion.nombreDocumento} 
-                            </a>
-                        </li>
-                    ))
-                }
-            </ul>
-            {justificacionesHistorial.filter(j => j.fase < parseInt(faseActual)).length === 0 && (
-                <p className="text-sm italic text-gray-500">No hay documentos de justificación para fases anteriores.</p>
-            )}
-        </div>
-    )}
+                    
+                    {isEditing && historialFases.length > 0 && (
+                        <div className="justification-history-section">
+                            <h4>Historial y Documentos de Justificación:</h4>
+                            <ul className="justification-list">
+                                {historialFases.map((historial) => (
+                                    <li key={historial.idHistorialFase} className="justification-item">
+                                        <span className="fase-label">Fase {historial.faseNumero} Concluida:</span>
+                                        <a 
+                                            href={`${process.env.REACT_APP_API_URL}${historial.documentoUrl}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="justification-link"
+                                            title={`Justificación: ${historial.justificacion}`}
+                                        >
+                                            {/* Muestra un nombre de archivo limpio en lugar de la URL completa */}
+                                            Documento (Fase {historial.faseNumero})
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     {error && <p className="error-message">{error}</p>}
 
