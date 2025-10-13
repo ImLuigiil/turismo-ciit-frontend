@@ -47,6 +47,9 @@ function ProjectForm() {
     const [concludeJustificationText, setConcludeJustificationText] = useState('');
     const [concludeDocumentFile, setConcludeDocumentFile] = useState(null);
 
+    const [concludeDocumentPreviewUrl, setConcludeDocumentPreviewUrl] = useState('');
+    const MAX_FILE_SIZE_MB = 10;
+
     const [personasDirectorio, setPersonasDirectorio] = useState([]);
 
     const [nombreCambiosCount, setNombreCambiosCount] = useState(0);
@@ -608,13 +611,38 @@ function ProjectForm() {
 
     const handleConcludeDocumentChange = (e) => {
         const file = e.target.files[0];
-        if (file && file.type === 'application/pdf') {
+        
+        // --- CÓDIGO MODIFICADO: Validación y Creación de URL de previsualización ---
+        if (concludeDocumentPreviewUrl) {
+            URL.revokeObjectURL(concludeDocumentPreviewUrl);
+        }
+
+        if (file) {
+            // Validación de tipo de archivo
+            if (file.type !== 'application/pdf') {
+                setConcludeDocumentFile(null);
+                setConcludeDocumentPreviewUrl('');
+                setError('Solo se permiten archivos PDF como documento de justificación.');
+                return;
+            }
+
+            // Validación de tamaño de archivo (10MB)
+            if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                setConcludeDocumentFile(null);
+                setConcludeDocumentPreviewUrl('');
+                setError(`El archivo excede el tamaño máximo permitido de ${MAX_FILE_SIZE_MB}MB.`);
+                return;
+            }
+
+            // Si pasa las validaciones, crea una URL para previsualización
             setConcludeDocumentFile(file);
+            setConcludeDocumentPreviewUrl(URL.createObjectURL(file));
             setError(null);
         } else {
             setConcludeDocumentFile(null);
-            setError('Solo se permiten archivos PDF como documento de justificación.');
+            setConcludeDocumentPreviewUrl('');
         }
+        // --- FIN CÓDIGO MODIFICADO ---
     };
 
     const handleConcludePhaseSubmit = async () => {
@@ -679,6 +707,12 @@ function ProjectForm() {
         setConcludeJustificationText('');
         setConcludeDocumentFile(null);
         setError(null);
+        // --- CÓDIGO AÑADIDO: Limpieza de la URL de previsualización ---
+        if (concludeDocumentPreviewUrl) {
+            URL.revokeObjectURL(concludeDocumentPreviewUrl);
+            setConcludeDocumentPreviewUrl('');
+        }
+        // --- FIN CÓDIGO AÑADIDO ---
     };
 
     const handleJustificationSubmit = () => {
@@ -1094,7 +1128,19 @@ function ProjectForm() {
                                 onChange={handleConcludeDocumentChange}
                                 required
                             />
-                            {concludeDocumentFile && <p className="selected-file-name">Archivo seleccionado: {concludeDocumentFile.name}</p>}
+                            {/* --- CÓDIGO MODIFICADO: Muestra info de archivo subido --- */}
+                            <p className="image-specs-text">
+                                Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.
+                            </p>
+                            {concludeDocumentFile && (
+                                <p className="selected-file-name">
+                                    Archivo seleccionado: 
+                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
+                                        {concludeDocumentFile.name}
+                                    </a>
+                                </p>
+                            )}
+                            {/* --- FIN CÓDIGO MODIFICADO --- */}
                         </div>
 
                         {error && <p className="error-message">{error}</p>}
