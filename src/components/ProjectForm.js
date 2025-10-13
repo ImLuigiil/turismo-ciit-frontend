@@ -54,6 +54,12 @@ function ProjectForm() {
 
     const MAX_PERSONAS_INVOLUCRADAS = 15; 
 
+    const justificacionesHistorial = [
+    { fase: 1, nombreDocumento: 'Acta de Inicio (Fase 1).pdf', url: 'https://ejemplo.com/doc_fase1.pdf' },
+    { fase: 2, nombreDocumento: 'Evidencia de Diseño (Fase 2).docx', url: 'https://ejemplo.com/doc_fase2.docx' },
+    { fase: 3, nombreDocumento: 'Reporte de Pruebas (Fase 3).zip', url: 'https://ejemplo.com/doc_fase3.zip' },
+]; 
+
     const generateCollaboratorRoles = (currentPersonas) => {
         // Contar cuántos colaboradores ya existen
 
@@ -997,6 +1003,7 @@ function ProjectForm() {
                     {isEditing && (
                         <div className="form-group">
                             <label>Fase Actual: {faseActual}</label>
+
                             <button
                                 type="button"
                                 onClick={handleJustificationModalOpen}
@@ -1007,6 +1014,34 @@ function ProjectForm() {
                             </button>
                         </div>
                     )}
+                    {isEditing && justificacionesHistorial.length > 0 && (
+        <div className="justification-history-section">
+            <h3>Documentos de Justificación (Fases Pasadas):</h3>
+            <ul className="justification-list">
+                {/* Filtra solo las justificaciones de fases pasadas, no la fase actual */}
+                {justificacionesHistorial
+                    .filter(j => j.fase < parseInt(faseActual))
+                    .map((justificacion) => (
+                        <li key={justificacion.fase} className="justification-item">
+                            <span className="fase-label">Fase {justificacion.fase}:</span>
+                            <a 
+                                href={justificacion.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="justification-link"
+                                title={`Ver documento de la Fase ${justificacion.fase}`}
+                            >
+                                {justificacion.nombreDocumento} 
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
+            {justificacionesHistorial.filter(j => j.fase < parseInt(faseActual)).length === 0 && (
+                <p className="text-sm italic text-gray-500">No hay documentos de justificación para fases anteriores.</p>
+            )}
+        </div>
+    )}
 
                     {error && <p className="error-message">{error}</p>}
 
