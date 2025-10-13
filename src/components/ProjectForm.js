@@ -226,17 +226,16 @@ function ProjectForm() {
                 try {
                     const API_URL_BASE = `${process.env.REACT_APP_API_URL}/proyectos`;
                     const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
-                    const project = response.data; // La respuesta principal
+                    const project = response.data;
 
-                    // --- CÓDIGO CLAVE: Carga del Historial desde la respuesta principal del proyecto ---
+                    // --- CÓDIGO AÑADIDO: Carga del Historial desde la respuesta principal del proyecto ---
                     if (project.historialFases) {
-                        // Asegurar que el historial esté ordenado por fase para la visualización
+                        // Asegurar que el historial esté ordenado por fase
                         const sortedHistorial = project.historialFases.sort((a, b) => a.faseNumero - b.faseNumero);
-                        setHistorialFases(sortedHistorial); 
+                        setHistorialFases(sortedHistorial); // <--- Usa el estado restaurado
                     } else {
                          setHistorialFases([]);
                     }
-                    // --- FIN CÓDIGO CLAVE ---
 
                     const personasResponse = await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${idProyectoUrl}`);
                     const personasData = personasResponse.data;
@@ -587,6 +586,21 @@ function ProjectForm() {
             }
             console.error(`Error al ${isEditing ? 'actualizar' : 'agregar'} proyecto:`, err.response || err);
         }
+    };
+
+    const handleJustificationModalOpen = async (e) => {
+        e.preventDefault();
+
+        if (parseInt(faseActual) >= 7) {
+            showNotification('El proyecto ya ha alcanzado la fase final (7).', 'info');
+            return;
+        }
+        if (!isEditing) return;
+
+        setConcludeJustificationText('');
+        setConcludeDocumentFile(null);
+        setError(null);
+        setShowConcludePhaseModal(true);
     };
 
     const handleConcludeDocumentChange = (e) => {
@@ -997,30 +1011,33 @@ function ProjectForm() {
                         <div className="form-group">
                             <label>Fase Actual: {faseActual}</label>
                             <button
-                                //... (código del botón)
+                                type="button"
+                                onClick={handleJustificationModalOpen}
+                                className="concluir-fase-button"
                                 disabled={isConcludePhaseButtonDisabled}
                             >
                                 {parseInt(faseActual) < 7 ? 'Concluir Fase' : 'Proyecto Finalizado'}
                             </button>
                         </div>
                     )}
-                    
-                    {/* --- CÓDIGO CLAVE: Bloque para el Historial de Justificaciones --- */}
-                    {isEditing && historialFases.length > 0 && (
+
+                    {isEditing && historialFases.length > 1 && (
                         <div className="justification-history-section">
                             <h4>Historial y Documentos de Justificación:</h4>
                             <ul className="justification-list">
-                                {historialFases.map((historial) => (
+                                {historialFases.map((historial) => ( // <-- Usa la variable de estado
                                     <li key={historial.idHistorialFase} className="justification-item">
                                         <span className="fase-label">Fase {historial.faseNumero} Concluida:</span>
                                         <a 
-                                            // Conexión directa al archivo en el servidor NestJS
+                                            // --- CÓDIGO CLAVE MODIFICADO: Uso de la URL base ---
                                             href={`${process.env.REACT_APP_API_URL}${historial.documentoUrl}`} 
+                                            // --- FIN CÓDIGO CLAVE MODIFICADO ---
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="justification-link"
                                             title={`Justificación: ${historial.justificacion}`}
                                         >
+                                            {/* Muestra un nombre de archivo limpio en lugar de la URL completa */}
                                             Documento (Fase {historial.faseNumero})
                                         </a>
                                     </li>
@@ -1028,7 +1045,6 @@ function ProjectForm() {
                             </ul>
                         </div>
                     )}
-                    {/* --- FIN CÓDIGO CLAVE --- */}
 
                     {error && <p className="error-message">{error}</p>}
 
