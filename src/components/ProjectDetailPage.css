@@ -317,3 +317,32 @@
 .generate-justificacion-button:hover {
   background-color: #0056b3;
 }
+
+.download-final-document-button {
+    width: 100%;
+    margin-bottom: 10px;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    display: block;
+    
+    /* Color distintivo para la finalización (Por ejemplo, un azul más brillante o un dorado) */
+    background-color: #f7a500; 
+    color: #1B396A; /* Texto oscuro para contraste */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.download-final-document-button:hover {
+    background-color: #e09600;
+}
+
+.download-final-document-button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+}

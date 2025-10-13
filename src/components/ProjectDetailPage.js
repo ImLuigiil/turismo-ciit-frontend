@@ -237,6 +237,24 @@ function ProjectDetailPage() {
         showNotification(`Descargando documento de la Fase ${faseNumero}...`, 'success');
     };
 
+  const handleDownloadFinalDocument = (historial) => {
+        const finalPhaseRecord = historial.find(h => h.faseNumero === 7);
+
+        if (!finalPhaseRecord || !finalPhaseRecord.documentoUrl) {
+            showNotification('El documento final (Fase 7) aún no ha sido subido.', 'warning');
+            return;
+        }
+
+        const link = document.createElement('a');
+        link.href = `${process.env.REACT_APP_API_URL}${finalPhaseRecord.documentoUrl}`;
+        // Nombrar el archivo de forma descriptiva
+        link.download = `Proyecto_Final_${project.nombre.replace(/\s/g, '_')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showNotification('Descargando el documento de Proyecto Final...', 'success');
+    };
+
   if (loading) {
     return <div className="project-detail-loading">Cargando detalles del proyecto...</div>;
   }
@@ -316,6 +334,17 @@ function ProjectDetailPage() {
                     disabled={project.faseActual >= 7 || project.historialFases.length === 0}
                 >
                     Descargar Justificaciones (Fase 1-6)
+                </button>
+            )}
+
+          {project.historialFases && (
+                <button 
+                    className="download-final-document-button" 
+                    onClick={() => handleDownloadFinalDocument(project.historialFases)}
+                    // Este botón solo es relevante si el proyecto está en Fase 7 (o ya pasó por ella)
+                    disabled={!project.historialFases.some(h => h.faseNumero === 7 && h.documentoUrl)}
+                >
+                    Descargar Proyecto Final
                 </button>
             )}
 
