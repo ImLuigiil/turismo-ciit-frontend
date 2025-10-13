@@ -217,6 +217,33 @@ function ProjectDetailPage() {
     }
   };
 
+  const handleDownloadAllJustifications = (historial) => {
+    // Filtramos solo las fases de la 1 a la 6
+    const documentsToDownload = historial.filter(h => h.faseNumero >= 1 && h.faseNumero <= 6);
+
+    if (documentsToDownload.length === 0) {
+        showNotification('No hay documentos de justificación de la Fase 1 a 6 para descargar.', 'warning');
+        return;
+    }
+
+    // Descargar cada documento con un pequeño retraso para evitar bloqueos del navegador
+    documentsToDownload.forEach((record, index) => {
+        if (record.documentoUrl) {
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = `${process.env.REACT_APP_API_URL}${record.documentoUrl}`;
+                // Nombrar el archivo de forma descriptiva
+                link.download = `Justificacion_Fase_${record.faseNumero}_Proyecto_${project.nombre.replace(/\s/g, '_')}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, index * 500); // 500ms de retraso entre cada descarga
+        }
+    });
+
+    showNotification(`Iniciando la descarga de ${documentsToDownload.length} documentos de justificación.`, 'info');
+};
+
   if (loading) {
     return <div className="project-detail-loading">Cargando detalles del proyecto...</div>;
   }
@@ -286,6 +313,18 @@ function ProjectDetailPage() {
           <button onClick={handleGenerateReport} className="generate-report-button">
             Generar Reporte PDF
           </button>
+
+          {project.historialFases && (
+                <button 
+                    className="print-documents-button" 
+                    onClick={() => handleDownloadAllJustifications(project.historialFases)}
+                    // Deshabilitar si el proyecto está en Fase 7 (finalizado) o si no hay historial
+                    disabled={project.faseActual >= 7 || project.historialFases.length === 0}
+                >
+                    Descargar Justificaciones (Fase 1-6)
+                </button>
+            )}
+            
         </div>
 
         <div className="project-main-info">

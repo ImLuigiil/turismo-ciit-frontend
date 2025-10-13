@@ -224,3 +224,39 @@
     order: unset;
   }
 }
+
+.print-documents-button, .generate-report-button {
+    width: 100%;
+    margin-bottom: 10px; /* Separación entre ambos botones */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    display: block;
+}
+
+.generate-report-button {
+    background-color: #1B396A; /* Azul oscuro */
+    color: white;
+}
+
+.generate-report-button:hover {
+    background-color: #2a5796;
+}
+
+.print-documents-button {
+    background-color: #004d40; /* Verde oscuro (Distintivo de documentos) */
+    color: white;
+}
+
+.print-documents-button:hover {
+    background-color: #00332a;
+}
+
+.print-documents-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
