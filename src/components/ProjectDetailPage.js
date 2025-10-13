@@ -107,12 +107,14 @@ const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
 function ProjectDetailPage() {
   const { idProyecto } = useParams();
   const navigate = useNavigate();
+
   const [project, setProject] = useState(null);
   const [personasDirectorio, setPersonasDirectorio] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const CAROUSEL_ROTATION_SPEED = 5000;
+  const [showJustificationsModal, setShowJustificationsModal] = useState(false);
   const { showNotification } = useNotification();
 
   const formatNumber = (num) => {
@@ -217,32 +219,23 @@ function ProjectDetailPage() {
     }
   };
 
-  const handleDownloadAllJustifications = (historial) => {
-    // Filtramos solo las fases de la 1 a la 6
-    const documentsToDownload = historial.filter(h => h.faseNumero >= 1 && h.faseNumero <= 6);
-
-    if (documentsToDownload.length === 0) {
-        showNotification('No hay documentos de justificación de la Fase 1 a 6 para descargar.', 'warning');
-        return;
-    }
-
-    // Descargar cada documento con un pequeño retraso para evitar bloqueos del navegador
-    documentsToDownload.forEach((record, index) => {
-        if (record.documentoUrl) {
-            setTimeout(() => {
-                const link = document.createElement('a');
-                link.href = `${process.env.REACT_APP_API_URL}${record.documentoUrl}`;
-                // Nombrar el archivo de forma descriptiva
-                link.download = `Justificacion_Fase_${record.faseNumero}_Proyecto_${project.nombre.replace(/\s/g, '_')}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }, index * 500); // 500ms de retraso entre cada descarga
+  const handleOpenJustificationsModal = () => {
+        if (!project.historialFases || project.historialFases.length === 0) {
+            showNotification('No hay documentos de justificación para mostrar.', 'warning');
+            return;
         }
-    });
+        setShowJustificationsModal(true);
+    };
 
-    showNotification(`Iniciando la descarga de ${documentsToDownload.length} documentos de justificación.`, 'info');
-};
+  const handleDownloadDocument = (documentoUrl, faseNumero) => {
+        const link = document.createElement('a');
+        link.href = `${process.env.REACT_APP_API_URL}${documentoUrl}`;
+        link.download = `Justificacion_Fase_${faseNumero}_Proyecto_${project.nombre.replace(/\s/g, '_')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showNotification(`Descargando documento de la Fase ${faseNumero}...`, 'success');
+    };
 
   if (loading) {
     return <div className="project-detail-loading">Cargando detalles del proyecto...</div>;
@@ -317,14 +310,15 @@ function ProjectDetailPage() {
           {project.historialFases && (
                 <button 
                     className="print-documents-button" 
-                    onClick={() => handleDownloadAllJustifications(project.historialFases)}
-                    // Deshabilitar si el proyecto está en Fase 7 (finalizado) o si no hay historial
+                    // --- CÓDIGO MODIFICADO: Llama a la función que abre la modal ---
+                    onClick={handleOpenJustificationsModal}
+                    // --- FIN CÓDIGO MODIFICADO ---
                     disabled={project.faseActual >= 7 || project.historialFases.length === 0}
                 >
                     Descargar Justificaciones (Fase 1-6)
                 </button>
             )}
-            
+
         </div>
 
         <div className="project-main-info">
@@ -357,6 +351,33 @@ function ProjectDetailPage() {
           <p className="project-main-description">{project.descripcion}</p>
         </div>
       </div>
+      {showJustificationsModal && project.historialFases && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button onClick={() => setShowJustificationsModal(false)} className="close-modal-button">X</button>
+            <h3>Justificaciones de Fases Anteriores</h3>
+            <p>Haga clic en 'Descargar' para obtener el documento correspondiente.</p>
+            <ul className="justifications-list">
+              {project.historialFases
+                .filter(h => h.faseNumero >= 1 && h.faseNumero <= 6 && h.documentoUrl)
+                .map((record) => (
+                  <li key={record.idHistorial} className="justification-item-modal">
+                    <span>Justificación Fase {record.faseNumero}:</span>
+                    <button
+                      onClick={() => handleDownloadDocument(record.documentoUrl, record.faseNumero)}
+                      className="download-document-button"
+                    >
+                      Descargar
+                    </button>
+                  </li>
+                ))}
+            </ul>
+            {project.historialFases.filter(h => h.faseNumero >= 1 && h.faseNumero <= 6 && h.documentoUrl).length === 0 && (
+                <p className="no-documents-message">No hay documentos de justificación disponibles.</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
