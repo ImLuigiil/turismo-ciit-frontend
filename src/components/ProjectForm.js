@@ -54,11 +54,6 @@ function ProjectForm() {
 
     const MAX_PERSONAS_INVOLUCRADAS = 15; 
 
-    const justificacionesHistorial = [
-    { fase: 1, nombreDocumento: 'Acta de Inicio (Fase 1).pdf', url: 'https://ejemplo.com/doc_fase1.pdf' },
-    { fase: 2, nombreDocumento: 'Evidencia de Diseño (Fase 2).docx', url: 'https://ejemplo.com/doc_fase2.docx' },
-    { fase: 3, nombreDocumento: 'Reporte de Pruebas (Fase 3).zip', url: 'https://ejemplo.com/doc_fase3.zip' },
-]; 
 
     const generateCollaboratorRoles = (currentPersonas) => {
         // Contar cuántos colaboradores ya existen
