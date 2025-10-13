@@ -1031,7 +1031,7 @@ function ProjectForm() {
                             <ul className="justification-list">
                                 {historialFases.map((historial) => ( // <-- Usa la variable de estado
                                     <li key={historial.idHistorialFase} className="justification-item">
-                                        <span className="fase-label">Fase {historial.faseNumero} Concluida:</span>
+                                        <span className="fase-label">Fase {historial.faseNumero}:</span>
                                         <a 
                                             // --- CÓDIGO CLAVE MODIFICADO: Uso de la URL base ---
                                             href={`${process.env.REACT_APP_API_URL}${historial.documentoUrl}`} 

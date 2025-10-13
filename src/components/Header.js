@@ -39,7 +39,7 @@
             <div className="header-middle-content">
               <img src="https://images.seeklogo.com/logo-png/34/2/gobierno-de-mexico-logo-png_seeklogo-343548.png" alt="Gobierno de México" className="header-logo-middle" />
               <img src="https://www.gob.mx/cms/uploads/action_program/main_image/3180/post_logo_educ.jpg" alt="Educación" className="header-logo-middle" />
-              <img src="https://www.cdcuauhtemoc.tecnm.mx/wp-content/uploads/2021/08/Logo-TecNM.png" alt="TecNM" className="header-logo-middle" />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Tecnologico_Nacional_de_Mexico.svg/1200px-Tecnologico_Nacional_de_Mexico.svg.png" alt="TecNM" className="header-logo-middle" />
               <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Instituto_Tecnologico_de_Oaxaca_-_original.svg/2131px-Instituto_Tecnologico_de_Oaxaca_-_original.svg.png" alt="ITOaxaca" className="header-logo-middle" />
             </div>
           </div>
