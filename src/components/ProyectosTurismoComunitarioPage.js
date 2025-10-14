@@ -601,59 +601,61 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                 </div>
             )}
              {showConcludePhaseModal && selectedProject && (
-                <div className="justification-modal-overlay">
-                    <div className="justification-modal-content">
-                        <h3>Concluir Fase {selectedProject.faseActual} a Fase {selectedProject.faseActual + 1}</h3>
-                        <p>Proyecto: **{selectedProject.nombre}**</p>
-                        <p>Para avanzar, explique los motivos y suba el documento de respaldo (PDF).</p>
+                <div className="justification-modal-overlay">
+                    <div className="justification-modal-content">
+                        <h3>Concluir Fase {selectedProject.faseActual} a Fase {selectedProject.faseActual + 1}</h3>
+                        <p>Proyecto: **{selectedProject.nombre}**</p>
+                        <p>Para avanzar, explique los motivos y suba el documento de respaldo (PDF).</p>
 
-                        <div className="form-group">
-                            <label htmlFor="concludeJustification">Justificación (Obligatoria):</label>
-                            <textarea
-                                id="concludeJustification"
-                                value={concludeJustificationText}
-                                onChange={(e) => setConcludeJustificationText(e.target.value)}
-                                placeholder="Escriba aquí la justificación..."
-                                rows="4"
-                                required
-                            ></textarea>
-                        </div>
+                        <div className="form-group">
+                            <label htmlFor="concludeJustification">Justificación (Obligatoria):</label>
+                            <textarea
+                                id="concludeJustification"
+                                value={concludeJustificationText}
+                                onChange={(e) => setConcludeJustificationText(e.target.value)}
+                                placeholder="Escriba aquí la justificación..."
+                                rows="4"
+                                required
+                            ></textarea>
+                        </div>
 
-                        <div className="form-group">
-                            <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
-                            <input
-                                type="file"
-                                id="concludeDocument"
-                                accept=".pdf"
-                                onChange={handleConcludeDocumentChange}
-                                required
-                            />
-                            <p className="image-specs-text">
-                                Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.
-                            </p>
-                            {concludeDocumentFile && (
-                                <p className="selected-file-name">
-                                    Archivo seleccionado: 
-                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
-                                        {concludeDocumentFile.name}
-                                    </a>
-                                </p>
-                            )}
-                        </div>
-                        
-                        {modalError && <p className="error-message">{modalError}</p>}
+                        <div className="form-group">
+                            <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
+                            <input
+                                type="file"
+                                id="concludeDocument"
+                                accept=".pdf"
+                                onChange={handleConcludeDocumentChange}
+                                required
+                            />
+                            {/* --- CÓDIGO MODIFICADO: Muestra info de archivo subido --- */}
+                            <p className="image-specs-text">
+                                Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.
+                            </p>
+                            {concludeDocumentFile && (
+                                <p className="selected-file-name">
+                                    Archivo seleccionado: 
+                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
+                                        {concludeDocumentFile.name}
+                                    </a>
+                                </p>
+                            )}
+                            {/* --- FIN CÓDIGO MODIFICADO --- */}
+                        </div>
+                        
+                        {modalError && <p className="error-message">{modalError}</p>}
 
-                        <div className="justification-warning">
-                            <p>⚠️ Una vez confirmado el avance, **no se podrá retroceder** a una fase anterior.</p>
-                        </div>
+                        <div className="justification-warning">
+                            <p>⚠️ Una vez confirmado el avance, **no se podrá retroceder** a una fase anterior.</p>
+                        </div>
 
-                        <div className="modal-buttons">
-                            <button onClick={handleConcludePhaseSubmit} className="submit-button" disabled={isSubmitting}>
-                                {isSubmitting ? 'Enviando...' : 'Confirmar Avance'}
-                            </button>
-                            <button onClick={handleConcludePhaseCancel} className="cancel-button" disabled={isSubmitting}>
-                                Cancelar
-                            </button>
+                        <div className="modal-buttons">
+                            <button onClick={handleConcludePhaseSubmit} className="submit-button" disabled={isSubmitting}>
+                                {isSubmitting ? 'Enviando...' : 'Confirmar Avance'}
+                            </button>
+                            <button onClick={handleConcludePhaseCancel} className="cancel-button" disabled={isSubmitting}>
+                                Cancelar
+                            </button>
                         </div>
                     </div>
                 </div>
