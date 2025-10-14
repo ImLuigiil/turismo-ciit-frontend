@@ -1,5 +1,5 @@
 // src/components/ReportesPage.js
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
@@ -8,38 +8,6 @@ import './ReportesPage.css';
 
 function ReportesPage() {
   const [proyectos, setProyectos] = useState([]);
-
-  const chartRef = useRef(null);
-    const [counts, setCounts] = useState({ green: 0, yellow: 0, red: 0, grey: 0 });
-
-
-
-    useEffect(() => {
-        if (chartRef.current) {
-            const ctx = chartRef.current.getContext('2d');
-            ctx.clearRect(0, 0, chartRef.current.width, chartRef.current.height);
-            const total = counts.green + counts.yellow + counts.red + counts.grey;
-            if (total === 0) return;
-
-            let startAngle = 0;
-            const drawSlice = (color, count) => {
-                const sliceAngle = (count / total) * 2 * Math.PI;
-                ctx.beginPath();
-                ctx.moveTo(100, 100);
-                ctx.arc(100, 100, 80, startAngle, startAngle + sliceAngle);
-                ctx.closePath();
-                ctx.fillStyle = color;
-                ctx.fill();
-                startAngle += sliceAngle;
-            };
-
-            drawSlice('#28a745', counts.green);
-            drawSlice('#ffc107', counts.yellow);
-            drawSlice('#dc3545', counts.red);
-            drawSlice('#6c757d', counts.grey);
-        }
-    }, [counts]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -75,98 +43,6 @@ function ReportesPage() {
 
     fetchProyectos();
   }, [navigate, showNotification]);
-
-  const getPhaseTargetPercentage = (faseActual) => {
-    if (faseActual < 1) return 0;
-    if (faseActual >= 7) return 100;
-    if (faseActual <= 3) return faseActual * 25;
-    const percentagePerSubPhase = 25 / 4;
-    return 75 + (faseActual - 3) * percentagePerSubPhase;
-};
-
-const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
-    if (!fechaInicio || !fechaFinAprox) return 0;
-    const startDate = new Date(fechaInicio);
-    const endDate = new Date(fechaFinAprox);
-    const currentDate = new Date();
-    if (currentDate < startDate) return 0;
-    if (currentDate > endDate) return 100;
-    const totalDuration = endDate.getTime() - startDate.getTime();
-    const elapsedDuration = currentDate.getTime() - startDate.getTime();
-    if (totalDuration <= 0) return 100;
-    return (elapsedDuration / totalDuration) * 100;
-};
-
-const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
-    // --- CORRECCIÓN CRUCIAL: Salida inmediata en Fase 7 ---
-    if ((faseActual ?? 0) >= 7) {
-        return '#28a745'; // Siempre verde si está terminado
-    }
-    // --- FIN CORRECCIÓN ---
-
-    if (!fechaInicio || !fechaFinAprox || !faseActual || faseActual < 1) {
-        return '#6c757d'; // Gris: Faltan datos para calcular
-    }
-    
-    const currentDate = new Date();
-    const endDate = new Date(fechaFinAprox);
-    if (currentDate > endDate) {
-        return '#dc3545'; // Rojo: Tiempo agotado
-    }
-    
-    // ... (El resto de la lógica para calcular días de atraso sigue igual) ...
-    
-    // NOTA: Se requiere la función getPhaseSchedule, que debes tener en el archivo
-    // para el cálculo de días exactos de atraso.
-
-    // ... (El resto de tu lógica de atraso (díasBehind, umbrales) continúa aquí) ...
-
-    return '#28a745';
-};
-
-const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
-    // --- CORRECCIÓN CRUCIAL: Salida inmediata en Fase 7 ---
-    if ((faseActual ?? 0) >= 7) {
-      return 100; // Proyecto terminado
-    }
-    // --- FIN CORRECCIÓN ---
-    
-    const getPhaseProgress = (fase) => {
-        if (fase <= 1) return 0;
-        const progressMap = { 2: 25, 3: 50, 4: 75, 5: 81.25, 6: 87.5, 7: 100 };
-        return progressMap[fase] || 0;
-    };
-    
-    const timeBasedPercentage = calculateTimeBasedProgress(fechaInicio, fechaFinAprox);
-    const phaseTargetPercentage = getPhaseProgress(faseActual);
-    const endDate = new Date(fechaFinAprox);
-    const currentDate = new Date();
-
-    if (currentDate > endDate && faseActual < 7) {
-        return Math.min(100, Math.max(0, Math.round(phaseTargetPercentage)));
-    }
-    let finalPercentage = Math.max(timeBasedPercentage, phaseTargetPercentage);
-    return Math.min(100, Math.max(0, Math.round(finalPercentage)));
-};
-
-    useEffect(() => {
-        if (proyectos.length > 0) {
-            let greenCount = 0;
-            let yellowCount = 0;
-            let redCount = 0;
-            let greyCount = 0;
-            proyectos.forEach(p => {
-                const color = getProgressColor(p.fechaInicio, p.fechaFinAprox, p.faseActual);
-                switch (color) {
-                    case '#28a745': greenCount++; break;
-                    case '#ffc107': yellowCount++; break;
-                    case '#dc3545': redCount++; break;
-                    default: greyCount++; break;
-                }
-            });
-            setCounts({ green: greenCount, yellow: yellowCount, red: redCount, grey: greyCount });
-        }
-    }, [proyectos, getProgressColor]);
 
 
   const handleGenerateProjectReport = async (projectId, projectName) => {
@@ -324,23 +200,6 @@ const calcularAvance = (fechaInicio, fechaFinAprox, faseActual) => {
               Generar Reporte General
             </button>
           </div>
-
-          <div className="report-section chart-container">
-        <h3>Estado General de Proyectos</h3>
-        <div className="pie-chart-wrapper">
-            <canvas ref={chartRef} width="200" height="200"></canvas>
-            <div className="chart-legend">
-                <h4>Distribución de Proyectos</h4>
-                <p><strong>Total de Proyectos:</strong> {proyectos.length}</p>
-                <ul>
-                    <li style={{ color: '#28a745' }}><strong>En Tiempo:</strong> {counts.green}</li>
-                    <li style={{ color: '#ffc107' }}><strong>Atraso Leve:</strong> {counts.yellow}</li>
-                    <li style={{ color: '#dc3545' }}><strong>Muy Atrasados:</strong> {counts.red}</li>
-                    <li style={{ color: '#6c757d' }}><strong>Sin Fechas:</strong> {counts.grey}</li>
-                </ul>
-            </div>
-        </div>
-    </div>
 
 
         </div>
