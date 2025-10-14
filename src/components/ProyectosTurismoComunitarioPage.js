@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
 import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 import './ProyectosTurismoComunitarioPage.css';
 
@@ -646,7 +645,10 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                             </button>
                         </div>
                     </div>
-                    {proyectos.length > 0 && (
+                </div>
+            )}
+
+            {proyectos.length > 0 && (
                     <div className="proyectos-chart-container">
                         <h3>Estado de Proyectos en Progreso</h3>
                         <Pie 
@@ -666,10 +668,6 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                         />
                     </div>
                 )}
-                </div>
-            )}
-
-            
 
     </div>
   );
