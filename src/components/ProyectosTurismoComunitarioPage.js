@@ -646,10 +646,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                             </button>
                         </div>
                     </div>
-                </div>
-            )}
-
-            {proyectos.length > 0 && (
+                    {proyectos.length > 0 && (
                     <div className="proyectos-chart-container">
                         <h3>Estado de Proyectos en Progreso</h3>
                         <Pie 
@@ -669,6 +666,10 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                         />
                     </div>
                 )}
+                </div>
+            )}
+
+            
 
     </div>
   );
