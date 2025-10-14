@@ -1,5 +1,5 @@
 // src/components/ReportesPage.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
@@ -12,24 +12,7 @@ function ReportesPage() {
   const chartRef = useRef(null);
     const [counts, setCounts] = useState({ green: 0, yellow: 0, red: 0, grey: 0 });
 
-    useEffect(() => {
-        if (proyectos.length > 0) {
-            let greenCount = 0;
-            let yellowCount = 0;
-            let redCount = 0;
-            let greyCount = 0;
-            proyectos.forEach(p => {
-                const color = getProgressColor(p.fechaInicio, p.fechaFinAprox, p.faseActual);
-                switch (color) {
-                    case '#28a745': greenCount++; break;
-                    case '#ffc107': yellowCount++; break;
-                    case '#dc3545': redCount++; break;
-                    default: greyCount++; break;
-                }
-            });
-            setCounts({ green: greenCount, yellow: yellowCount, red: redCount, grey: greyCount });
-        }
-    }, [proyectos]);
+
 
     useEffect(() => {
         if (chartRef.current) {
@@ -101,8 +84,9 @@ function ReportesPage() {
     return 75 + (faseActual - 3) * percentagePerSubPhase;
 };
 
-const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
+const calculateTimeBasedProgress = useCallback((fechaInicio, fechaFinAprox) => {
     if (!fechaInicio || !fechaFinAprox) return 0;
+    // ... (Tu lógica de calculateTimeBasedProgress) ...
     const startDate = new Date(fechaInicio);
     const endDate = new Date(fechaFinAprox);
     const currentDate = new Date();
@@ -112,9 +96,9 @@ const calculateTimeBasedProgress = (fechaInicio, fechaFinAprox) => {
     const elapsedDuration = currentDate.getTime() - startDate.getTime();
     if (totalDuration <= 0) return 100;
     return (elapsedDuration / totalDuration) * 100;
-};
+}, []);
 
-const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
+const getProgressColor = useCallback((fechaInicio, fechaFinAprox, faseActual) => {
     if (!fechaInicio || !fechaFinAprox || !faseActual || faseActual < 1) {
         return '#6c757d'; // Gris: Faltan datos para calcular
     }
@@ -137,7 +121,26 @@ const getProgressColor = (fechaInicio, fechaFinAprox, faseActual) => {
     } else {
         return '#28a745';
     }
-};
+}, [calculateTimeBasedProgress]); 
+
+    useEffect(() => {
+        if (proyectos.length > 0) {
+            let greenCount = 0;
+            let yellowCount = 0;
+            let redCount = 0;
+            let greyCount = 0;
+            proyectos.forEach(p => {
+                const color = getProgressColor(p.fechaInicio, p.fechaFinAprox, p.faseActual);
+                switch (color) {
+                    case '#28a745': greenCount++; break;
+                    case '#ffc107': yellowCount++; break;
+                    case '#dc3545': redCount++; break;
+                    default: greyCount++; break;
+                }
+            });
+            setCounts({ green: greenCount, yellow: yellowCount, red: redCount, grey: greyCount });
+        }
+    }, [proyectos, getProgressColor]);
 
 
   const handleGenerateProjectReport = async (projectId, projectName) => {
