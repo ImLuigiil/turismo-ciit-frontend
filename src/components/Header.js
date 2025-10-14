@@ -46,8 +46,8 @@
 
           <nav className="main-nav">
             <div className="nav-container">
+              <Link to="/" className="nav-home">Inicio</Link>
               <ul className="nav-list">
-                <li className="nav-item"><Link to="/" className="nav-home">Inicio</Link></li>
                 <li className="nav-item"><Link to="/proyectos-turismo">Proyecto Red de Turismo Comunitario</Link></li>
                 <li className="nav-item"><Link to="/diplomados">Diplomado</Link></li>
                 <li className="nav-item"><Link to="/cursos">Cursos</Link></li>
