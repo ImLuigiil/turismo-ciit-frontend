@@ -78,7 +78,7 @@
     /* Empuja la lista de navegación al extremo derecho */
     justify-content: flex-end; 
     /* --- FIN CÓDIGO MODIFICADO --- */
-    align-items: center;
+    align-items: right;
 }
 
 .nav-home {
