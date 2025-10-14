@@ -455,123 +455,131 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
     return <div className="proyectos-error">Error al cargar los proyectos: {error.message}</div>;
   }
 
-  return (
-    <div className="proyectos-container">
-      <h2>Proyectos Red de Turismo Comunitario</h2>
+  return (
+    <div className="proyectos-container">
+      <h2>Proyectos Red de Turismo Comunitario</h2>
 
-      <div className="color-guide-container">
-        <div className="color-guide-item">
-            <span className="color-box" style={{ backgroundColor: '#28a745' }}></span>
-            <p>En Tiempo (Avance según lo esperado)</p>
-        </div>
-        <div className="color-guide-item">
-            <span className="color-box" style={{ backgroundColor: '#ffc107' }}></span>
-            <p>Ligeramente Atrasado (1 a 4 días de retraso)</p>
-        </div>
-        <div className="color-guide-item">
-            <span className="color-box" style={{ backgroundColor: '#dc3545' }}></span>
-            <p>Muy Atrasado(5 o más días de retraso)</p>
-        </div>
-    </div>
+      <div className="color-guide-container">
+        <div className="color-guide-item">
+            <span className="color-box" style={{ backgroundColor: '#28a745' }}></span>
+            <p>En Tiempo (Avance según lo esperado)</p>
+        </div>
+        <div className="color-guide-item">
+            <span className="color-box" style={{ backgroundColor: '#ffc107' }}></span>
+            <p>Ligeramente Atrasado (1 a 4 días de retraso)</p>
+        </div>
+        <div className="color-guide-item">
+            <span className="color-box" style={{ backgroundColor: '#dc3545' }}></span>
+            <p>Muy Atrasado(5 o más días de retraso)</p>
+        </div>
+    </div>
 
-      {isAdmin && (
-        <button className="add-new-project-button" onClick={handleAgregarNuevo}>
-          Agregar Nuevo Proyecto
-        </button>
-      )}
+      {isAdmin && (
+        <button className="add-new-project-button" onClick={handleAgregarNuevo}>
+          Agregar Nuevo Proyecto
+        </button>
+      )}
 
-       <div className="proyectos-grid">
-                {proyectos.length > 0 ? (
-                    proyectos.map(proyecto => {
-                        const avance = calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
-                        const color = getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
-                        
-                        const actionClass = (color === '#ffc107' || color === '#dc3545') && proyecto.faseActual < 7 ? 'urgent-action' : '';
+       <div className="proyectos-grid">
+                {proyectos.length > 0 ? (
+                    proyectos.map(proyecto => {
+                        const avance = calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
+                        const color = getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
+                        
+                        // Lógica para la clase de parpadeo (urgent-action)
+                        const actionClass = (color === '#ffc107' || color === '#dc3545') && proyecto.faseActual < 7 ? 'urgent-action' : '';
 
-                        return (
-                            <div key={proyecto.idProyecto} className="proyecto-card">
-                                {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
-                                    <div className="proyecto-card-image-container">
-                                        <img
-                                            src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
-                                            alt={`Imagen de ${proyecto.nombre}`}
-                                            className="proyecto-card-image"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="proyecto-card-image-container">
-                                        <img
-                                            src="https://placehold.co/300x180/e0e0e0/777?text=Sin+Imagen"
-                                            alt="Sin imagen"
-                                            className="proyecto-card-image"
-                                        />
-                                    </div>
-                                )}
-                                <h3 className="proyecto-card-title">{proyecto.nombre}</h3>
-                                <p className="proyecto-card-description">
-                                    {truncateDescription(proyecto.descripcion, 100)}
-                                </p>
-                                {proyecto.comunidad && (
-                                    <p className="proyecto-card-community">Comunidad: {proyecto.comunidad.nombre}</p>
-                                )}
-                                <div className="proyecto-card-progress">
-                                    <div
-                                        className="progress-bar-container"
-                                    >
-                                        <div
-                                            className="progress-bar"
-                                            style={{ 
-                                                width: `${avance}%`,
-                                                backgroundColor: color
-                                            }}
-                                        ></div>
-                                    </div>
-                                    <span className="progress-text">
-                                        Avance: {avance}%
-                                        {proyecto.faseActual && ` (Fase ${proyecto.faseActual})`}
-                                    </span>
-                                </div>
-                                
-                                
-                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
+                        return (
+                            <div key={proyecto.idProyecto} className="proyecto-card">
+                                {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
+                                    <div className="proyecto-card-image-container">
+                                        <img
+                                            src={`${process.env.REACT_APP_API_URL}${proyecto.imagenes[0].url}`}
+                                            alt={`Imagen de ${proyecto.nombre}`}
+                                            className="proyecto-card-image"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="proyecto-card-image-container">
+                                        <img
+                                            src="https://placehold.co/300x180/e0e0e0/777?text=Sin+Imagen"
+                                            alt="Sin imagen"
+                                            className="proyecto-card-image"
+                                        />
+                                    </div>
+                                )}
+                                <h3 className="proyecto-card-title">{proyecto.nombre}</h3>
+                                <p className="proyecto-card-description">
+                                    {truncateDescription(proyecto.descripcion, 100)}
+                                </p>
+                                {proyecto.comunidad && (
+                                    <p className="proyecto-card-community">Comunidad: {proyecto.comunidad.nombre}</p>
+                                )}
+                                <div className="proyecto-card-progress">
+                                    <div
+                                        className="progress-bar-container"
+                                    >
+                                        <div
+                                            className="progress-bar"
+                                            style={{ 
+                                                width: `${avance}%`,
+                                                backgroundColor: color
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <span className="progress-text">
+                                        Avance: {avance}%
+                                        {proyecto.faseActual && ` (Fase ${proyecto.faseActual})`}
+                                    </span>
+                                </div>
+                                
+                                
+                                
+                                <button className="proyecto-card-button" onClick={() => navigate(`/proyectos/${proyecto.idProyecto}`)}>Ver Más</button>
 
-                                {isAdmin && (
-                                    <div className="card-actions">
-                                        <button 
-                                            className={`action-button conclude-button ${actionClass}`} 
-                                            onClick={() => handleOpenConcludePhaseModal(proyecto)}
-                                            disabled={proyecto.faseActual >= 7 || isSubmitting}
-                                            title={proyecto.faseActual >= 7 ? "Proyecto completado" : "Avanzar a la siguiente fase"}
-                                        >
-                                            {proyecto.faseActual < 7 ? 'Concluir Fase' : 'Finalizado'}
-                                        </button>
+                                {isAdmin && (
+                                    <div className="card-actions">
+                                        {/* Botón Concluir Fase */}
+                                        <button 
+                                            className={`action-button conclude-button ${actionClass}`} 
+                                            onClick={() => handleOpenConcludePhaseModal(proyecto)}
+                                            disabled={proyecto.faseActual >= 7 || isSubmitting}
+                                            title={proyecto.faseActual >= 7 ? "Proyecto completado" : "Avanzar a la siguiente fase"}
+                                        >
+                                            {proyecto.faseActual < 7 ? 'Concluir Fase' : 'Finalizado'}
+                                        </button>
 
-                                        <button
-                                            className="action-button admin-edit-button"
-                                            onClick={() => handleEditarProyecto(proyecto.idProyecto)}
-                                            title={proyecto.faseActual > 1 ? "No se puede editar un proyecto finalizado" : (proyecto.faseActual === 7 ? "Editar Proyecto" : "Editar proyecto")}
-                                            disabled={proyecto.faseActual >= 7}
-                                        >
-                                            Editar
-                                        </button>
-                                        
-                                        <button
-                                            className="action-button admin-delete-button"
-                                            onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
-                                            title={proyecto.faseActual > 1 ? "No se puede eliminar: ya inició la Fase 2" : (proyecto.faseActual === 7 ? "Proyecto finalizado" : "Eliminar proyecto")}
-                                            disabled={proyecto.faseActual > 1 || proyecto.faseActual >= 7}
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })
-                ) : (
-                    <p className="no-proyectos">No hay proyectos de turismo comunitario registrados.</p>
-                )}
-            </div>
+                                        <button
+                                            className="action-button admin-edit-button"
+                                            onClick={() => handleEditarProyecto(proyecto.idProyecto)}
+                                            // --- CÓDIGO CLAVE AÑADIDO ---
+                                            title={proyecto.faseActual > 1 ? "No se puede editar un proyecto finalizado" : (proyecto.faseActual === 7 ? "Editar Proyecto" : "Editar proyecto")}
+                                            disabled={proyecto.faseActual >= 7}
+                                            // --- FIN CÓDIGO CLAVE AÑADIDO ---
+                                        >
+                                            Editar
+                                        </button>
+                                        
+                                        {/* Botón Eliminar (Mantendremos admin-delete-button para un color distinto) */}
+                                        <button
+                                            className="action-button admin-delete-button"
+                                            onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
+                                            title={proyecto.faseActual > 1 ? "No se puede eliminar: ya inició la Fase 2" : (proyecto.faseActual === 7 ? "Proyecto finalizado" : "Eliminar proyecto")}
+                                            // --- CÓDIGO CLAVE MODIFICADO ---
+                                            disabled={proyecto.faseActual > 1 || proyecto.faseActual >= 7}
+                                            
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p className="no-proyectos">No hay proyectos de turismo comunitario registrados.</p>
+                )}
+            </div>
             {proyectos.length > 0 && (
                 <div className="proyectos-chart-container">
                     <h3>Estado de Proyectos en Progreso</h3>
