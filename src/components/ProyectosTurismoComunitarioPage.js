@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 import './ProyectosTurismoComunitarioPage.css';
 
@@ -325,6 +327,68 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
         // --- FIN CÓDIGO AÑADIDO ---
     };
 
+    const getProjectStatusCounts = () => {
+        const counts = {
+            enTiempo: 0,
+            ligeramenteAtrasado: 0,
+            muyAtrasado: 0,
+            completado: 0, // Opcional, pero útil
+        };
+
+        proyectos.forEach(proyecto => {
+            if (proyecto.faseActual >= 7) {
+                counts.completado++;
+                return;
+            }
+
+            const color = getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
+            
+            if (color === '#28a745') {
+                counts.enTiempo++;
+            } else if (color === '#ffc107') {
+                counts.ligeramenteAtrasado++;
+            } else if (color === '#dc3545') {
+                counts.muyAtrasado++;
+            }
+        });
+
+        return counts;
+    };
+    
+    const statusCounts = getProjectStatusCounts();
+
+    const pieChartData = {
+        labels: [
+            `En Tiempo (${statusCounts.enTiempo})`, 
+            `Ligeramente Atrasado (${statusCounts.ligeramenteAtrasado})`, 
+            `Muy Atrasado (${statusCounts.muyAtrasado})`,
+            `Completado (${statusCounts.completado})`
+        ],
+        datasets: [
+            {
+                data: [
+                    statusCounts.enTiempo,
+                    statusCounts.ligeramenteAtrasado,
+                    statusCounts.muyAtrasado,
+                    statusCounts.completado
+                ],
+                backgroundColor: [
+                    '#28a745', 
+                    '#ffc107', 
+                    '#dc3545',
+                    '#007bff'
+                ],
+                borderColor: [
+                    '#ffffff',
+                    '#ffffff',
+                    '#ffffff',
+                    '#ffffff'
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
     const handleConcludePhaseSubmit = async () => {
         if (!selectedProject) return;
 
@@ -584,6 +648,28 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                     </div>
                 </div>
             )}
+
+            {proyectos.length > 0 && (
+                    <div className="proyectos-chart-container">
+                        <h3>Estado de Proyectos en Progreso</h3>
+                        <Pie 
+                            data={pieChartData}
+                            options={{ 
+                                responsive: true, 
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Distribución de Proyectos por Estado'
+                                    }
+                                }
+                            }}
+                        />
+                    </div>
+                )}
+
     </div>
   );
 }
