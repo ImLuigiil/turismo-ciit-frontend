@@ -70,16 +70,9 @@
 }
 
 .nav-container {
-  max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    /* --- CÓDIGO CLAVE MODIFICADO --- */
-    /* Empuja la lista de navegación al extremo derecho */
-    justify-content: flex-end; 
-    /* --- FIN CÓDIGO MODIFICADO --- */
-    align-items: center;
-    height: 50px;
+  display: flex;
+  align-items: right;
+  justify-content: space-between;
 }
 
 .nav-home {
