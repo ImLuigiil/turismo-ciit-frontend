@@ -70,14 +70,9 @@
 }
 
 .nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    /* Empuja todo el contenido del contenedor a la derecha */
-    justify-content: flex-end;
-    /* La siguiente línea es innecesaria para este objetivo, pero si quisieras centrarlo verticalmente sería align-items: center */
-    /* align-items: right; se elimina o corrige */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .nav-home {
@@ -105,14 +100,13 @@
 }
 
 .nav-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    /* ¡Alinea los ítems de la lista a la derecha! */
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .nav-item a {
