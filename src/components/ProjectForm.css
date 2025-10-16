@@ -572,26 +572,3 @@ textarea {
     color: #0b7dda;
     text-decoration: underline;
 }
-
-@keyframes blink-slow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
-@keyframes blink-fast {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}
-
-.concluir-fase-button:not(:disabled).blink-slow {
-    animation: blink-slow 1.5s infinite;
-}
-
-.concluir-fase-button:not(:disabled).blink-fast {
-    animation: blink-fast 0.7s infinite;
-    background-color: #dc3545; /* Rojo para muy atrasado */
-}
-
-.concluir-fase-button:not(:disabled).blink-fast:hover {
-    background-color: #c82333;
-}
