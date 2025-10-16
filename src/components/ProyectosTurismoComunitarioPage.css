@@ -293,3 +293,29 @@
     color: #333;
     margin-bottom: 20px;
 }
+
+@keyframes urgent-action-blink {
+  0%, 100% {
+    background-color: #ffc107; /* Amarillo para ligeramente atrasado */
+  }
+  50% {
+    background-color: #f8d070; /* Un tono más claro para el parpadeo */
+  }
+}
+
+@keyframes very-urgent-action-blink {
+  0%, 100% {
+    background-color: #dc3545; /* Rojo para muy atrasado */
+  }
+  50% {
+    background-color: #e66f7a; /* Un tono más claro para el parpadeo */
+  }
+}
+
+.action-button.blink-yellow {
+  animation: urgent-action-blink 1.5s infinite;
+}
+
+.action-button.blink-red {
+  animation: very-urgent-action-blink 1.5s infinite;
+}
