@@ -57,6 +57,8 @@ function ProjectForm() {
 
     const MAX_PERSONAS_INVOLUCRADAS = 15; 
 
+    const [blinkStatus, setBlinkStatus] = useState('none'); // 'none', 'slow', 'fast'
+
     
 
     const generateCollaboratorRoles = (currentPersonas) => {
@@ -113,6 +115,25 @@ function ProjectForm() {
             setError('Solo se permiten dígitos numéricos.');
         }
     };
+
+    const calculateDelayStatus = useCallback(() => {
+    if (!fechaFinAprox || parseInt(faseActual) >= 7) {
+        setBlinkStatus('none');
+        return;
+    }
+
+    const today = new Date();
+    const endDate = new Date(fechaFinAprox + 'T00:00:00'); // Evita problemas de zona horaria
+    const diffInDays = (today.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (diffInDays >= 14) { // Muy atrasado (2 semanas o más)
+        setBlinkStatus('fast');
+    } else if (diffInDays >= 7) { // Ligeramente atrasado (1 semana o más)
+        setBlinkStatus('slow');
+    } else {
+        setBlinkStatus('none');
+    }
+}, [fechaFinAprox, faseActual]);
 
     const validateDateDifference = (start, end) => {
         if (!start || !end) {
@@ -328,6 +349,12 @@ function ProjectForm() {
 
         calculateAndSetLimits();
     }, [fechaInicio, fechaFinAprox, showNotification]);
+
+    useEffect(() => {
+    calculateDelayStatus();
+    const interval = setInterval(calculateDelayStatus, 3600000); // Revisa cada hora
+    return () => clearInterval(interval); // Limpia el intervalo al desmontar el componente
+}, [calculateDelayStatus]);
 
 
     const handleAddPersona = () => {
@@ -1050,7 +1077,7 @@ function ProjectForm() {
                             <button
                                 type="button"
                                 onClick={handleJustificationModalOpen}
-                                className="concluir-fase-button"
+                                className={`concluir-fase-button ${isEditing ? `blink-${blinkStatus}` : ''}`}
                                 disabled={isConcludePhaseButtonDisabled}
                             >
                                 {parseInt(faseActual) < 7 ? 'Concluir Fase' : 'Proyecto Finalizado'}
