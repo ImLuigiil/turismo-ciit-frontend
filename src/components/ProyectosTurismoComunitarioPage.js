@@ -551,7 +551,6 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                       Editar
                                   </button>
                                   
-                                  {/* Botón Eliminar */}
                                   <button
                                       className="action-button admin-delete-button"
                                       onClick={() => handleEliminarProyecto(proyecto.idProyecto)}

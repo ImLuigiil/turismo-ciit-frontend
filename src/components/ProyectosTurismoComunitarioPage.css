@@ -183,6 +183,14 @@
   color: white;
 }
 
+.eliminar-delete-button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  border: 1px solid #999999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .admin-edit-button {
   background-color: #2196F3;
 }

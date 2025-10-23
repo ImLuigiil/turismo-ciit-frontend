@@ -79,9 +79,7 @@ textarea {
     min-height: 100px;
 }
 
-/* --------------------------------------------------- */
-/* BOTONES PRINCIPALES */
-/* --------------------------------------------------- */
+
 .form-buttons {
     display: flex;
     justify-content: flex-end;
@@ -124,9 +122,6 @@ textarea {
     cursor: not-allowed;
 }
 
-/* --------------------------------------------------- */
-/* COMUNIDADES DROPDOWN */
-/* --------------------------------------------------- */
 .community-dropdown {
     list-style: none;
     padding: 0;

@@ -1132,7 +1132,7 @@ function ProjectForm() {
                             </p>
                             {concludeDocumentFile && (
                                 <p className="selected-file-name">
-                                    Archivo seleccionado: 
+                                    Vista Previa: 
                                     <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
                                         {concludeDocumentFile.name}
                                     </a>
