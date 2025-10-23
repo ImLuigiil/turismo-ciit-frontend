@@ -1120,23 +1120,24 @@ function ProjectForm() {
 
                         <div className="form-group">
                             <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
-                            <div className="custom-file-upload">
-                                <label htmlFor="concludeDocument" className="custom-file-label">
-                                    Seleccionar Archivo
-                                </label>
-                                <span className="selected-file-display">
-                                    {concludeDocumentFile 
-                                        ? concludeDocumentFile.name 
-                                        : "No ha seleccionado un archivo aún"} 
-                                </span>
+                            <div className="file-input-wrapper-native-style">
                                 <input
                                     type="file"
                                     id="concludeDocument"
                                     accept=".pdf"
                                     onChange={handleConcludeDocumentChange}
                                     required
-                                    style={{ display: 'none' }}
+                                    className="hidden-input-file"
                                 />
+                                
+                                <label htmlFor="concludeDocument" className="file-upload-button">
+                                    Seleccionar Archivo
+                                </label>
+                                <span className="file-status-text">
+                                    {concludeDocumentFile 
+                                        ? concludeDocumentFile.name 
+                                        : "No ha seleccionado un archivo aún"}
+                                </span>
                             </div>
                             <p className="image-specs-text">
                                 Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.

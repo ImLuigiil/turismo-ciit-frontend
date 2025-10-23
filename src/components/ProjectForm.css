@@ -531,33 +531,54 @@ textarea {
     text-decoration: underline;
 }
 
-.custom-file-upload {
+.file-input-wrapper-native-style {
     display: flex;
-    align-items: left;
-    gap: 5px;
-    width: 50%;
+    align-items: center;
+    /* Ajusta el espaciado para que se vea como lo quieres */
+    gap: 10px; 
 }
 
-.custom-file-label {
-    background-color: #4a5568;
-    color: black;
-    padding: 8px 15px;
+/* 2. Oculta el input de archivo REAL (no queremos que el navegador muestre su UI) */
+.file-input-wrapper-native-style .hidden-input-file {
+    /* Clave para ocultarlo sin perder su funcionalidad */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* 3. Estilo del botón simulado (la etiqueta <label>) */
+/* Estos estilos imitan el aspecto simple de un botón de archivo nativo */
+.file-input-wrapper-native-style .file-upload-button {
+    background-color: #e9ecef; /* Un gris claro, similar al nativo */
+    color: #495057;
+    border: 1px solid #ced4da; /* Borde más suave */
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
-    border: 1px solid #007bff;
-    transition: background-color 0.2s;
+    transition: background-color 0.15s;
     white-space: nowrap;
+    
+    /* Pequeño ajuste para que parezca un botón real */
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
-.custom-file-label:hover {
-    background-color: #0056b3;
+.file-input-wrapper-native-style .file-upload-button:hover {
+    background-color: #d8dde2;
 }
 
-.selected-file-display {
+/* 4. Estilo del texto que muestra el estado del archivo */
+.file-input-wrapper-native-style .file-status-text {
     font-size: 14px;
-    color: #6c757d;
+    color: #6c757d; /* Texto gris para el estado */
+    /* Asegura que el texto largo no rompa el diseño */
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; 
     white-space: nowrap;
+    max-width: 70%; /* Limita el ancho para que el nombre no sea demasiado largo */
 }
