@@ -1062,7 +1062,7 @@ function ProjectForm() {
 
                     {isEditing && historialFases.length > 0 && (
                         <div className="justification-history-section">
-                            <h4>Historial y Documentos de Justificación:</h4>
+                            <h4>Historial de fases:</h4>
                              {console.log('[DEBUG] Renderizando historial de fases:', historialFases)}
                             <ul className="justification-list">
                                 {historialFases.map((historial) => (
@@ -1129,16 +1129,21 @@ function ProjectForm() {
                             />
                             <p className="image-specs-text">
                                 Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.
+                                ⚠️Solo se permite 1 archivo⚠️
                             </p>
-                            {concludeDocumentFile && (
-                                <p className="selected-file-name">
-                                    Vista Previa: 
-                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
-                                        {concludeDocumentFile.name}
-                                    </a>
+                            {concludeDocumentFile ? (
+                                <p className="selected-file-name">
+                                    Archivo Seleccionado: 
+                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
+                                        {concludeDocumentFile.name}
+                                    </a>
+                                </p>
+                            ) : (
+                                <p className="no-images-message">
+                                    No ha seleccionado un archivo aún
                                 </p>
                             )}
-                        </div>
+                        </div>
 
                         {error && <p className="error-message">{error}</p>}
 
