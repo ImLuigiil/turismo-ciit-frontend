@@ -761,6 +761,7 @@ function ProjectForm() {
                             id="comunidadSearch"
                             value={searchTerm}
                             onChange={handleSearchChange}
+                            disabled={isEditing && (parseInt(faseActual) > 1)}
                             onFocus={() => setShowDropdown(true)}
                             placeholder="Busca o selecciona un municipio"
                             required
@@ -790,6 +791,7 @@ function ProjectForm() {
                                 id="poblacionBeneficiada"
                                 value={formatNumber(poblacionBeneficiada)}
                                 onChange={handlePoblacionChange}
+                                disabled={isEditing && (parseInt(faseActual) > 1)}
                                 placeholder="Número de personas beneficiadas"
                             />
                         </div>
@@ -799,6 +801,7 @@ function ProjectForm() {
                                 id="noCapitulos"
                                 value={noCapitulos}
                                 onChange={(e) => setNoCapitulos(e.target.value)}
+                                disabled={isEditing && (parseInt(faseActual) > 1)}
                             >
                                 {capitulos.map((capitulo) => (
                                     <option key={capitulo} value={capitulo}>
@@ -817,6 +820,7 @@ function ProjectForm() {
         accept="image/*"
         multiple
         onChange={handleNewImageChange}
+        disabled={isEditing && (parseInt(faseActual) > 1)}
     />
     <p className="image-specs-text">
         Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
@@ -889,15 +893,16 @@ function ProjectForm() {
                                         placeholder="Apellido Paterno"
                                         value={persona.apellidoPaterno}
                                         onChange={(e) => handlePersonaChange(index, 'apellidoPaterno', e.target.value)}
+                                        
                                         required
-                                        disabled={!persona.isEditingLocal}
+                                        disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                     />
                                     <input
                                         type="text"
                                         placeholder="Apellido Materno (Opcional)"
                                         value={persona.apellidoMaterno}
                                         onChange={(e) => handlePersonaChange(index, 'apellidoMaterno', e.target.value)}
-                                        disabled={!persona.isEditingLocal}
+                                        disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                     />
                                     <input
                                         type="text"
@@ -905,7 +910,7 @@ function ProjectForm() {
                                         value={persona.nombre}
                                         onChange={(e) => handlePersonaChange(index, 'nombre', e.target.value)}
                                         required
-                                        disabled={!persona.isEditingLocal}
+                                        disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                     />
                                     
                                      <select
@@ -913,7 +918,7 @@ function ProjectForm() {
                 onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
                 required
                 className="select-rol"
-                disabled={!persona.isEditingLocal}
+                disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
             >
                 <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
                 
@@ -945,13 +950,14 @@ function ProjectForm() {
                                         placeholder="Contacto (ej. email)"
                                         value={persona.contacto}
                                         onChange={(e) => handlePersonaChange(index, 'contacto', e.target.value)}
-                                        disabled={!persona.isEditingLocal}
+                                        disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                     />
                                     
                                     {persona.isEditingLocal ? (
                                         <button 
                                             type="button" 
                                             onClick={() => handleAcceptPersona(index)} 
+                                            disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                             className="accept-persona-button"
                                             title="Confirmar y bloquear edición de esta persona"
                                         >
@@ -966,6 +972,7 @@ function ProjectForm() {
                                                 setPersonasDirectorio(newPersonas);
                                                 setIsFormDirty(true);
                                             }} 
+                                            disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                             className="edit-persona-button"
                                             title="Editar datos de esta persona"
                                         >
@@ -973,16 +980,20 @@ function ProjectForm() {
                                         </button>
                                     )}
                                     
-                                    <button type="button" onClick={() => handleRemovePersona(index)} className="remove-persona-button">
+                                    <button type="button" onClick={() => handleRemovePersona(index)} disabled={isEditing && (parseInt(faseActual) > 1)} className="remove-persona-button">
                                         X
                                     </button>
                                 </div>
                             );
                         })}
-                        <button type="button" onClick={handleAddPersona} className={`add-persona-button ${personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS ? 'disabled-limit' : ''}`}
-                        disabled={personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS}>
-                            + Agregar Persona
-                        </button>
+                        <button
+    type="button"
+    onClick={handleAddPersona}
+    className={`add-persona-button ${personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS ? 'disabled-limit' : ''}`}
+    disabled={personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS || (isEditing && (parseInt(faseActual) > 1))}
+>
+    + Agregar Persona
+</button>
                     </div>
                     
                     <div className="form-group">
@@ -992,6 +1003,7 @@ function ProjectForm() {
                             id="fechaInicio"
                             value={fechaInicio}
                             onChange={(e) => setFechaInicio(e.target.value)}
+                            disabled={isEditing && (parseInt(faseActual) > 1)}
                         />
                     </div>
 
@@ -1002,6 +1014,7 @@ function ProjectForm() {
                                 id="fechaFinAprox"
                                 value={fechaFinAprox}
                                 onChange={(e) => setFechaFinAprox(e.target.value)}
+                                disabled={isEditing && (parseInt(faseActual) > 1)}
                                 min={minDateFinAprox}
                                 max={maxDateFinAprox}
                             />
