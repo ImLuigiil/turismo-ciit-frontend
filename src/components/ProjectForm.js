@@ -750,6 +750,7 @@ function ProjectForm() {
                             id="descripcion"
                             value={descripcion}
                             onChange={(e) => setDescripcion(e.target.value)}
+                            disabled={isEditing && (parseInt(faseActual) > 1)}
                         ></textarea>
                     </div>
 
