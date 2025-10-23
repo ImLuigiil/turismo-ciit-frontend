@@ -546,7 +546,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                       className="action-button admin-edit-button"
                                       onClick={() => handleEditarProyecto(proyecto.idProyecto)}
                                       title={proyecto.faseActual > 1 ? "No se puede editar un proyecto que ya inició" : "Editar proyecto"}
-                                      disabled={proyecto.faseActual > 1 || proyecto.faseActual >= 7}
+                                      disabled={proyecto.faseActual >= 7}
                                   >
                                       Editar
                                   </button>

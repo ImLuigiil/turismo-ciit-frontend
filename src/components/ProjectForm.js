@@ -9,11 +9,9 @@ import './ProjectForm.css';
 const calculateTargetDate = (baseDate, months) => {
     if (!baseDate) return '';
     
-    // Usar 'T00:00:00' evita problemas de zona horaria que pueden mover la fecha un día.
     const d = new Date(baseDate + 'T00:00:00'); 
     d.setMonth(d.getMonth() + months);
 
-    // Formatear como YYYY-MM-DD
     return d.toISOString().split('T')[0];
 };
 
@@ -60,11 +58,9 @@ function ProjectForm() {
     
 
     const generateCollaboratorRoles = (currentPersonas) => {
-        // Contar cuántos colaboradores ya existen
 
         const roles = [{ label: 'Líder', value: 'Líder' }];
         
-        // Genera los siguientes roles de Colaborador hasta el límite máximo
         for (let i = 1; i <= MAX_PERSONAS_INVOLUCRADAS; i++) {
             roles.push({ label: `Colaborador ${i}`, value: `Colaborador ${i}` });
         }
@@ -122,10 +118,8 @@ function ProjectForm() {
         const startDate = new Date(start);
         const endDate = new Date(end);
         
-        // La diferencia de tiempo se calcula en milisegundos
         const timeDifference = endDate.getTime() - startDate.getTime();
         
-        // Define la duración mínima y máxima en milisegundos (usando días como aproximación)
         const MIN_DURATION_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000; // Aprox. 4 meses (120 días)
         const MAX_DURATION_IN_MS = 12 * 30 * 24 * 60 * 60 * 1000; // Aprox. 12 meses (365 días)
         
@@ -177,7 +171,6 @@ function ProjectForm() {
         originalProjectData
     ]);
 
-    // Llama a checkFormDirty cada vez que los datos del formulario cambian
     useEffect(() => {
         if (isEditing) {
             checkFormDirty();
@@ -231,10 +224,8 @@ function ProjectForm() {
                     const response = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
                     const project = response.data;
 
-                    // --- CÓDIGO AÑADIDO: Carga del Historial desde la respuesta principal del proyecto ---
                     console.log('[DEBUG] Datos del proyecto recibidos:', project);
                     console.log('[DEBUG] Historial de Fases recibido:', project.historialFases);
-                    // --- FIN CÓDIGO AÑADIDO ---
 
                     if (project.historialFases) {
                         const sortedHistorial = project.historialFases.sort((a, b) => a.faseNumero - b.faseNumero);
@@ -304,26 +295,22 @@ function ProjectForm() {
                 return;
             }
             
-            // Requisitos: Mínimo 4 meses (120 días) y Máximo 12 meses (365 días)
             const minDate = calculateTargetDate(fechaInicio, 4);
             const maxDate = calculateTargetDate(fechaInicio, 12);
             
             setMinDateFinAprox(minDate);
             setMaxDateFinAprox(maxDate);
 
-            // --- VALIDACIÓN DE COHERENCIA EN TIEMPO REAL ---
             if (fechaFinAprox) {
                 const currentEnd = new Date(fechaFinAprox).getTime();
                 const minTime = new Date(minDate).getTime();
                 const maxTime = new Date(maxDate).getTime();
 
-                // Si la fecha final actual es menor que el nuevo mínimo o mayor que el nuevo máximo, la borramos.
                 if (currentEnd < minTime || currentEnd > maxTime) {
                     setFechaFinAprox(''); 
                     showNotification('La fecha final fue restablecida, ya que ya no cumple con el nuevo rango de duración (4 a 12 meses desde el inicio).', 'warning');
                 }
             }
-            // --- FIN VALIDACIÓN COHERENCIA ---
         };
 
         calculateAndSetLimits();
@@ -342,7 +329,7 @@ function ProjectForm() {
                 apellidoPaterno: '', 
                 apellidoMaterno: '', 
                 nombre: '', 
-                rolEnProyecto: '', // Dejamos vacío para que el usuario seleccione
+                rolEnProyecto: '',
                 contacto: '',
 
                 isEditingLocal: true,
@@ -369,8 +356,6 @@ function ProjectForm() {
         const persona = personasDirectorio[index];
         const personaNombre = persona.nombre || `Persona #${index + 1}`;
         
-        // **ADVERTENCIA: Uso temporal de window.confirm() para desarrollo.**
-        // En producción, esto debe ser una modal/notificación personalizada.
         if (window.confirm(`¿Estás seguro de que quieres eliminar a ${personaNombre}? Esta acción no se puede deshacer.`)) {
             const newPersonas = personasDirectorio.filter((_, i) => i !== index);
             setPersonasDirectorio(newPersonas);
@@ -383,16 +368,13 @@ function ProjectForm() {
     const handleAcceptPersona = (index) => {
         const persona = personasDirectorio[index];
         
-        // 1. Validación de campos obligatorios
         if (!persona.apellidoPaterno.trim() || !persona.nombre.trim() || !persona.rolEnProyecto.trim()) {
             showNotification('Error: Los campos Apellido Paterno, Nombre(s) y Rol son obligatorios para confirmar la persona.', 'error');
             return;
         }
 
-        // 2. Validación: Solo puede haber un Líder (Verifica si hay otro Líder ya ACEPTADO)
         if (persona.rolEnProyecto === 'Líder') {
             const isLeaderAlreadyAssigned = personasDirectorio.some(
-                // Busca en todas las filas excepto la actual (i !== index) y que ya estén confirmadas (isEditingLocal === false)
                 (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
             );
             
@@ -401,11 +383,10 @@ function ProjectForm() {
                 return;
             }
         }
-        // --- FIN Validación de un solo Líder ---
 
 
         const newPersonas = [...personasDirectorio];
-        newPersonas[index].isEditingLocal = false; // Se marca como confirmada
+        newPersonas[index].isEditingLocal = false;
         setPersonasDirectorio(newPersonas);
         setIsFormDirty(true);
         showNotification('Persona involucrada confirmada con éxito.', 'success');
@@ -611,14 +592,13 @@ function ProjectForm() {
 
     const handleConcludeDocumentChange = (e) => {
         const file = e.target.files[0];
-        
-        // --- CÓDIGO MODIFICADO: Validación y Creación de URL de previsualización ---
+
         if (concludeDocumentPreviewUrl) {
             URL.revokeObjectURL(concludeDocumentPreviewUrl);
         }
 
         if (file) {
-            // Validación de tipo de archivo
+         
             if (file.type !== 'application/pdf') {
                 setConcludeDocumentFile(null);
                 setConcludeDocumentPreviewUrl('');
@@ -626,7 +606,6 @@ function ProjectForm() {
                 return;
             }
 
-            // Validación de tamaño de archivo (10MB)
             if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
                 setConcludeDocumentFile(null);
                 setConcludeDocumentPreviewUrl('');
@@ -634,7 +613,6 @@ function ProjectForm() {
                 return;
             }
 
-            // Si pasa las validaciones, crea una URL para previsualización
             setConcludeDocumentFile(file);
             setConcludeDocumentPreviewUrl(URL.createObjectURL(file));
             setError(null);
@@ -642,7 +620,7 @@ function ProjectForm() {
             setConcludeDocumentFile(null);
             setConcludeDocumentPreviewUrl('');
         }
-        // --- FIN CÓDIGO MODIFICADO ---
+
     };
 
     const handleConcludePhaseSubmit = async () => {
@@ -707,12 +685,10 @@ function ProjectForm() {
         setConcludeJustificationText('');
         setConcludeDocumentFile(null);
         setError(null);
-        // --- CÓDIGO AÑADIDO: Limpieza de la URL de previsualización ---
         if (concludeDocumentPreviewUrl) {
             URL.revokeObjectURL(concludeDocumentPreviewUrl);
             setConcludeDocumentPreviewUrl('');
         }
-        // --- FIN CÓDIGO AÑADIDO ---
     };
 
     const handleJustificationSubmit = () => {
@@ -758,10 +734,7 @@ function ProjectForm() {
         value={nombre}
         onChange={(e) => setNombre(e.target.value)}
         required
-        // --- CÓDIGO CLAVE MODIFICADO ---
-        // Deshabilita si es modo edición Y la fase actual es mayor a 1
         disabled={isEditing && (nombreCambiosCount >= MAX_NAME_CHANGES || parseInt(faseActual) > 1)}
-        // --- FIN CÓDIGO CLAVE MODIFICADO ---
     />
     {isEditing && parseInt(faseActual) <= 1 && (
         <p className="name-changes-info">
@@ -899,17 +872,14 @@ function ProjectForm() {
         <div className="remove-placeholder remove-persona-button"></div> 
     </div>
                         {personasDirectorio.map((persona, index) => {
-                            // --- CÓDIGO CORREGIDO: Definición de isLeaderUsed dentro del map ---
                             const isLeaderUsed = personasDirectorio.some(
         (p, i) => i !== index && p.rolEnProyecto === 'Líder' && p.isEditingLocal === false
     );
 
-    // Crea un Set de todos los roles de Colaborador confirmados en otras filas
     const usedCollaboratorRoles = new Set(personasDirectorio
         .filter((p, i) => i !== index && p.rolEnProyecto.startsWith('Colaborador') && p.isEditingLocal === false)
         .map(p => p.rolEnProyecto)
     );
-                            // --- FIN CÓDIGO CORREGIDO ---
 
                             return (
                                 <div key={persona.idPersonaProyecto || `new-${index}`} className="persona-input-group">
@@ -937,7 +907,6 @@ function ProjectForm() {
                                         disabled={!persona.isEditingLocal}
                                     />
                                     
-                                    {/* SELECT ROL */}
                                      <select
                 value={persona.rolEnProyecto}
                 onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
@@ -947,21 +916,18 @@ function ProjectForm() {
             >
                 <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
                 
-                {/* ----------------------------------------------------- */}
-                {/* --- LÓGICA DE FILTRADO (El rol ya no aparece si está usado) --- */}
                 {collaboratorRoles
                     .filter(role => {
-                        // 1. Si es Líder: Solo aparece si la fila actual es la que lo tiene (o si no hay ninguno usado)
+                        
                         if (role.value === 'Líder') {
                             return persona.rolEnProyecto === 'Líder' || !isLeaderUsed;
                         }
 
-                        // 2. Si es Colaborador: Solo aparece si no ha sido usado O si la fila actual lo tiene
                         if (role.value.startsWith('Colaborador')) {
                             return persona.rolEnProyecto === role.value || !usedCollaboratorRoles.has(role.value);
                         }
 
-                        return true; // Cualquier otro rol pasa el filtro
+                        return true;
                     })
                     .map((role) => (
                         <option 
@@ -971,8 +937,6 @@ function ProjectForm() {
                             {role.label}
                         </option>
                     ))}
-                {/* --- FIN LÓGICA DE FILTRADO --- */}
-                {/* ----------------------------------------------------- */}
             </select>
                                     
                                     <input
@@ -983,7 +947,6 @@ function ProjectForm() {
                                         disabled={!persona.isEditingLocal}
                                     />
                                     
-                                    {/* Botón ACEPTAR/EDITAR Condicional */}
                                     {persona.isEditingLocal ? (
                                         <button 
                                             type="button" 
@@ -1038,10 +1001,8 @@ function ProjectForm() {
                                 id="fechaFinAprox"
                                 value={fechaFinAprox}
                                 onChange={(e) => setFechaFinAprox(e.target.value)}
-                                // --- CÓDIGO MODIFICADO: Aplicación de límites ---
                                 min={minDateFinAprox}
                                 max={maxDateFinAprox}
-                                // --- FIN CÓDIGO MODIFICADO ---
                             />
                         </div>
                     {isEditing && (
@@ -1063,19 +1024,16 @@ function ProjectForm() {
                             <h4>Historial y Documentos de Justificación:</h4>
                              {console.log('[DEBUG] Renderizando historial de fases:', historialFases)}
                             <ul className="justification-list">
-                                {historialFases.map((historial) => ( // <-- Usa la variable de estado
+                                {historialFases.map((historial) => (
                                     <li key={historial.idHistorialFase} className="justification-item">
                                         <span className="fase-label">Fase {historial.faseNumero}:</span>
                                         <a 
-                                            // --- CÓDIGO CLAVE MODIFICADO: Uso de la URL base ---
                                             href={`${process.env.REACT_APP_API_URL}${historial.documentoUrl}`} 
-                                            // --- FIN CÓDIGO CLAVE MODIFICADO ---
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="justification-link"
                                             title={`Justificación: ${historial.justificacion}`}
                                         >
-                                            {/* Muestra un nombre de archivo limpio en lugar de la URL completa */}
                                             Documento (Fase {historial.faseNumero})
                                         </a>
                                     </li>
@@ -1128,7 +1086,6 @@ function ProjectForm() {
                                 onChange={handleConcludeDocumentChange}
                                 required
                             />
-                            {/* --- CÓDIGO MODIFICADO: Muestra info de archivo subido --- */}
                             <p className="image-specs-text">
                                 Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.
                             </p>
@@ -1140,7 +1097,6 @@ function ProjectForm() {
                                     </a>
                                 </p>
                             )}
-                            {/* --- FIN CÓDIGO MODIFICADO --- */}
                         </div>
 
                         {error && <p className="error-message">{error}</p>}
