@@ -1121,9 +1121,9 @@ function ProjectForm() {
                         <div className="form-group">
                             <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
                             <div className="custom-file-upload">
-                                <button htmlFor="concludeDocument" className="custom-file-label">
+                                <label htmlFor="concludeDocument" className="custom-file-label">
                                     Seleccionar Archivo
-                                </button>
+                                </label>
                                 <span className="selected-file-display">
                                     {concludeDocumentFile 
                                         ? concludeDocumentFile.name 
