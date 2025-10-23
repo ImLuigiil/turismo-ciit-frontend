@@ -237,8 +237,8 @@
 }
 
 .color-guide-item .color-box {
-    width: 15px;
-    height: 15px;
+    width: 25px;
+    height: 25px;
     border-radius: 3px;
     margin-right: 8px;
     border: 1px solid rgba(0, 0, 0, 0.1);
