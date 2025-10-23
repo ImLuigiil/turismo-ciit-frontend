@@ -533,14 +533,14 @@ textarea {
 
 .custom-file-upload {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
+    align-items: left;
+    gap: 5px;
+    width: 50%;
 }
 
 .custom-file-label {
-    background-color: #007bff;
-    color: white;
+    background-color: #4a5568;
+    color: black;
     padding: 8px 15px;
     border-radius: 4px;
     cursor: pointer;
