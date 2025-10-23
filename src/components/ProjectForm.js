@@ -120,8 +120,8 @@ function ProjectForm() {
         
         const timeDifference = endDate.getTime() - startDate.getTime();
         
-        const MIN_DURATION_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000;
-        const MAX_DURATION_IN_MS = 12 * 30 * 24 * 60 * 60 * 1000;
+        const MIN_DURATION_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000; // Aprox. 4 meses (120 días)
+        const MAX_DURATION_IN_MS = 12 * 30 * 24 * 60 * 60 * 1000; // Aprox. 12 meses (365 días)
         
 
         if (timeDifference < MIN_DURATION_IN_MS) {
@@ -142,34 +142,58 @@ function ProjectForm() {
     };
 
     const checkFormDirty = useCallback(() => {
-        if (!originalProjectData) return false;
+        if (!originalProjectData) return true; // Si es un proyecto nuevo, siempre está "sucio" para forzar el guardado
 
-        const isDifferent =
-            nombre !== originalProjectData.nombre ||
-            descripcion !== originalProjectData.descripcion ||
-            String(selectedCommunityId) !== String(originalProjectData.comunidad?.idComunidad || '') ||
-            String(noCapitulos) !== String(originalProjectData.noCapitulos || '') ||
-            fechaInicio !== (originalProjectData.fechaInicio ? new Date(originalProjectData.fechaInicio).toISOString().split('T')[0] : '') ||
-            fechaFinAprox !== (originalProjectData.fechaFinAprox ? new Date(originalProjectData.fechaFinAprox).toISOString().split('T')[0] : '') ||
-            String(poblacionBeneficiada) !== String(originalProjectData.poblacionBeneficiada || '') ||
-            newImageFiles.length > 0 ||
-            imagesToDeleteIds.length > 0 ||
-            JSON.stringify(personasDirectorio) !== JSON.stringify(originalProjectData.personasDirectorio);
+        // Función auxiliar para limpiar y normalizar los datos de las personas para la comparación
+        const normalizePersonas = (personas) => {
+            return personas
+                // 1. Filtra personas sin datos esenciales (para ignorar filas vacías)
+                .filter(p => p.apellidoPaterno.trim() || p.nombre.trim() || p.contacto.trim() || p.rolEnProyecto.trim())
+                // 2. Mapea y selecciona solo las propiedades relevantes para la comparación de "cambio de datos"
+                .map(p => ({
+                    // Incluimos el ID para diferenciar actualizaciones de eliminaciones/adiciones
+                    id: p.idPersonaProyecto || null, 
+                    ap: p.apellidoPaterno.trim(),
+                    am: p.apellidoMaterno?.trim() || '',
+                    n: p.nombre.trim(),
+                    r: p.rolEnProyecto || '',
+                    c: p.contacto?.trim() || '',
+                }));
+        };
+        
+        // Normaliza las listas de personas
+        const normalizedCurrentPersonas = normalizePersonas(personasDirectorio);
+        const normalizedOriginalPersonas = normalizePersonas(originalProjectData.personasDirectorio);
 
-        setIsFormDirty(isDifferent);
-    }, [
-        nombre,
-        descripcion,
-        selectedCommunityId,
-        noCapitulos,
-        fechaInicio,
-        fechaFinAprox,
-        poblacionBeneficiada,
-        newImageFiles,
-        imagesToDeleteIds,
-        personasDirectorio,
-        originalProjectData
-    ]);
+        // Compara las propiedades principales (como antes)
+        const isProjectDataDifferent =
+            nombre !== originalProjectData.nombre ||
+            descripcion !== originalProjectData.descripcion ||
+            String(selectedCommunityId) !== String(originalProjectData.comunidad?.idComunidad || '') ||
+            String(noCapitulos) !== String(originalProjectData.noCapitulos || '') ||
+            fechaInicio !== (originalProjectData.fechaInicio ? new Date(originalProjectData.fechaInicio).toISOString().split('T')[0] : '') ||
+            fechaFinAprox !== (originalProjectData.fechaFinAprox ? new Date(originalProjectData.fechaFinAprox).toISOString().split('T')[0] : '') ||
+            String(poblacionBeneficiada) !== String(originalProjectData.poblacionBeneficiada || '') ||
+            newImageFiles.length > 0 ||
+            imagesToDeleteIds.length > 0;
+        
+        // Compara las listas de personas
+        const arePersonasDifferent = JSON.stringify(normalizedCurrentPersonas) !== JSON.stringify(normalizedOriginalPersonas);
+
+        setIsFormDirty(isProjectDataDifferent || arePersonasDifferent);
+    }, [
+        nombre,
+        descripcion,
+        selectedCommunityId,
+        noCapitulos,
+        fechaInicio,
+        fechaFinAprox,
+        poblacionBeneficiada,
+        newImageFiles,
+        imagesToDeleteIds,
+        personasDirectorio,
+        originalProjectData
+    ]);
 
     useEffect(() => {
         if (isEditing) {
@@ -364,6 +388,7 @@ function ProjectForm() {
             showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
         }
     };
+    // 
 
     const handleAcceptPersona = (index) => {
         const persona = personasDirectorio[index];
@@ -971,8 +996,9 @@ function ProjectForm() {
                                                 newPersonas[index].isEditingLocal = true; 
                                                 setPersonasDirectorio(newPersonas);
                                                 setIsFormDirty(true);
+                                                
                                             }} 
-                                            disabled={isEditing && (parseInt(faseActual) > 1)}
+                                            disabled={(isEditing && (parseInt(faseActual) > 1))}
                                             className="edit-persona-button"
                                             title="Editar datos de esta persona"
                                         >
