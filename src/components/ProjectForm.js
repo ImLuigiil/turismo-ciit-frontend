@@ -351,9 +351,7 @@ function ProjectForm() {
 
         setPersonasDirectorio(newPersonas);
 
-        if (isEditing) {
-            setIsFormDirty(true);
-        }
+        setIsFormDirty(true);
     };
 
     const handleRemovePersona = (index) => {
