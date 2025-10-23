@@ -972,6 +972,7 @@ function ProjectForm() {
                                                 const newPersonas = [...personasDirectorio];
                                                 newPersonas[index].isEditingLocal = true; 
                                                 setPersonasDirectorio(newPersonas);
+                                                handlePersonaChange(index);
                                                 setIsFormDirty(true);
 
                                             }} 
