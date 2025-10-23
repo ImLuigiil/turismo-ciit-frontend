@@ -534,8 +534,10 @@ textarea {
 .file-input-wrapper-native-style {
     display: flex;
     align-items: left;
-    /* Ajusta el espaciado para que se vea como lo quieres */
     gap: 10px; 
+    width: 100%;
+    padding-left: 0; 
+    margin-left: 0;
 }
 
 /* 2. Oculta el input de archivo REAL (no queremos que el navegador muestre su UI) */
@@ -572,7 +574,6 @@ textarea {
     background-color: #d8dde2;
 }
 
-/* 4. Estilo del texto que muestra el estado del archivo */
 .file-input-wrapper-native-style .file-status-text {
     font-size: 14px;
     color: #6c757d; /* Texto gris para el estado */
