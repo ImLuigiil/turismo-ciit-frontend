@@ -555,7 +555,7 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                                       className="action-button admin-delete-button"
                                       onClick={() => handleEliminarProyecto(proyecto.idProyecto)}
                                       title={proyecto.faseActual > 1 ? "No se puede eliminar: ya inició la Fase 2" : "Eliminar proyecto"}
-                                      disabled={proyecto.faseActual > 1 || proyecto.faseActual >= 7}
+                                      disabled={proyecto.faseActual > 1 || proyecto.faseActual === 7}
                                   >
                                       Eliminar
                                   </button>
