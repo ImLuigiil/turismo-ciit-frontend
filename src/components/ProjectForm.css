@@ -16,7 +16,7 @@
 }
 
 h2 {
-    color: #0000FF;
+    color: black;
     margin-bottom: 25px;
     font-size: 1.8em;
     text-align: center;
@@ -160,13 +160,10 @@ textarea {
     background: #fff;
 }
 
-/* --------------------------------------------------- */
-/* DIRECTORIO DE PERSONAS */
-/* --------------------------------------------------- */
 .personas-directorio-section h3 {
     font-size: 1.3em;
-    color: #0000FF;
-    border-bottom: 2px solid #0000FF;
+    color: black;
+    border-bottom: 2px solid black;
     padding-bottom: 5px;
     margin-bottom: 15px;
 }
@@ -176,7 +173,7 @@ textarea {
     gap: 10px;
     margin-bottom: 10px;
     align-items: center;
-    padding: 0 12px; /* Añade un padding lateral para que no toque los bordes */
+    padding: 0 12px;
 }
 
 .persona-input-group input {
