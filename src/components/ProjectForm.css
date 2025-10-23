@@ -539,7 +539,7 @@ textarea {
     align-items: center; /* Cambiado de 'left' a 'center' para alineación vertical */
     gap: 10px; 
     justify-content: flex-start;
-    /* width: 100%; <- Puedes mantenerlo si quieres que el contenedor ocupe todo el ancho */
+    width: 100%;
     /* Eliminar o comentar las siguientes, ya que no son necesarias y 'width: 100%' suele ser el valor por defecto en la mayoría de los contenedores si no se especifica. */
     /* padding-left: 0; 
     margin-left: 0; */
