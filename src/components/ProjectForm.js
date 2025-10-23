@@ -384,6 +384,9 @@ function ProjectForm() {
                 showNotification('Error de Rol: Solo puede haber un Líder asignado por proyecto. Por favor, selecciona otro rol.', 'error');
                 return;
             }
+            if (isEditing) {
+            setIsFormDirty(true);
+            }
         }
 
 
@@ -958,7 +961,7 @@ function ProjectForm() {
                                     {persona.isEditingLocal ? (
                                         <button 
                                             type="button" 
-                                            onClick={() => handleAcceptPersona(index)} 
+                                            onClick={() =>{handleAcceptPersona(index); setIsFormDirty(true)}}
                                             disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                             className="accept-persona-button"
                                             title="Confirmar y bloquear edición de esta persona"
@@ -972,7 +975,6 @@ function ProjectForm() {
                                                 const newPersonas = [...personasDirectorio];
                                                 newPersonas[index].isEditingLocal = true; 
                                                 setPersonasDirectorio(newPersonas);
-                                                handlePersonaChange(index);
                                                 setIsFormDirty(true);
 
                                             }} 
