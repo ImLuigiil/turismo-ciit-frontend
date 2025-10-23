@@ -29,9 +29,6 @@ h2 {
     color: #007bff;
 }
 
-/* --------------------------------------------------- */
-/* GRUPOS DE FORMULARIO Y CAMPOS */
-/* --------------------------------------------------- */
 .form-group {
     margin-bottom: 20px;
 }
@@ -133,8 +130,8 @@ textarea {
     background: white;
     position: absolute;
     z-index: 10;
-    width: calc(100% - 60px); /* Ajuste basado en el padding de la página */
-    max-width: 740px; /* Asegura que no sea más ancho que el formulario */
+    width: calc(100% - 60px);
+    max-width: 740px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -186,9 +183,8 @@ textarea {
     cursor: pointer;
     font-weight: bold;
     flex-shrink: 0;
-    /* --- CLAVE PARA ALINEACIÓN --- */
-    min-width: 40px; /* Tamaño fijo para que el texto 'X' no lo colapse */
-    height: 34px; /* Altura fija para que coincida con la altura de la caja del input */
+    min-width: 40px;
+    height: 34px;
 }
 
 .add-persona-button {
@@ -206,21 +202,15 @@ textarea {
     background-color: #218838;
 }
 
-/* --- ESTILOS PARA LÍMITE DE PERSONAS --- */
 .add-persona-button.disabled-limit,
 .add-persona-button:disabled {
-    background-color: #cccccc !important; /* Gris claro */
-    color: #666666 !important; /* Texto gris más oscuro */
-    cursor: not-allowed; /* Cambia el cursor */
+    background-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed;
     box-shadow: none !important;
     opacity: 0.7; 
 }
 
-/* --------------------------------------------------- */
-/* IMÁGENES PREVISUALIZACIÓN Y EXISTENTES */
-/* --------------------------------------------------- */
-
-/* Contenedor general para previsualizaciones de nuevas imágenes */
 .image-previews-container {
     display: flex;
     flex-wrap: wrap;
@@ -268,7 +258,6 @@ textarea {
     margin-top: 5px;
 }
 
-/* --- ESTILOS CLAVE PARA IMÁGENES EXISTENTES --- */
 
 .existing-images-list {
     margin-top: 15px;
@@ -285,7 +274,6 @@ textarea {
     margin-bottom: 10px;
 }
 
-/* Alineación del link y el botón de eliminar */
 .existing-image-item {
     display: flex; 
     align-items: center;
@@ -296,11 +284,10 @@ textarea {
 }
 
 .existing-image-item:last-child {
-    border-bottom: none; /* Quitar el borde del último elemento */
+    border-bottom: none;
     margin-bottom: 0;
 }
 
-/* Estilo para el enlace de la URL */
 .image-url-link {
     cursor: pointer; 
     color: #007bff; 
@@ -320,9 +307,8 @@ textarea {
     color: #0056b3; 
 }
 
-/* Botón de eliminar en las imágenes existentes (alineado) */
 .existing-image-item .remove-image-button {
-    position: static; /* Sobrescribe el position: absolute del otro botón */
+    position: static;
     background-color: #dc3545;
     color: white;
     border: none;
@@ -332,9 +318,6 @@ textarea {
     font-size: 0.8em;
     flex-shrink: 0; 
 }
-/* --------------------------------------------------- */
-/* MODAL DE JUSTIFICACIÓN DE FASE */
-/* --------------------------------------------------- */
 .justification-modal-overlay {
     position: fixed;
     top: 0;
@@ -372,9 +355,9 @@ textarea {
 }
 
 .justification-warning {
-    background-color: #fff3cd; /* Amarillo claro */
-    color: #856404;            /* Texto amarillo oscuro */
-    border: 1px solid #ffeeba; /* Borde amarillo más oscuro */
+    background-color: #fff3cd;
+    color: #856404;           
+    border: 1px solid #ffeeba; 
     padding: 10px;
     border-radius: 5px;
     margin-top: 15px;
@@ -389,9 +372,6 @@ textarea {
     margin-top: 20px;
 }
 
-/* --------------------------------------------------- */
-/* BOTÓN CONCLUIR FASE */
-/* --------------------------------------------------- */
 .concluir-fase-button {
     background-color: #0000FF;
     color: white;
@@ -414,21 +394,15 @@ textarea {
     cursor: not-allowed;
 }
 
-/* --------------------------------------------------- */
-/* ANIMACIÓN */
-/* --------------------------------------------------- */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .persona-header-labels {
-    /* Sobrescribe el margen inferior para acercarlo a la primera fila de inputs */
     margin-bottom: 5px;
     padding-bottom: 5px;
     border-bottom: 1px solid #ddd;
-    
-    /* Asegura que las etiquetas también crezcan uniformemente */
     font-size: 0.85em; 
 }
 
@@ -441,16 +415,11 @@ textarea {
 }
 
 .persona-header-labels .remove-placeholder {
-    /* Debe coincidir con el tamaño del botón de eliminar */
     width: 40px; 
     flex-shrink: 0;
-    /* Ajuste para el padding interno del botón */
     padding: 8px 12px; 
 }
-/* --- FIN CÓDIGO AÑADIDO --- */
 
-
-/* Asegúrate de que .persona-input-group tiene el estilo base: */
 .persona-input-group {
     display: flex;
     gap: 10px;
@@ -466,7 +435,7 @@ textarea {
 }
 
 .accept-persona-button {
-    background-color: #28a745; /* Verde */
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 4px;
@@ -474,14 +443,14 @@ textarea {
     cursor: pointer;
     font-weight: bold;
     flex-shrink: 0;
-    min-width: 90px; /* Asegura un tamaño consistente */
+    min-width: 90px;
     height: 34px;
-    margin-right: 5px; /* Espacio antes del botón X */
+    margin-right: 5px;
     transition: background-color 0.2s;
 }
 
 .edit-persona-button {
-    background-color: #ffc107; /* Amarillo */
+    background-color: #ffc107;
     color: #333;
     border: none;
     border-radius: 4px;
@@ -491,7 +460,7 @@ textarea {
     flex-shrink: 0;
     min-width: 90px; 
     height: 34px;
-    margin-right: 5px; /* Espacio antes del botón X */
+    margin-right: 5px;
     transition: background-color 0.2s;
 }
 
@@ -504,10 +473,8 @@ textarea {
 }
 
 
-/* Asegurar alineación: Ajustamos el tamaño del placeholder en el header */
 .persona-header-labels .remove-placeholder {
-    /* El espacio del placeholder ahora debe cubrir ACEPTAR + X */
-    min-width: 140px; /* Ancho estimado de ACEPTAR + X + margen */
+    min-width: 140px;
     padding: 8px 12px; 
 }
 
@@ -544,17 +511,16 @@ textarea {
 
 .fase-label {
     font-weight: 700;
-    color: #004d40; /* Color de tu marca */
+    color: #004d40;
     min-width: 130px;
     margin-right: 15px;
 }
 
 .justification-link {
-    color: #2196F3; /* Azul primario */
+    color: #2196F3;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
-    /* Para que el título de la justificación se vea al pasar el mouse */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -563,4 +529,35 @@ textarea {
 .justification-link:hover {
     color: #0b7dda;
     text-decoration: underline;
+}
+
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.custom-file-label {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    border: 1px solid #007bff;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.custom-file-label:hover {
+    background-color: #0056b3;
+}
+
+.selected-file-display {
+    font-size: 14px;
+    color: #6c757d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
