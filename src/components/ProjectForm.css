@@ -31,6 +31,7 @@ h2 {
 
 .form-group {
     margin-bottom: 20px;
+    text-align: left;
 }
 
 .double-form-group {
@@ -537,6 +538,7 @@ textarea {
     /* Lo que necesitamos para alinear los ítems verticalmente es 'align-items: center;' (opcional, si quieres que estén centrados verticalmente) */
     align-items: center; /* Cambiado de 'left' a 'center' para alineación vertical */
     gap: 10px; 
+    justify-content: flex-start;
     /* width: 100%; <- Puedes mantenerlo si quieres que el contenedor ocupe todo el ancho */
     /* Eliminar o comentar las siguientes, ya que no son necesarias y 'width: 100%' suele ser el valor por defecto en la mayoría de los contenedores si no se especifica. */
     /* padding-left: 0; 
