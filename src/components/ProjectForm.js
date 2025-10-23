@@ -820,7 +820,7 @@ function ProjectForm() {
         accept="image/*"
         multiple
         onChange={handleNewImageChange}
-        disabled={isEditing && (parseInt(faseActual) > 1)}
+        disabled={isEditing && (parseInt(faseActual) === 7)}
     />
     <p className="image-specs-text">
         Formatos soportados: JPG, JPEG, PNG, GIF. Máximo 15 fotos.
