@@ -535,7 +535,7 @@ textarea {
     display: flex;
     align-items: left;
     gap: 10px; 
-    width: 100%;
+    width: 50%;
     padding-left: 0; 
     margin-left: 0;
 }
