@@ -6,6 +6,27 @@ import { useNotification } from '../contexts/NotificationContext';
 
 import './ProjectForm.css';
 
+// =========================================================================
+// FUNCIONES DE AYUDA (Fuera del componente para evitar re-renderizados)
+// =========================================================================
+
+// Función para normalizar objetos de persona eliminando propiedades temporales (como isEditingLocal)
+// y ordenándolos para una comparación de igualdad confiable.
+const normalizePersonas = (personas) => {
+    if (!personas) return [];
+    
+    // 1. Mapear y excluir la propiedad 'isEditingLocal' (y cualquier otra que no esté en la DB)
+    return personas
+        .map(({ isEditingLocal, ...rest }) => ({ ...rest }))
+        // 2. Ordenar por un campo clave para que el orden de entrada no active un 'isFormDirty'
+        .sort((a, b) => {
+            const nameA = a.nombre || '';
+            const nameB = b.nombre || '';
+            return nameA.localeCompare(nameB);
+        });
+};
+
+
 const calculateTargetDate = (baseDate, months) => {
     if (!baseDate) return '';
     
@@ -14,6 +35,10 @@ const calculateTargetDate = (baseDate, months) => {
 
     return d.toISOString().split('T')[0];
 };
+
+// =========================================================================
+// COMPONENTE PRINCIPAL
+// =========================================================================
 
 function ProjectForm() {
     const { idProyectoUrl } = useParams();
@@ -141,20 +166,43 @@ function ProjectForm() {
         return { isValid: true, message: '' };
     };
 
+    // =========================================================================
+    // FUNCIÓN MODIFICADA: checkFormDirty
+    // =========================================================================
     const checkFormDirty = useCallback(() => {
         if (!originalProjectData) return false;
 
-        const isDifferent =
+        // **1. Normalizar y comparar Personas Involucradas**
+        const normalizedCurrentPersonas = normalizePersonas(personasDirectorio);
+        const normalizedOriginalPersonas = normalizePersonas(originalProjectData.personasDirectorio);
+        
+        const personasChanged = JSON.stringify(normalizedCurrentPersonas) !== JSON.stringify(normalizedOriginalPersonas);
+
+        // **2. Normalizar y comparar Imágenes Existentes**
+        // Obtenemos los IDs de las imágenes que quedan en el formulario (existentes - eliminadas)
+        const existingImageIds = existingImages.map(img => img.idProyectoImagen).sort();
+        // Obtenemos los IDs de las imágenes originales cargadas de la API
+        const originalImageIds = (originalProjectData.imagenes || []).map(img => img.idProyectoImagen).sort();
+
+        const existingImagesChanged = JSON.stringify(existingImageIds) !== JSON.stringify(originalImageIds);
+
+
+        // **3. Comprobar otros campos**
+        const basicFieldsChanged =
             nombre !== originalProjectData.nombre ||
             descripcion !== originalProjectData.descripcion ||
             String(selectedCommunityId) !== String(originalProjectData.comunidad?.idComunidad || '') ||
             String(noCapitulos) !== String(originalProjectData.noCapitulos || '') ||
             fechaInicio !== (originalProjectData.fechaInicio ? new Date(originalProjectData.fechaInicio).toISOString().split('T')[0] : '') ||
             fechaFinAprox !== (originalProjectData.fechaFinAprox ? new Date(originalProjectData.fechaFinAprox).toISOString().split('T')[0] : '') ||
-            String(poblacionBeneficiada) !== String(originalProjectData.poblacionBeneficiada || '') ||
-            newImageFiles.length > 0 ||
-            imagesToDeleteIds.length > 0 ||
-            JSON.stringify(personasDirectorio) !== JSON.stringify(originalProjectData.personasDirectorio);
+            String(poblacionBeneficiada) !== String(originalProjectData.poblacionBeneficiada || '');
+        
+        // El formulario está sucio si cambia cualquier campo básico, las personas o las imágenes
+        const isDifferent =
+            basicFieldsChanged ||
+            personasChanged ||
+            existingImagesChanged || // Si se marcaron imágenes para eliminar, esta bandera se activa
+            newImageFiles.length > 0; // Si se agregaron nuevas imágenes
 
         setIsFormDirty(isDifferent);
     }, [
@@ -166,8 +214,8 @@ function ProjectForm() {
         fechaFinAprox,
         poblacionBeneficiada,
         newImageFiles,
-        imagesToDeleteIds,
         personasDirectorio,
+        existingImages, // Se agregó existingImages como dependencia
         originalProjectData
     ]);
 
@@ -235,7 +283,11 @@ function ProjectForm() {
                     }
 
                     const personasResponse = await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${idProyectoUrl}`);
-                    const personasData = personasResponse.data;
+                    // Agregamos isEditingLocal: false a las personas cargadas de la API
+                    const personasData = personasResponse.data.map(p => ({
+                        ...p,
+                        isEditingLocal: false, // ¡Clave! Inicialmente no se están editando
+                    })); 
 
                     setIdProyecto(project.idProyecto);
                     setNombre(project.nombre);
@@ -264,11 +316,12 @@ function ProjectForm() {
                         setExistingImages([]);
                     }
 
-                    setPersonasDirectorio(personasData);
+                    setPersonasDirectorio(personasData); // Seteamos el estado actual con la propiedad temporal
 
+                    // Guardamos una versión limpia del original, sin la propiedad isEditingLocal
                     setOriginalProjectData({
                         ...project,
-                        personasDirectorio: personasData,
+                        personasDirectorio: personasResponse.data, // ¡Aquí va el array limpio para la comparación!
                         fechaInicio: project.fechaInicio,
                         fechaFinAprox: project.fechaFinAprox,
                     });
@@ -319,8 +372,8 @@ function ProjectForm() {
 
     const handleAddPersona = () => {
     if (personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS) {
-      showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
-      return;
+        showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
+        return;
     }
 
         setPersonasDirectorio([
@@ -337,7 +390,8 @@ function ProjectForm() {
             
         ]);
 
-        setIsFormDirty(true);
+        // Ya que agregar una persona siempre ensucia el formulario
+        setIsFormDirty(true); 
 
     };
 
@@ -345,11 +399,13 @@ function ProjectForm() {
         const newPersonas = [...personasDirectorio];
         newPersonas[index][field] = value;
 
+        // Si se modifica cualquier campo, se habilita el modo de edición local
         if (field !== 'idPersonaProyecto' && newPersonas[index].isEditingLocal === false) {
             newPersonas[index].isEditingLocal = true;
         }
 
         setPersonasDirectorio(newPersonas);
+        // El llamado a checkFormDirty en el useEffect se encarga de setIsFormDirty(true)
     };
 
     const handleRemovePersona = (index) => {
@@ -359,7 +415,7 @@ function ProjectForm() {
         if (window.confirm(`¿Estás seguro de que quieres eliminar a ${personaNombre}? Esta acción no se puede deshacer.`)) {
             const newPersonas = personasDirectorio.filter((_, i) => i !== index);
             setPersonasDirectorio(newPersonas);
-            setIsFormDirty(true);
+            // El llamado a checkFormDirty en el useEffect se encarga de setIsFormDirty(true)
             showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
         }
     };
@@ -388,7 +444,7 @@ function ProjectForm() {
         const newPersonas = [...personasDirectorio];
         newPersonas[index].isEditingLocal = false;
         setPersonasDirectorio(newPersonas);
-        setIsFormDirty(true);
+        // El llamado a checkFormDirty en el useEffect se encarga de setIsFormDirty(true)
         showNotification('Persona involucrada confirmada con éxito.', 'success');
     };
 
@@ -533,8 +589,9 @@ function ProjectForm() {
             }
 
             for (const persona of personasDirectorio) {
-                if (!persona.apellidoPaterno && !persona.apellidoMaterno && !persona.nombre) {
-                    continue;
+                // Solo si la persona fue "aceptada" o tiene datos mínimos
+                if (!persona.apellidoPaterno.trim() || !persona.nombre.trim()) {
+                    continue; 
                 }
 
                 if (persona.idPersonaProyecto && personasIdsInDb.includes(persona.idPersonaProyecto)) {
@@ -598,7 +655,7 @@ function ProjectForm() {
         }
 
         if (file) {
-         
+            
             if (file.type !== 'application/pdf') {
                 setConcludeDocumentFile(null);
                 setConcludeDocumentPreviewUrl('');
@@ -964,21 +1021,20 @@ function ProjectForm() {
                                             ✓ Aceptar
                                         </button>
                                     ) : (
-                                         <button 
-                                            type="button" 
-                                            onClick={() => {
-                                                const newPersonas = [...personasDirectorio];
-                                                newPersonas[index].isEditingLocal = true; 
-                                                setPersonasDirectorio(newPersonas);
-                                                setIsFormDirty(true);
-                                            }} 
-                                            disabled={isEditing && (parseInt(faseActual) > 1)}
-                                            className="edit-persona-button"
-                                            title="Editar datos de esta persona"
-                                        >
-                                            ✍
-                                        </button>
-                                    )}
+                                            <button 
+                                                type="button" 
+                                                onClick={() => {
+                                                    const newPersonas = [...personasDirectorio];
+                                                    newPersonas[index].isEditingLocal = true; 
+                                                    setPersonasDirectorio(newPersonas);
+                                                }} 
+                                                disabled={isEditing && (parseInt(faseActual) > 1)}
+                                                className="edit-persona-button"
+                                                title="Editar datos de esta persona"
+                                            >
+                                                ✍
+                                            </button>
+                                        )}
                                     
                                     <button type="button" onClick={() => handleRemovePersona(index)} disabled={isEditing && (parseInt(faseActual) > 1)} className="remove-persona-button">
                                         X
@@ -1116,11 +1172,11 @@ function ProjectForm() {
                         {error && <p className="error-message">{error}</p>}
 
                         <div className="justification-warning">
-                          <p>
-                          <span role="img" aria-label="advertencia">⚠️</span>
-                          Después de confirmar el avance, no se podrá retroceder a una fase anterior.
-                          </p>
-                          </div>
+                            <p>
+                            <span role="img" aria-label="advertencia">⚠️</span>
+                            Después de confirmar el avance, no se podrá retroceder a una fase anterior.
+                            </p>
+                            </div>
 
 
                         <div className="modal-buttons">
