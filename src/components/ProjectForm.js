@@ -15,6 +15,12 @@ const calculateTargetDate = (baseDate, months) => {
     return d.toISOString().split('T')[0];
 };
 
+// Función de ayuda para limpiar el objeto de personas de propiedades de UI
+// Esto asegura que la comparación 'dirty' solo se base en los datos que se enviarán al servidor.
+const cleanPersonasForComparison = (personas) => {
+    return personas.map(({ isEditingLocal, ...rest }) => rest);
+};
+
 function ProjectForm() {
     const { idProyectoUrl } = useParams();
     const isEditing = !!idProyectoUrl;
@@ -141,8 +147,12 @@ function ProjectForm() {
         return { isValid: true, message: '' };
     };
 
+    // 💡 MODIFICACIÓN 1: Usar la función de limpieza para una comparación precisa.
     const checkFormDirty = useCallback(() => {
         if (!originalProjectData) return false;
+
+        const currentPersonasClean = cleanPersonasForComparison(personasDirectorio);
+        const originalPersonasClean = cleanPersonasForComparison(originalProjectData.personasDirectorio);
 
         const isDifferent =
             nombre !== originalProjectData.nombre ||
@@ -154,7 +164,8 @@ function ProjectForm() {
             String(poblacionBeneficiada) !== String(originalProjectData.poblacionBeneficiada || '') ||
             newImageFiles.length > 0 ||
             imagesToDeleteIds.length > 0 ||
-            JSON.stringify(personasDirectorio) !== JSON.stringify(originalProjectData.personasDirectorio);
+            // Se compara la versión limpia de las personas involucradas
+            JSON.stringify(currentPersonasClean) !== JSON.stringify(originalPersonasClean);
 
         setIsFormDirty(isDifferent);
     }, [
@@ -167,7 +178,8 @@ function ProjectForm() {
         poblacionBeneficiada,
         newImageFiles,
         imagesToDeleteIds,
-        personasDirectorio,
+        // Mantener personasDirectorio aquí para que se ejecute la comparación cuando cambie.
+        personasDirectorio, 
         originalProjectData
     ]);
 
@@ -263,12 +275,19 @@ function ProjectForm() {
                     } else {
                         setExistingImages([]);
                     }
+                    
+                    // Asegurar que la persona del directorio tenga el flag de edición local desactivado al inicio
+                    const initialPersonasDirectorio = personasData.map(p => ({
+                        ...p,
+                        isEditingLocal: false, 
+                    }));
 
-                    setPersonasDirectorio(personasData);
+                    setPersonasDirectorio(initialPersonasDirectorio);
 
                     setOriginalProjectData({
                         ...project,
-                        personasDirectorio: personasData,
+                        // Almacenar las personas con el flag de edición local desactivado para la comparación original
+                        personasDirectorio: initialPersonasDirectorio,
                         fechaInicio: project.fechaInicio,
                         fechaFinAprox: project.fechaFinAprox,
                     });
@@ -317,10 +336,11 @@ function ProjectForm() {
     }, [fechaInicio, fechaFinAprox, showNotification]);
 
 
+    // 💡 MODIFICACIÓN 2: Marcar como DIRTY al agregar una persona
     const handleAddPersona = () => {
     if (personasDirectorio.length >= MAX_PERSONAS_INVOLUCRADAS) {
-      showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
-      return;
+        showNotification(`Límite alcanzado: Solo se permiten ${MAX_PERSONAS_INVOLUCRADAS} personas involucradas por proyecto.`, 'warning');
+        return;
     }
 
         setPersonasDirectorio([
@@ -337,23 +357,24 @@ function ProjectForm() {
             
         ]);
 
-        setIsFormDirty(true);
-
+        setIsFormDirty(true); // Marca como dirty
     };
 
+    // 💡 MODIFICACIÓN 3: Marcar como DIRTY al cambiar campos de la persona
     const handlePersonaChange = (index, field, value) => {
         const newPersonas = [...personasDirectorio];
         newPersonas[index][field] = value;
 
+        // Asegurar que se activa la edición local si el campo cambia (excepto si es el ID)
         if (field !== 'idPersonaProyecto' && newPersonas[index].isEditingLocal === false) {
             newPersonas[index].isEditingLocal = true;
         }
 
         setPersonasDirectorio(newPersonas);
-
-        setIsFormDirty(true);
+        setIsFormDirty(true); // Marca como dirty en cada cambio
     };
 
+    // 💡 MODIFICACIÓN 4: Marcar como DIRTY al eliminar una persona
     const handleRemovePersona = (index) => {
         const persona = personasDirectorio[index];
         const personaNombre = persona.nombre || `Persona #${index + 1}`;
@@ -361,12 +382,12 @@ function ProjectForm() {
         if (window.confirm(`¿Estás seguro de que quieres eliminar a ${personaNombre}? Esta acción no se puede deshacer.`)) {
             const newPersonas = personasDirectorio.filter((_, i) => i !== index);
             setPersonasDirectorio(newPersonas);
-            setIsFormDirty(true);
+            setIsFormDirty(true); // Marca como dirty al eliminar
             showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
         }
     };
-    // 
 
+    // 💡 MODIFICACIÓN 5: Marcar como DIRTY al aceptar edición de persona
     const handleAcceptPersona = (index) => {
         const persona = personasDirectorio[index];
         
@@ -384,16 +405,13 @@ function ProjectForm() {
                 showNotification('Error de Rol: Solo puede haber un Líder asignado por proyecto. Por favor, selecciona otro rol.', 'error');
                 return;
             }
-            if (isEditing) {
-            setIsFormDirty(true);
-            }
         }
 
 
         const newPersonas = [...personasDirectorio];
         newPersonas[index].isEditingLocal = false;
         setPersonasDirectorio(newPersonas);
-        setIsFormDirty(true);
+        setIsFormDirty(true); // Marca como dirty al aceptar (en caso de que solo se haya tocado el botón de aceptar sin cambios en los inputs)
         showNotification('Persona involucrada confirmada con éxito.', 'success');
     };
 
@@ -529,6 +547,7 @@ function ProjectForm() {
             const personasIdsInDb = personasInDbForProject.map(p => p.idPersonaProyecto);
             const personasIdsInForm = personasDirectorio.map(p => p.idPersonaProyecto).filter(id => id);
 
+            // Eliminar personas que estaban en DB pero no en el formulario actual
             for (const dbId of personasIdsInDb) {
                 if (!personasIdsInForm.includes(dbId)) {
                     await axios.delete(`${process.env.REACT_APP_API_URL}/personas-proyecto/${dbId}`, {
@@ -537,12 +556,14 @@ function ProjectForm() {
                 }
             }
 
+            // Crear/Actualizar personas
             for (const persona of personasDirectorio) {
                 if (!persona.apellidoPaterno && !persona.apellidoMaterno && !persona.nombre) {
                     continue;
                 }
 
                 if (persona.idPersonaProyecto && personasIdsInDb.includes(persona.idPersonaProyecto)) {
+                    // Actualizar
                     await axios.put(`${process.env.REACT_APP_API_URL}/personas-proyecto/${persona.idPersonaProyecto}`, {
                         apellidoPaterno: persona.apellidoPaterno,
                         apellidoMaterno: persona.apellidoMaterno || null,
@@ -552,6 +573,7 @@ function ProjectForm() {
                         proyectoIdProyecto: currentProjectId
                     }, { headers: { Authorization: `Bearer ${token}` } });
                 } else {
+                    // Crear
                     await axios.post(`${process.env.REACT_APP_API_URL}/personas-proyecto`, {
                         apellidoPaterno: persona.apellidoPaterno,
                         apellidoMaterno: persona.apellidoMaterno || null,
@@ -562,6 +584,30 @@ function ProjectForm() {
                     }, { headers: { Authorization: `Bearer ${token}` } });
                 }
             }
+            
+            // 💡 RECARGAR DATOS ORIGINALES PARA REFLEJAR CAMBIOS GUARDADOS
+            // Después de un guardado exitoso, el formulario ya no está sucio.
+            // Recargar datos o actualizar `originalProjectData` es clave.
+            if (isEditing) {
+                const updatedPersonasResponse = await axios.get(`${process.env.REACT_APP_API_URL}/personas-proyecto/by-project/${idProyectoUrl}`);
+                const updatedPersonasData = updatedPersonasResponse.data.map(p => ({
+                    ...p,
+                    isEditingLocal: false, 
+                }));
+
+                const updatedProjectResponse = await axios.get(`${API_URL_BASE}/${idProyectoUrl}`);
+                const updatedProject = updatedProjectResponse.data;
+
+                setPersonasDirectorio(updatedPersonasData);
+                setOriginalProjectData({
+                    ...updatedProject,
+                    personasDirectorio: updatedPersonasData,
+                    fechaInicio: updatedProject.fechaInicio,
+                    fechaFinAprox: updatedProject.fechaFinAprox,
+                });
+                setIsFormDirty(false);
+            }
+            // ----------------------------------------------------------------
 
             setLoading(false);
             navigate('/proyectos-turismo');
@@ -603,7 +649,7 @@ function ProjectForm() {
         }
 
         if (file) {
-         
+            
             if (file.type !== 'application/pdf') {
                 setConcludeDocumentFile(null);
                 setConcludeDocumentPreviewUrl('');
@@ -918,37 +964,37 @@ function ProjectForm() {
                                         disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                     />
                                     
-                                     <select
-                value={persona.rolEnProyecto}
-                onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
-                required
-                className="select-rol"
-                disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
-            >
-                <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
-                
-                {collaboratorRoles
-                    .filter(role => {
-                        
-                        if (role.value === 'Líder') {
-                            return persona.rolEnProyecto === 'Líder' || !isLeaderUsed;
-                        }
+                                    <select
+                                            value={persona.rolEnProyecto}
+                                            onChange={(e) => handlePersonaChange(index, 'rolEnProyecto', e.target.value)}
+                                            required
+                                            className="select-rol"
+                                            disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
+                                        >
+                                            <option value="" disabled={!!persona.rolEnProyecto}>Seleccionar Rol</option>
+                                            
+                                            {collaboratorRoles
+                                                .filter(role => {
+                                                    
+                                                    if (role.value === 'Líder') {
+                                                        return persona.rolEnProyecto === 'Líder' || !isLeaderUsed;
+                                                    }
 
-                        if (role.value.startsWith('Colaborador')) {
-                            return persona.rolEnProyecto === role.value || !usedCollaboratorRoles.has(role.value);
-                        }
+                                                    if (role.value.startsWith('Colaborador')) {
+                                                        return persona.rolEnProyecto === role.value || !usedCollaboratorRoles.has(role.value);
+                                                    }
 
-                        return true;
-                    })
-                    .map((role) => (
-                        <option 
-                            key={role.value} 
-                            value={role.value}
-                        >
-                            {role.label}
-                        </option>
-                    ))}
-            </select>
+                                                    return true;
+                                                })
+                                                .map((role) => (
+                                                    <option 
+                                                        key={role.value} 
+                                                        value={role.value}
+                                                    >
+                                                        {role.label}
+                                                    </option>
+                                                ))}
+                                        </select>
                                     
                                     <input
                                         type="text"
@@ -961,7 +1007,7 @@ function ProjectForm() {
                                     {persona.isEditingLocal ? (
                                         <button 
                                             type="button" 
-                                            onClick={() =>{handleAcceptPersona(index); setIsFormDirty(true)}}
+                                            onClick={() => handleAcceptPersona(index)} 
                                             disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                             className="accept-persona-button"
                                             title="Confirmar y bloquear edición de esta persona"
@@ -969,22 +1015,21 @@ function ProjectForm() {
                                             ✓ Aceptar
                                         </button>
                                     ) : (
-                                         <button 
-                                            type="button" 
-                                            onClick={() => {
-                                                const newPersonas = [...personasDirectorio];
-                                                newPersonas[index].isEditingLocal = true; 
-                                                setPersonasDirectorio(newPersonas);
-                                                setIsFormDirty(true);
-
-                                            }} 
-                                            disabled={isEditing && (parseInt(faseActual) > 1)}
-                                            className="edit-persona-button"
-                                            title="Editar datos de esta persona"
-                                        >
-                                            ✍
-                                        </button>
-                                    )}
+                                            <button 
+                                                type="button" 
+                                                onClick={() => {
+                                                    const newPersonas = [...personasDirectorio];
+                                                    newPersonas[index].isEditingLocal = true; 
+                                                    setPersonasDirectorio(newPersonas);
+                                                    setIsFormDirty(true); // 💡 Marcar como dirty al reabrir la edición.
+                                                }} 
+                                                
+                                                className="edit-persona-button"
+                                                title="Editar datos de esta persona"
+                                            >
+                                                ✍
+                                            </button>
+                                        )}
                                     
                                     <button type="button" onClick={() => handleRemovePersona(index)} disabled={isEditing && (parseInt(faseActual) > 1)} className="remove-persona-button">
                                         X
@@ -1122,11 +1167,11 @@ function ProjectForm() {
                         {error && <p className="error-message">{error}</p>}
 
                         <div className="justification-warning">
-                          <p>
-                          <span role="img" aria-label="advertencia">⚠️</span>
-                          Después de confirmar el avance, no se podrá retroceder a una fase anterior.
-                          </p>
-                          </div>
+                            <p>
+                            <span role="img" aria-label="advertencia">⚠️</span>
+                            Después de confirmar el avance, no se podrá retroceder a una fase anterior.
+                            </p>
+                            </div>
 
 
                         <div className="modal-buttons">
