@@ -533,7 +533,7 @@ textarea {
 
 .file-input-wrapper-native-style {
     display: flex;
-    align-items: center;
+    align-items: left;
     /* Ajusta el espaciado para que se vea como lo quieres */
     gap: 10px; 
 }
