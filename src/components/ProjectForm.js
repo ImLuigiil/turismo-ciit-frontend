@@ -1003,12 +1003,12 @@ function ProjectForm() {
                                                 className="edit-persona-button"
                                                 title="Editar datos de esta persona"
                                             >
-                                                ✍
+                                                Editar
                                             </button>
                                         )}
                                     
                                     <button type="button" onClick={() => handleRemovePersona(index)} disabled={isEditing && (parseInt(faseActual) > 1)} className="remove-persona-button">
-                                        X
+                                        Eliminar
                                     </button>
                                 </div>
                             );
