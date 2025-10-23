@@ -977,7 +977,7 @@ function ProjectForm() {
                                                 setIsFormDirty(true);
 
                                             }} 
-                                            disabled={!persona.isEditingLocal || ((parseInt(faseActual) > 1))}
+                                            disabled={isEditing && (parseInt(faseActual) > 1)}
                                             className="edit-persona-button"
                                             title="Editar datos de esta persona"
                                         >
