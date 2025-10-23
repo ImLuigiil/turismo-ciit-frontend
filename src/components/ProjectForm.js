@@ -350,6 +350,10 @@ function ProjectForm() {
         }
 
         setPersonasDirectorio(newPersonas);
+
+        if (isEditing) {
+            setIsFormDirty(true);
+        }
     };
 
     const handleRemovePersona = (index) => {
@@ -971,8 +975,9 @@ function ProjectForm() {
                                                 newPersonas[index].isEditingLocal = true; 
                                                 setPersonasDirectorio(newPersonas);
                                                 setIsFormDirty(true);
+
                                             }} 
-                                            
+                                            disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
                                             className="edit-persona-button"
                                             title="Editar datos de esta persona"
                                         >
