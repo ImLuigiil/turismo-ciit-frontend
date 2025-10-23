@@ -972,7 +972,7 @@ function ProjectForm() {
                                                 setPersonasDirectorio(newPersonas);
                                                 setIsFormDirty(true);
                                             }} 
-                                            disabled={!persona.isEditingLocal || (isEditing && (parseInt(faseActual) > 1))}
+                                            
                                             className="edit-persona-button"
                                             title="Editar datos de esta persona"
                                         >
