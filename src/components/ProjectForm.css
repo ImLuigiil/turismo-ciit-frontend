@@ -535,11 +535,11 @@ textarea {
 .file-input-wrapper-native-style {
     display: flex;
     /* Cambio clave: ya no es necesario 'align-items: left;' porque no es una propiedad válida para flex */
-    /* Lo que necesitamos para alinear los ítems verticalmente es 'align-items: center;' (opcional, si quieres que estén centrados verticalmente) */
-    align-items: center; /* Cambiado de 'left' a 'center' para alineación vertical */
     gap: 10px; 
     justify-content: flex-start;
     width: 100%;
+    position: relative;
+    left: -10px;
     /* Eliminar o comentar las siguientes, ya que no son necesarias y 'width: 100%' suele ser el valor por defecto en la mayoría de los contenedores si no se especifica. */
     /* padding-left: 0; 
     margin-left: 0; */
