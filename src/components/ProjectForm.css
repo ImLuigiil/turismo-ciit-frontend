@@ -559,18 +559,17 @@ textarea {
 
 /* 3. Estilo del botón simulado (la etiqueta <label>) */
 /* Estos estilos imitan el aspecto simple de un botón de archivo nativo */
-.file-input-wrapper-native-style .file-upload-button {
-    background-color: #e9ecef; /* Un gris claro, similar al nativo */
+.file-input-wrapper-native-style {
+    background-color: blue; /* Un gris claro, similar al nativo */
     color: #495057;
+    
     border: 1px solid #ced4da; /* Borde más suave */
     padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.15s;
-    
-    /* Pequeño ajuste para que parezca un botón real */
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+
 }
 
 .file-input-wrapper-native-style .file-upload-button:hover {
@@ -586,3 +585,15 @@ textarea {
     white-space: nowrap;
     max-width: 70%; /* Limita el ancho para que el nombre no sea demasiado largo */
 }
+
+ .file-upload-button {
+    background-color: #e9ecef; /* Un gris claro, similar al nativo */
+    color: #495057;
+    border: 1px solid #ced4da; /* Borde más suave */
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.15s;
+    white-space: nowrap;
+ }
