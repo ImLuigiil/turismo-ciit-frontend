@@ -6,11 +6,12 @@ import { useNotification } from '../contexts/NotificationContext';
 // Importaciones de Chart.js MOVidas al principio del archivo
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import './ProyectosTurismoComunitarioPage.css';
 
 // Registro de los elementos necesarios de Chart.js
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const getPhaseSchedule = (fechaInicio, fechaFinAprox) => {
   if (!fechaInicio || !fechaFinAprox) {
@@ -570,23 +571,41 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
       </div>
       {proyectos.length > 0 && (
           <div className="proyectos-chart-container">
-              <h3>Estado de Proyectos en Progreso</h3>
-              <Pie 
-                  data={pieChartData}
-                  options={{ 
-                      responsive: true, 
-                      plugins: {
-                          legend: {
-                              position: 'top',
-                          },
-                          title: {
-                              display: true,
-                              text: 'Distribución de Proyectos por Estado'
-                          }
-                      }
-                  }}
-              />
-          </div>
+              <h3>Estado de Proyectos en Progreso</h3>
+              <Pie 
+                  data={pieChartData}
+                  options={{ 
+                      responsive: true, 
+                      plugins: {
+                          legend: {
+                              position: 'top',
+                          },
+                          title: {
+                              display: true,
+                              text: 'Distribución de Proyectos por Estado'
+                          },
+                          // ¡NUEVA CONFIGURACIÓN!
+                          datalabels: {
+                              formatter: (value, ctx) => {
+                                  let dataArr = ctx.chart.data.datasets[0].data;
+                                  
+                                  // SOLUCIÓN AL ERROR array-callback-return
+                                  const sum = dataArr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+                                  
+                                  if (sum === 0) return '0%'; 
+
+                                  let percentage = (value * 100 / sum).toFixed(1) + "%";
+                                  return percentage; // Asegurando que siempre se devuelve un valor
+                              },
+                              color: '#fff', 
+                              font: {
+                                  weight: 'bold'
+                              }
+                          }
+                      }
+                  }}
+              />
+          </div>
       )}
       {showConcludePhaseModal && selectedProject && (
           <div className="justification-modal-overlay">
