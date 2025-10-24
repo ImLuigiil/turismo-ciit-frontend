@@ -1128,8 +1128,18 @@ function ProjectForm() {
                                 required
                             />
                             <p className="image-specs-text">
-                                Formato soportado: PDF.Solo se acepta 1 archivo de máximo: {MAX_FILE_SIZE_MB}MB.
+                                Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.
+                                
+                                ⚠️Solo se permite 1 archivo⚠️
                             </p>
+                            {concludeDocumentFile && (
+                                <p className="selected-file-name">
+                                    Vista Previa: 
+                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
+                                        {concludeDocumentFile.name}
+                                    </a>
+                                </p>
+                            )}
                         </div>
 
                         {error && <p className="error-message">{error}</p>}
