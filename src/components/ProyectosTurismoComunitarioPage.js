@@ -589,13 +589,13 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                               formatter: (value, ctx) => {
                                   let dataArr = ctx.chart.data.datasets[0].data;
                                   
-                                  // SOLUCIÓN AL ERROR array-callback-return
                                   const sum = dataArr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
                                   
-                                  if (sum === 0) return '0%'; 
+                                // ✨ NUEVA CONDICIÓN CLAVE: Si el valor es 0, no mostrar nada.
+                                  if (value === 0 || sum === 0) return ''; 
 
                                   let percentage = (value * 100 / sum).toFixed(1) + "%";
-                                  return percentage; // Asegurando que siempre se devuelve un valor
+                                  return percentage; 
                               },
                               color: '#fff', 
                               font: {
