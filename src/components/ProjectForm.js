@@ -1120,38 +1120,30 @@ function ProjectForm() {
 
                         <div className="form-group">
                             <label htmlFor="concludeDocument">Documento de Respaldo (PDF):</label>
-                            <div className="file-input-wrapper-native-style">
-                                <input
-                                    type="file"
-                                    id="concludeDocument"
-                                    accept=".pdf"
-                                    onChange={handleConcludeDocumentChange}
-                                    required
-                                    className="hidden-input-file"
-                                />
-                                
-                                <label htmlFor="concludeDocument" className="file-upload-button">
-                                    Seleccionar Archivo
-                                </label>
-                                <span className="file-status-text">
-                                    {concludeDocumentFile 
-                                        ? concludeDocumentFile.name 
-                                        : "No ha seleccionado un archivo aún"}
-                                </span>
-                            </div>
+                            <input
+                                type="file"
+                                id="concludeDocument"
+                                accept=".pdf"
+                                onChange={handleConcludeDocumentChange}
+                                required
+                            />
                             <p className="image-specs-text">
                                 Formato soportado: PDF. Tamaño máximo: {MAX_FILE_SIZE_MB}MB.
                                 ⚠️Solo se permite 1 archivo⚠️
                             </p>
-                            {concludeDocumentFile && (
-                                <p className="selected-file-name">
-                                    Vista Previa: 
-                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
-                                        {concludeDocumentFile.name}
-                                    </a>
+                            {concludeDocumentFile ? (
+                                <p className="selected-file-name">
+                                    Archivo Seleccionado: 
+                                    <a href={concludeDocumentPreviewUrl} target="_blank" rel="noopener noreferrer">
+                                        {concludeDocumentFile.name}
+                                    </a>
+                                </p>
+                            ) : (
+                                <p className="no-images-message">
+                                    No ha seleccionado un archivo aún
                                 </p>
                             )}
-                        </div>
+                        </div>
 
                         {error && <p className="error-message">{error}</p>}
 
