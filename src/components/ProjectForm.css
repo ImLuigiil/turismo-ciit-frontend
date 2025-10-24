@@ -538,8 +538,7 @@ textarea {
     gap: 10px; 
     justify-content: flex-start;
     width: 100%;
-    position: relative;
-    left: -10px;
+    
     /* Eliminar o comentar las siguientes, ya que no son necesarias y 'width: 100%' suele ser el valor por defecto en la mayoría de los contenedores si no se especifica. */
     /* padding-left: 0; 
     margin-left: 0; */
@@ -588,3 +587,8 @@ textarea {
     white-space: nowrap;
     max-width: 70%; /* Limita el ancho para que el nombre no sea demasiado largo */
 }
+
+.file-upload-button {
+    position: relative;
+  left: -20px;
+    }
