@@ -1,4 +1,3 @@
-// src/components/ProjectForm.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -392,7 +391,6 @@ function ProjectForm() {
             showNotification(`Persona ${personaNombre} eliminada.`, 'warning');
         }
     };
-    // 
 
     const handleAcceptPersona = (index) => {
         const persona = personasDirectorio[index];

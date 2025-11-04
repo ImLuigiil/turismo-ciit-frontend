@@ -247,7 +247,6 @@ function ProjectDetailPage() {
 
         const link = document.createElement('a');
         link.href = `${process.env.REACT_APP_API_URL}${finalPhaseRecord.documentoUrl}`;
-        // Nombrar el archivo de forma descriptiva
         link.download = `Proyecto_Final_${project.nombre.replace(/\s/g, '_')}.pdf`;
         document.body.appendChild(link);
         link.click();
@@ -328,9 +327,7 @@ function ProjectDetailPage() {
           {project.historialFases && (
                 <button 
                     className="generate-justificacion-button" 
-                    // --- CÓDIGO MODIFICADO: Llama a la función que abre la modal ---
                     onClick={handleOpenJustificationsModal}
-                    // --- FIN CÓDIGO MODIFICADO ---
                     disabled={project.historialFases.length === 0}
                 >
                     Descargar Justificaciones (Fase 1-6)
@@ -343,7 +340,6 @@ function ProjectDetailPage() {
                 <button 
                     className="download-final-document-button" 
                     onClick={() => handleDownloadFinalDocument(project.historialFases)}
-                    // Este botón solo es relevante si el proyecto está en Fase 7 (o ya pasó por ella)
                     disabled={!project.historialFases.some(h => h.faseNumero === 6 && h.documentoUrl)}
                 >
                     Descargar Proyecto Final

@@ -1,16 +1,13 @@
-// src/components/ProyectosTurismoComunitarioPage.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
-// Importaciones de Chart.js MOVidas al principio del archivo
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import './ProyectosTurismoComunitarioPage.css';
 
-// Registro de los elementos necesarios de Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const getPhaseSchedule = (fechaInicio, fechaFinAprox) => {
@@ -475,7 +472,6 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                   const avance = calcularAvance(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
                   const color = getProgressColor(proyecto.fechaInicio, proyecto.fechaFinAprox, proyecto.faseActual);
                   
-                  // Lógica para la clase de parpadeo (blink-yellow o blink-red)
                   let actionClass = '';
                   if (proyecto.faseActual < 7) {
                       if (color === '#ffc107') {
@@ -533,7 +529,6 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
 
                           {isAdmin && (
                               <div className="card-actions">
-                                  {/* Botón Concluir Fase */}
                                   <button 
                                       className={`action-button conclude-button ${actionClass}`} 
                                       onClick={() => handleOpenConcludePhaseModal(proyecto)}
@@ -584,14 +579,12 @@ function ProyectosTurismoComunitarioPage({ isAdmin }) {
                               display: true,
                               text: 'Distribución de Proyectos por Estado'
                           },
-                          // ¡NUEVA CONFIGURACIÓN!
                           datalabels: {
                               formatter: (value, ctx) => {
                                   let dataArr = ctx.chart.data.datasets[0].data;
                                   
                                   const sum = dataArr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
                                   
-                                // ✨ NUEVA CONDICIÓN CLAVE: Si el valor es 0, no mostrar nada.
                                   if (value === 0 || sum === 0) return ''; 
 
                                   let percentage = (value * 100 / sum).toFixed(1) + "%";

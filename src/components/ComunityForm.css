@@ -1,4 +1,4 @@
-/* src/components/CommunityForm.css */
+
 
 .community-form-page {
     display: flex;
@@ -115,7 +115,6 @@
     color: #555;
 }
 
-/* Responsive adjustments */
 @media (max-width: 600px) {
     .community-form-container {
         padding: 20px;

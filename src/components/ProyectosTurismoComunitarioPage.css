@@ -1,4 +1,4 @@
-/* src/components/ProyectosTurismoComunitarioPage.css */
+
 
 .proyectos-container {
   padding: 20px;
@@ -79,7 +79,6 @@
 
 .progress-bar {
   height: 100%;
-  /*background-color: #4CAF50;*/
   border-radius: 5px;
   text-align: right;
   transition: width 0.5s ease-in-out;
@@ -257,7 +256,6 @@
     margin: 0;
 }
 
-/* Estilo para el estado gris */
 .grey-status .color-box {
     border: 1px solid #999;
 }
@@ -304,19 +302,19 @@
 
 @keyframes urgent-action-blink {
   0%, 100% {
-    background-color: #ffc107; /* Amarillo para ligeramente atrasado */
+    background-color: #ffc107;
   }
   50% {
-    background-color: #f8d070; /* Un tono más claro para el parpadeo */
+    background-color: #f8d070; 
   }
 }
 
 @keyframes very-urgent-action-blink {
   0%, 100% {
-    background-color: #dc3545; /* Rojo para muy atrasado */
+    background-color: #dc3545; 
   }
   50% {
-    background-color: #e66f7a; /* Un tono más claro para el parpadeo */
+    background-color: #e66f7a;
   }
 }
 

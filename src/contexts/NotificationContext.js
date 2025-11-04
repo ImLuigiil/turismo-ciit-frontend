@@ -1,6 +1,6 @@
 // src/contexts/NotificationContext.js
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import Notification from '../components/Notification'; // Importa el componente de notificación
+import Notification from '../components/Notification';
 
 const NotificationContext = createContext();
 
